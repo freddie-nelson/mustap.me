@@ -10,19 +10,11 @@ function playlistDownloader(url) {
     const _colors = require('colors');
     const readdir = util.promisify(fs.readdir);
     const getPath = require('platform-folders');
-    
-    
-    import store from '../store/index'
-
-    const currentDownload = store;
-    console.log(currentDownload)
 
     let playlist = [];
 
     // Get playlist metadata
-    ytpl(url, {
-        limit: 0
-    })
+    ytpl(url, { limit: 0 })
         .then(async res => {
             console.log('Fetching metadata...')
             playlist = await Promise.all(res.items /* await is used so that we don't move on until all songs metadata has been found*/

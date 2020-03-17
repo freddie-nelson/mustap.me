@@ -6,12 +6,13 @@ Vue.use(Vuex)
 export default new Vuex.Store({
   state: {
     currentDownload: {
-      currentProcess: '',
-      currentDownloadTitle: '',
+      currentProcess: 'N / A',
+      currentDownloadTitle: 'N / A',
       progress: 0,
       index: 0,
-      totalQueueSize: 0
-    }
+      totalQueueSize: 0,
+      currentlyDownloading: false
+    },
   },
   mutations: {
   },

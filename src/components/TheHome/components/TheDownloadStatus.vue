@@ -1,19 +1,24 @@
 <template>
   <div class="download-status">
       <div class="download-status__text-container">
-          <p id="current-process">Downloading...</p>
-          <p id="current-download">Billie Eilish - bad guy</p>
-          <p id="download-index">Song 1 of 12 <span>Skip</span></p>
+          <p id="current-process">{{ currentDownload.currentProcess }}</p>
+          <p id="current-download">{{ currentDownload.currentDownloadTitle }}</p>
+          <p id="download-index">Song {{ currentDownload.index }} of {{ currentDownload.totalQueueSize }} <span>Skip</span></p>
       </div>
 
-      <div class="download-status__progress-bar"><div id="download-progress"></div></div>
-      <p id="download-progress-percentage">21%</p>
+      <div class="download-status__progress-bar"><div :style="{ width: currentDownload.progress + '%' }" id="download-progress"></div></div>
+      <p id="download-progress-percentage">{{ currentDownload.progress }}%</p>
   </div>
 </template>
 
 <script>
 export default {
-    name: 'DownloadStatus'
+    name: 'DownloadStatus',
+    data() {
+        return {
+            currentDownload: this.$store.state.currentDownload,
+        }
+    }
 }
 </script>
 
@@ -54,9 +59,10 @@ export default {
           #download-progress {
             height: 8px;
             border-radius: 4px;
-            width: 30%;
+            width: 1%;
             background: linear-gradient(to right, #E91E63, #E91EA4);
             position: relative;
+            transition: width .2s ease-out;
           }
         }
 
