@@ -1,16 +1,19 @@
 <template>
   <main class="home">
       <Searchbox class="home__searchbox" />
+      <DownloadStatus class="home__downloadstatus" />
   </main>
 </template>
 
 <script>
 import Searchbox from './components/TheSearchbox'
+import DownloadStatus from './components/TheDownloadStatus'
 
 export default {
   name: 'Home',
   components: {
-    Searchbox
+    Searchbox,
+    DownloadStatus
   }
 }
 </script>
@@ -26,6 +29,16 @@ export default {
       width: 100%;
       max-width: 500px;
       height: 50px;
+      opacity: 0;
+      display: none;
+    }
+
+    &__downloadstatus {
+      width: 100%;
+      margin: auto;
+      max-width: 500px;
+      height: 160px;
+      z-index: 2;
     }
   }
 </style>
