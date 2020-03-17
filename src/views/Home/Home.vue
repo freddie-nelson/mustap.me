@@ -77,7 +77,7 @@ export default {
 
         // Get playlist metadata
         ytpl(url, {
-            limit: 0
+            limit: 3
         })
             .then(async res => {
                 console.log('Fetching metadata...')

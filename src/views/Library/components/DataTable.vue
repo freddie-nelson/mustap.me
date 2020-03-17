@@ -24,31 +24,29 @@ export default {
     },
     methods: {
       formatData() {
-        if (this.playlistt === []) {
-          setTimeout(this.formatData(), 500)
-        } else {
+        setTimeout(() => {
           let array = []
           let obj = {};
 
-        this.playlists.forEach((arr, index) => {
-          obj.leftTop = this.playlistNames[index];
-          let views = JSON.stringify(arr.reduce((objA, objB) => Number.parseInt(objA.views) + Number.parseInt(objB.views)));
-          let viewsLength = views.length;
-          obj.leftBottom = views.slice(0, 2) + '0'.repeat(viewsLength - 2) + '+ views';
-          obj.rightTop = arr.length + ' Songs';
+          this.playlists.forEach((arr, index) => {
+            obj.leftTop = this.playlistNames[index];
+            let views = JSON.stringify(arr.reduce((objA, objB) => Number.parseInt(objA.views) + Number.parseInt(objB.views)));
+            let viewsLength = views.length;
+            obj.leftBottom = views.slice(0, 2) + '0'.repeat(viewsLength - 2) + '+ views';
+            obj.rightTop = arr.length + ' Songs';
 
-          array.push(obj);
-          obj = {};
-        });
+            array.push(obj);
+            obj = {};
+          });
 
-        this.array = array;
-        window.console.log(array);
-        }
-      }
-    },
-    mounted() {
-      this.formatData();
+          this.array = array;
+          window.console.log(array);
+        }, 50)
     }
+  },
+  mounted() {
+    this.formatData()
+  }
 }
 </script>
 

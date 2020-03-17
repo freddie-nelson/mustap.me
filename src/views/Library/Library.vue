@@ -35,11 +35,11 @@ export default {
 
             await fs.promises.readdir(playlistsLocation)
                 .then(arr => {
-                    Promise.all(arr.forEach(async file => {
+                    arr.forEach(async file => {
                         fs.promises.readFile(playlistsLocation + '/' + file)
                             .then(data => playlists.push(JSON.parse(data)))
                             .catch(err => window.console.log(err));
-                    }));
+                    });
 
                     playlistNames = arr.map(name => name.split('.')[0]);
                 })
