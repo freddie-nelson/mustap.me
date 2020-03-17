@@ -60,8 +60,6 @@ export default {
           return;
         }
 
-        window.console.log()
-
         /* dependencies */
         const fs = require('fs');
         const util = require('util')
@@ -71,12 +69,9 @@ export default {
         const readdir = util.promisify(fs.readdir);
         const { remote } = require('electron');
 
-        window.console.log(remote);
-
         /* environment variables */
         const documentsPath = remote.app.getPath('documents')
         const songsPath = documentsPath + '/mustap/songs/';
-        window.console.log(documentsPath);
 
         let playlist = [];
 
@@ -90,31 +85,33 @@ export default {
                 playlist = await Promise.all(res.items /* await is used so that we don't move on until all songs metadata has been found*/
                     .map((song, i) => { /* map is the best way to do this as it allows us to take in all the songs from the playlist, change them, and put them back in all in one*/
                         const info = ytdl.getBasicInfo(song.url)
-                            .then(res => {
-                                let details = res.player_response.videoDetails;
+                            .then(response => {
+                                currentDownload.currentProcess = `Fetched data for song ${i}`;
+                                currentDownload.progress += 100 / res.items.length * 100;
+                                let details = response.player_response.videoDetails;
 
                                 /* Take the data we want and format it nicely */
                                 return {
-                                    videoId: res.video_id,
-                                    url: res.video_url,
-                                    title: res.title,
+                                    videoId: response.video_id,
+                                    url: response.video_url,
+                                    title: response.title,
                                     filename: details.title.replace(/[/\\?%*:|"<>]/g, '') + '.mp3',
-                                    artist: res.author.name,
-                                    datePublished: res.published,
+                                    artist: response.author.name,
+                                    datePublished: response.published,
                                     thumbnailUrl: details.thumbnail.thumbnails.pop().url,
                                     duration: details.lengthSeconds,
                                     views: details.viewCount,
-                                    likes: res.likes,
-                                    dislikes: res.dislikes,
+                                    likes: response.likes,
+                                    dislikes: response.dislikes,
                                 }
                             })
                             .catch(err => console.log(`An error occured: The song at position ${i} of the playlist could not be found.`, err));
 
                         return info; /* add the formatted data to the plalist array */
                     }));
-
+            
                 playlist = playlist.filter(obj => obj !== undefined); /* get rid of any songs that weren't found*/
-                window.console.log(playlist)
+                console.log(playlist)
                 
                 // console.log(playlist);
                 console.log('Fetched all metadata.')
@@ -125,10 +122,11 @@ export default {
                 currentDownload.currentProcess = 'Saving metadata in documents...';
 
                 /* saving playlist to documents as json file */
+                const playlistName = 'Super Epic Playlist';
                 const jsonPlaylist = JSON.stringify(playlist);
                 await fs.promises.mkdir(documentsPath + '/mustap/playlists/', { recursive: true })
                     .then(async () => {
-                        await fs.promises.writeFile(documentsPath + '/mustap/playlists/playlist.json', jsonPlaylist)
+                        await fs.promises.writeFile(documentsPath + `/mustap/playlists/${playlistName}.json`, jsonPlaylist)
                     })
                     .catch(err => console.log(err));
                   
