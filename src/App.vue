@@ -1,20 +1,20 @@
 <template>
   <div id="app">
     <Navbar />
-    <Home />
+    <vue-page-transition name="fade-in-right" class="transition">
+      <router-view></router-view>
+    </vue-page-transition>
   </div>
 </template>
 
 <script>
 import Navbar from './components/TheNavbar/TheNavbar'
-import Home from './components/TheHome/TheHome'
 
 export default {
   name: 'App',
   components: {
-    Navbar,
-    Home
-  },
+    Navbar
+  }
 }
 </script>
 
@@ -40,5 +40,9 @@ export default {
     width: 100vw;
     height: 100vh;
     flex-direction: row;
+  }
+
+  .transition {
+    width: 100%;
   }
 </style>

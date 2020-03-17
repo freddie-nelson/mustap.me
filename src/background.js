@@ -16,9 +16,12 @@ protocol.registerSchemesAsPrivileged([{scheme: 'app', privileges: { secure: true
 
 function createWindow () {
   // Create the browser window.
-  win = new BrowserWindow({ width: 1080, height: 700, webPreferences: {
-    nodeIntegration: true
-  } })
+  win = new BrowserWindow({ width: 1080, height: 900, webPreferences: {
+    nodeIntegration: true, 
+    devTools: true // CHANGE HERE TO FALSE TO DISABLE DEVTOOLS FOR PRODUCTION -----------------------------------------------------------------------
+  }})
+
+  win.setMenuBarVisibility(false);
 
   if (process.env.WEBPACK_DEV_SERVER_URL) {
     // Load the url of the dev server if in development mode
