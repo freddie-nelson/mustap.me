@@ -1,6 +1,6 @@
 <template>
-  <div class="table">
-    <DataTableCell v-for="(data, index) in array" :data="data" :key="index" :index="index + 1" />
+  <div class="table" id="table">
+    <DataTableCell v-for="(data, index) in array" :data="data" :key="index" @clicked="formatDataSongs" :index="index + 1" />
   </div>
 </template>
 
@@ -14,7 +14,9 @@ export default {
     },
     data() {
       return {
-        array: []
+        array: [],
+        forPlaylistsBool: this.forPlaylists,
+        playlist: []
       }
     },
     props: {
@@ -23,7 +25,15 @@ export default {
       forPlaylists: Boolean
     },
     methods: {
-      formatData() {
+      currentPlayingChanged() {
+        const { remote } = require('electron');
+
+        const currentPlaying = this.$store.state.currentPlaying;
+        currentPlaying.sound.src = 'file://' + remote.app.getPath('documents') + '/mustap/songs/' + currentPlaying.filename;
+
+        setTimeout(() => currentPlaying.sound.play(), 500);
+      },
+      formatDataPlaylists() {
         setTimeout(() => {
           let array = []
           let obj = {};
@@ -42,10 +52,57 @@ export default {
           this.array = array;
           window.console.log(array);
         }, 50)
+    },
+    formatDataSongs(e) {
+      if (!this.forPlaylistsBool) {
+        const children = document.getElementById('table').children;
+        const clickedEle = children[e - 1];
+
+        for (let i = 0; i < children.length; i++) {
+          const element = children[i];
+
+          if (element.classList.contains('clicked')) {
+            element.classList.remove('clicked');
+            break;
+          }
+        }
+
+        const song = this.playlist[e - 1];
+        const currentPlaying = this.$store.state.currentPlaying;
+
+        currentPlaying.thumbnail = song.thumbnailUrl;
+        currentPlaying.title = song.title.length > 18 ? song.title.split('').slice(0, 18).join('') + '...' : song.title;
+        currentPlaying.artist = song.artist;
+        currentPlaying.duration = song.duration;
+        currentPlaying.currentTime = '0:00';
+        currentPlaying.lengthSeconds = song.duration[0] * 60 + Number.parseInt(song.duration.split(':')[1]);
+        currentPlaying.filename = song.filename;
+        currentPlaying.playing = song.thmbnailUrl === currentPlaying.thumbnail ? currentPlaying.playing = !currentPlaying.playing : currentPlaying.playing = true;
+
+        clickedEle.classList.add('clicked');
+        this.currentPlayingChanged();
+      } else {
+        this.forPlaylistsBool = false;
+        const index = e - 1;
+        this.playlist = this.playlists[index];
+        let array = [];
+        let obj = {};
+        
+        this.playlist.forEach(song => {
+          obj.leftTop = song.title;
+          obj.leftBottom = song.artist;
+          obj.rightTop = song.duration;
+
+          array.push(obj);
+          obj = {};
+        })
+
+        this.array = array.slice(0, 50);
+      }
     }
   },
   mounted() {
-    this.formatData()
+    this.formatDataPlaylists()
   }
 }
 </script>

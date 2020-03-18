@@ -84,20 +84,42 @@ export default {
 
         let playlist = [];
 
+        const removeArtist = (title, artist) => {
+          let name = title.split('-')[1]
+
+          if (!name) {
+            return title;
+          }
+
+          if (name.toLowerCase() === artist.toLowerCase()) {
+            name = title.split('-')[0];
+
+            if (!name || name.length === 1) {
+              name = title;
+            }
+          }
+
+          return name;
+        }
+
+        // const findFeatures = (artist, title) => {
+        //   let match = title.match();
+        // }
+
+        console.log('Fetching metadata...')
+        currentDownload.currentProcess = 'Fetching metadata...';
         // Get playlist metadata
         ytpl(url, {
             limit: downloadLimit
         })
             .then(res => {
                 console.log(res)
-                console.log('Fetching metadata...')
-                currentDownload.currentProcess = 'Fetching metadata...';
                 playlist = res.items.map(song => { /* map is the best way to do this as it allows us to take in all the songs from the playlist, change them, and put them back in all in one*/
                     /* Take the data we want and format it nicely */
                     return {
                         videoId: song.id,
                         url: song.url,
-                        title: song.title,
+                        title: removeArtist(song.title.replace(/(official lyrics video)|(Official Lyrics Video)|(OFFICIAL LYRICS VIDEO)|(official lyric video)|(Official Lyric Video)|(OFFICIAL LYRIC VIDEO)|(lyric video)|(Lyric Video)|(LYRIC VIDEO)|(official music video)|(Official Music Video)|(OFFICIAL MUSIC VIDEO)|(music video)|(Music Video)|(MUSIC VIDEO)|(official video)|(Official Video)|(OFFICIAL VIDEO)|(official audio)|(Official Audio)|(OFFICIAL AUDIO)|(audio)|(Audio)|(AUDIO)|(Dir. by @_ColeBennet_)|(\[official audio\])|(\[Official Audio\])|(\[OFFICIAL AUDIO\])|(\[VIDEO\])|(lyric)|(Lyric)|(lyrics)|(Lyrics)/g, '').replace(/\(\)/g, ''), song.author.name),
                         filename: song.title.replace(/[/\\?%*:|"<>]/g, '') + '.mp3',
                         artist: song.author.name,                                    
                         thumbnailUrl: song.thumbnail,

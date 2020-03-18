@@ -1,5 +1,5 @@
 <template>
-  <div class="cell">
+  <div class="cell created" :id="id" @click="$emit('clicked', index)">
     <span class="cell__index">{{ index }}</span>
     <div class="cell__left-text">
       <p class="cell__left-text-top">{{ data.leftTop }}</p>
@@ -13,16 +13,31 @@
 </template>
 
 <script>
+import { v4 as uuidv4 } from 'uuid';
+
 export default {
   name: "DataTableCell",
+  data() {
+    return {
+      id: uuidv4(),
+    }
+  },
   props: {
       data: Object,
-      index: Number
+      index: Number,
+  },
+  mounted() {
+    setTimeout(() => document.getElementById(this.id).classList.remove('created'), 100 + this.index * 100)
   }
 };
 </script>
 
 <style lang="scss">
+.created {
+  transform: translateX(30px) !important;
+  opacity: 0 !important;
+}
+
 .cell {
   width: 100%;
   height: 64px;
@@ -31,7 +46,17 @@ export default {
   border-radius: 10px;
   display: flex;
   cursor: pointer;
-  transition: background .3s ease-in;
+  transition: background .3s ease-in, color .2s ease-in, transform .4s ease-out, opacity .4s ease-out;
+  transform: translateX(0);
+  opacity: 1;
+
+  &.clicked {
+    color: #E91EA4;
+
+    & .cell__right-text-top {
+      color: #E91EA4;
+    }
+  }
 
   &:hover {
       background: #242424;

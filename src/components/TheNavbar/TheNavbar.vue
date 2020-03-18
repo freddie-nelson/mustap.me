@@ -62,17 +62,48 @@
         </svg>
 
         <div class="nav__music-controller__album-details">
-          <img src="./album-placeholder.png" alt="Album Cover / Song Art">
+          <div class="image" :style="{ backgroundImage: `url(${this.$store.state.currentPlaying.thumbnail})` }" alt="Album Cover / Song Art"></div>
           <div>
-            <p id="song-title">Changes</p>
-            <p id="artist-name">XXXTENTACION</p>
-            <p id="duration">0:00 / 0:00</p>
+            <p>{{ this.$store.state.currentPlaying.title }}</p>
+            <p>{{ this.$store.state.currentPlaying.artist }}</p>
+            <p>{{ this.$store.state.currentPlaying.currentTime }} / {{ this.$store.state.currentPlaying.duration }}</p>
           </div>
         </div>
 
         <div class="nav__music-controller__controls">
-          <div class="nav__music-controller__controls-bar"><div id="music-progress"></div></div>
+          <div class="nav__music-controller__controls-bar"><div id="music-progress" :style="{ width: this.$store.state.currentPlaying.progress }"></div></div>
+          <div class="nav__music-controller__controls-buttons">
+
+            <svg class="nav__music-controller__controls-buttons-button" xmlns="http://www.w3.org/2000/svg" width="22" height="20" fill="none"><g clip-path="url(#A)">
+              <path d="M4.948 8.385L19.09.257C20.24-.404 22 .237 22 1.87v16.254c0 1.465-1.635 2.348-2.91 1.613L4.948 11.612c-1.262-.723-1.266-2.504 0-3.227z" fill="#fff"/></g>
+              <rect width="3" height="20" rx="1" transform="matrix(-1 0 0 1 3 0)" fill="#fff"/>
+              <defs><clipPath id="A"><path transform="matrix(-1 0 0 1 22 0)" fill="#fff" d="M0 0h18v20H0z"/></clipPath></defs>
+            </svg>
+
+            <svg class="nav__music-controller__controls-buttons-button-play" @click="playPause" v-if="!this.$store.state.currentPlaying.playing" xmlns="http://www.w3.org/2000/svg" width="34" height="36" fill="none">
+              <path d="M32.2 15.093L5.495.462C3.324-.726 0 .427 0 3.366V32.62c0 2.637 3.09 4.226 5.495 2.904L32.2 20.9c2.383-1.3 2.39-4.507 0-5.808z" fill="#fff"/>
+            </svg>
+
+            <svg class="nav__music-controller__controls-buttons-button-pause" @click="playPause" v-if="this.$store.state.currentPlaying.playing" xmlns="http://www.w3.org/2000/svg" width="34" height="36" viewBox="0 0 34 36" fill="none">
+              <g clip-path="url(#clip0)">
+                <path fill-rule="evenodd" clip-rule="evenodd" d="M10.2436 33.5C10.2436 34.1851 9.88764 34.8422 9.25411 35.3267C8.62057 35.8111 7.76131 36.0833 6.86536 36.0833H3.48715C2.5912 36.0833 1.73194 35.8111 1.0984 35.3267C0.464865 34.8422 0.108948 34.1851 0.108948 33.5V2.49996C0.108948 1.81482 0.464865 1.15774 1.0984 0.673267C1.73194 0.188798 2.5912 -0.083374 3.48715 -0.083374H6.86536C7.76131 -0.083374 8.62057 0.188798 9.25411 0.673267C9.88764 1.15774 10.2436 1.81482 10.2436 2.49996V33.5ZM33.891 33.5C33.891 34.1851 33.5351 34.8422 32.9015 35.3267C32.268 35.8111 31.4087 36.0833 30.5128 36.0833H27.1346C26.2386 36.0833 25.3794 35.8111 24.7458 35.3267C24.1123 34.8422 23.7564 34.1851 23.7564 33.5V2.49996C23.7564 1.81482 24.1123 1.15774 24.7458 0.673267C25.3794 0.188798 26.2386 -0.083374 27.1346 -0.083374H30.5128C31.4087 -0.083374 32.268 0.188798 32.9015 0.673267C33.5351 1.15774 33.891 1.81482 33.891 2.49996V33.5Z" fill="white"/>
+              </g>
+              <defs>
+                <clipPath id="clip0">
+                  <rect width="34" height="36" fill="white"/>
+                </clipPath>
+              </defs>
+            </svg>
+
+            <svg class="nav__music-controller__controls-buttons-button" xmlns="http://www.w3.org/2000/svg" width="22" height="20" fill="none"><g clip-path="url(#A)">
+              <path d="M4.948 8.385L19.09.257C20.24-.404 22 .237 22 1.87v16.254c0 1.465-1.635 2.348-2.91 1.613L4.948 11.612c-1.262-.723-1.266-2.504 0-3.227z" fill="#fff"/></g>
+              <rect width="3" height="20" rx="1" transform="matrix(-1 0 0 1 3 0)" fill="#fff"/>
+              <defs><clipPath id="A"><path transform="matrix(-1 0 0 1 22 0)" fill="#fff" d="M0 0h18v20H0z"/></clipPath></defs>
+            </svg>
+
+          </div>
         </div>
+
       </div>
   </nav>
 </template>
@@ -81,6 +112,17 @@
 export default {
     name: 'Navbar',
     methods: {
+      playPause() {
+        const currentPlaying = this.$store.state.currentPlaying;
+        currentPlaying.playing = !currentPlaying.playing;
+        console.log(currentPlaying.sound)
+
+        if (currentPlaying.playing) {
+          currentPlaying.sound.play();
+        } else {
+          currentPlaying.sound.pause()
+        }
+      },
       changeView(e) {
         const parent = e.srcElement.parentNode
         
@@ -218,7 +260,7 @@ export default {
       height: 234px;
       margin-top: auto;
       
-      svg {
+      > svg {
         width: 100%;
         height: auto;
         overflow: hidden;
@@ -232,9 +274,12 @@ export default {
         color: white;
         margin-left: 20px;
 
-        img {
+        .image {
           width: 70px;
           height: 70px;
+          background-size: 240%;
+          background-position: center;
+          border-radius: 8px;
         }
 
         div {
@@ -251,6 +296,12 @@ export default {
             opacity: 0.8;
           }
 
+          p:first-of-type {
+              margin-top: 0;
+              opacity: 1;
+              font-weight: 500;
+          }
+
           #song-title {
             margin-top: 0;
             font-size: 15px;
@@ -262,7 +313,7 @@ export default {
 
       &__controls {
         position: absolute;
-        bottom: 0;
+        bottom: 35px;
         margin: 0 20px;
         height: 50px;
         width: calc(100% - 40px);
@@ -277,7 +328,7 @@ export default {
           #music-progress {
             height: 10px;
             border-radius: 5px;
-            width: 30%;
+            width: 0%;
             background: linear-gradient(to right, #E91E63, #E91EA4);
             position: relative;
 
@@ -291,6 +342,33 @@ export default {
               right: -7.5px;
               top: -2px;
             }
+          }
+        }
+
+        &-buttons {
+          display: flex;
+          width: 100%;
+          justify-content: center;
+          align-items: center;
+          margin-top: 15px;
+
+          &-button {
+            transform: scale(.9);
+            cursor: pointer;
+          }
+
+          &-button:nth-of-type(3) {
+            transform: rotate(180deg);
+          }
+
+          &-button-play {
+            margin: 0 35px;
+            cursor: pointer;
+          }
+
+          &-button-pause {
+            margin: 0 35px;
+            cursor: pointer;
           }
         }
       }

@@ -18,7 +18,8 @@ function createWindow () {
   // Create the browser window.
   win = new BrowserWindow({ width: 1080, height: 900, webPreferences: {
     nodeIntegration: true, 
-    devTools: true // CHANGE HERE TO FALSE TO DISABLE DEVTOOLS FOR PRODUCTION -----------------------------------------------------------------------
+    devTools: true, // CHANGE HERE TO FALSE TO DISABLE DEVTOOLS FOR PRODUCTION -----------------------------------------------------------------------
+    webSecurity: false
   }})
 
   win.setMenuBarVisibility(false);
