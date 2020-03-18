@@ -74,7 +74,7 @@
           <div class="nav__music-controller__controls-bar"><div id="music-progress" :style="{ width: this.$store.state.currentPlaying.progress }"></div></div>
           <div class="nav__music-controller__controls-buttons">
 
-            <svg class="nav__music-controller__controls-buttons-button" xmlns="http://www.w3.org/2000/svg" width="22" height="20" fill="none"><g clip-path="url(#A)">
+            <svg @click="nextBack(-1)" class="nav__music-controller__controls-buttons-button" xmlns="http://www.w3.org/2000/svg" width="22" height="20" fill="none"><g clip-path="url(#A)">
               <path d="M4.948 8.385L19.09.257C20.24-.404 22 .237 22 1.87v16.254c0 1.465-1.635 2.348-2.91 1.613L4.948 11.612c-1.262-.723-1.266-2.504 0-3.227z" fill="#fff"/></g>
               <rect width="3" height="20" rx="1" transform="matrix(-1 0 0 1 3 0)" fill="#fff"/>
               <defs><clipPath id="A"><path transform="matrix(-1 0 0 1 22 0)" fill="#fff" d="M0 0h18v20H0z"/></clipPath></defs>
@@ -95,7 +95,7 @@
               </defs>
             </svg>
 
-            <svg class="nav__music-controller__controls-buttons-button" xmlns="http://www.w3.org/2000/svg" width="22" height="20" fill="none"><g clip-path="url(#A)">
+            <svg @click="nextBack(1)" class="nav__music-controller__controls-buttons-button" xmlns="http://www.w3.org/2000/svg" width="22" height="20" fill="none"><g clip-path="url(#A)">
               <path d="M4.948 8.385L19.09.257C20.24-.404 22 .237 22 1.87v16.254c0 1.465-1.635 2.348-2.91 1.613L4.948 11.612c-1.262-.723-1.266-2.504 0-3.227z" fill="#fff"/></g>
               <rect width="3" height="20" rx="1" transform="matrix(-1 0 0 1 3 0)" fill="#fff"/>
               <defs><clipPath id="A"><path transform="matrix(-1 0 0 1 22 0)" fill="#fff" d="M0 0h18v20H0z"/></clipPath></defs>
@@ -112,6 +112,14 @@
 export default {
     name: 'Navbar',
     methods: {
+      currentPlayingChanged() {
+        const { remote } = require('electron');
+
+        const currentPlaying = this.$store.state.currentPlaying;
+        currentPlaying.sound.src = 'file://' + remote.app.getPath('documents') + '/mustap/songs/' + currentPlaying.filename;
+
+        setTimeout(() => currentPlaying.sound.play(), 500);
+      },
       playPause() {
         const currentPlaying = this.$store.state.currentPlaying;
         currentPlaying.playing = !currentPlaying.playing;
@@ -121,6 +129,41 @@ export default {
           currentPlaying.sound.play();
         } else {
           currentPlaying.sound.pause()
+        }
+      },
+      nextBack(num) {
+        if (this.$store.state.currentPlaying.title === 'N / A') {
+          return
+        } else {
+          const currentPlaying = this.$store.state.currentPlaying;
+          const index = currentPlaying.index + num;
+          const song = this.$store.state.playlists[this.$store.state.currentPlaylist][index]
+          
+          currentPlaying.thumbnail = song.thumbnailUrl;
+          currentPlaying.title = song.title.length > 18 ? song.title.split('').slice(0, 18).join('') + '...' : song.title;
+          currentPlaying.artist = song.artist;
+          currentPlaying.duration = song.duration;
+          currentPlaying.currentTime = '0:00';
+          currentPlaying.lengthSeconds = song.duration[0] * 60 + Number.parseInt(song.duration.split(':')[1]);
+          currentPlaying.filename = song.filename;
+          currentPlaying.playing = song.thmbnailUrl === currentPlaying.thumbnail ? currentPlaying.playing = !currentPlaying.playing : currentPlaying.playing = true;
+          currentPlaying.index = index;
+
+          const children = document.getElementById('table').children;
+          const clickedEle = children[currentPlaying.index];
+
+          for (let i = 0; i < children.length; i++) {
+            const element = children[i];
+
+            if (element.classList.contains('clicked')) {
+              element.classList.remove('clicked');
+              break;
+            }
+        } 
+
+        clickedEle.classList.add('clicked');
+
+          this.currentPlayingChanged()
         }
       },
       changeView(e) {
@@ -331,6 +374,7 @@ export default {
             width: 0%;
             background: linear-gradient(to right, #E91E63, #E91EA4);
             position: relative;
+            transition: width 1s linear;
 
             &::after {
               content: '';

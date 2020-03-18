@@ -49,6 +49,9 @@ export default {
 
             this.playlists = playlists;
             this.playlistNames = playlistNames;
+
+            this.$store.state.playlists = this.playlists;
+            this.$store.state.playlistNames = this.playlistNames;
         }
     },
     mounted() {

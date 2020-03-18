@@ -26,7 +26,10 @@ export default new Vuex.Store({
       filename: '',
       playing: false,
       index: 0
-    }
+    },
+    playlists: [],
+    playlistNames: [],
+    currentPlaylist: 0
   },
   mutations: {
   },
