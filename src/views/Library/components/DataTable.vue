@@ -55,18 +55,6 @@ export default {
     },
     formatDataSongs(e) {
       if (!this.forPlaylistsBool) {
-        const children = document.getElementById('table').children;
-        const clickedEle = children[e - 1];
-
-        for (let i = 0; i < children.length; i++) {
-          const element = children[i];
-
-          if (element.classList.contains('clicked')) {
-            element.classList.remove('clicked');
-            break;
-          }
-        }
-
         const song = this.playlist[e - 1];
         const currentPlaying = this.$store.state.currentPlaying;
 
@@ -78,6 +66,19 @@ export default {
         currentPlaying.lengthSeconds = song.duration[0] * 60 + Number.parseInt(song.duration.split(':')[1]);
         currentPlaying.filename = song.filename;
         currentPlaying.playing = song.thmbnailUrl === currentPlaying.thumbnail ? currentPlaying.playing = !currentPlaying.playing : currentPlaying.playing = true;
+        currentPlaying.index = e - 1;
+
+        const children = document.getElementById('table').children;
+        const clickedEle = children[currentPlaying.index];
+
+        for (let i = 0; i < children.length; i++) {
+          const element = children[i];
+
+          if (element.classList.contains('clicked')) {
+            element.classList.remove('clicked');
+            break;
+          }
+        }
 
         clickedEle.classList.add('clicked');
         this.currentPlayingChanged();
@@ -96,6 +97,8 @@ export default {
           array.push(obj);
           obj = {};
         })
+
+        this.$store.state.currentPlaylist = index;
 
         this.array = array.slice(0, 50);
       }
