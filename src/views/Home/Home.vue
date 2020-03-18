@@ -77,38 +77,25 @@ export default {
 
         // Get playlist metadata
         ytpl(url, {
-            limit: 3
+            limit: 10
         })
-            .then(async res => {
+            .then(res => {
+                console.log(res)
                 console.log('Fetching metadata...')
                 currentDownload.currentProcess = 'Fetching metadata...';
-                playlist = await Promise.all(res.items /* await is used so that we don't move on until all songs metadata has been found*/
-                    .map((song, i) => { /* map is the best way to do this as it allows us to take in all the songs from the playlist, change them, and put them back in all in one*/
-                        const info = ytdl.getBasicInfo(song.url)
-                            .then(response => {
-                                currentDownload.currentProcess = `Fetched data for song ${i}`;
-                                currentDownload.progress += 100 / res.items.length * 100;
-                                let details = response.player_response.videoDetails;
-
-                                /* Take the data we want and format it nicely */
-                                return {
-                                    videoId: response.video_id,
-                                    url: response.video_url,
-                                    title: response.title,
-                                    filename: details.title.replace(/[/\\?%*:|"<>]/g, '') + '.mp3',
-                                    artist: response.author.name,
-                                    datePublished: response.published,
-                                    thumbnailUrl: details.thumbnail.thumbnails.pop().url,
-                                    duration: details.lengthSeconds,
-                                    views: details.viewCount,
-                                    likes: response.likes,
-                                    dislikes: response.dislikes,
-                                }
-                            })
-                            .catch(err => console.log(`An error occured: The song at position ${i} of the playlist could not be found.`, err));
-
-                        return info; /* add the formatted data to the plalist array */
-                    }));
+                playlist = res.items.map(song => { /* map is the best way to do this as it allows us to take in all the songs from the playlist, change them, and put them back in all in one*/
+                    /* Take the data we want and format it nicely */
+                    return {
+                        videoId: song.id,
+                        url: song.url,
+                        title: song.title,
+                        filename: song.title.replace(/[/\\?%*:|"<>]/g, '') + '.mp3',
+                        artist: song.author.name,                                    
+                        thumbnailUrl: song.thumbnail,
+                        duration: song.duration,
+                        views: 0
+                    }
+                  });
             
                 playlist = playlist.filter(obj => obj !== undefined); /* get rid of any songs that weren't found*/
                 console.log(playlist)

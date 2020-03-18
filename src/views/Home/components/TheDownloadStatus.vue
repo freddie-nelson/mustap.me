@@ -6,7 +6,7 @@
           <p id="download-index">Song {{ currentDownload.index }} of {{ currentDownload.totalQueueSize }} <span>Skip</span></p>
       </div>
 
-      <div class="download-status__progress-bar"><div :style="{ width: currentDownload.progress + '%' }" id="download-progress"></div></div>
+      <div class="download-status__progress-bar"><div :style="{ width: currentDownload.progress + '%', maxWidth: '100%' }" id="download-progress"></div></div>
       <p id="download-progress-percentage">{{ currentDownload.progress }}%</p>
   </div>
 </template>
