@@ -201,6 +201,7 @@ export default {
 
             str.on('progress', progress => {
                 currentDownload.progress = Math.round(progress.percentage);
+                console.log('progress')
             });
             /* calculate the progress on the download */
 
@@ -217,6 +218,14 @@ export default {
                     }));
 
       }
+    }
+  },
+  mounted() {
+    if (this.$store.state.currentDownload.currentlyDownloading) {
+      this.searchboxHidden = true;
+      this.searchboxDisplayNone = true;
+      this.downloadDisplayNone = false;
+      this.downloadShow = true;
     }
   }
 }
