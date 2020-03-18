@@ -137,7 +137,8 @@ export default {
         } else {
           const currentPlaying = this.$store.state.currentPlaying;
           const index = currentPlaying.index + num;
-          const song = this.$store.state.playlists[this.$store.state.currentPlaylist][index]
+          const song = this.$store.state.playlists[this.$store.state.currentPlaylist][index];
+          currentPlaying.sound.pause();
           
           currentPlaying.thumbnail = song.thumbnailUrl;
           currentPlaying.title = song.title.length > 18 ? song.title.split('').slice(0, 18).join('') + '...' : song.title;
@@ -149,19 +150,25 @@ export default {
           currentPlaying.playing = song.thmbnailUrl === currentPlaying.thumbnail ? currentPlaying.playing = !currentPlaying.playing : currentPlaying.playing = true;
           currentPlaying.index = index;
 
-          const children = document.getElementById('table').children;
-          const clickedEle = children[currentPlaying.index];
+          console.log(currentPlaying.index);
 
-          for (let i = 0; i < children.length; i++) {
-            const element = children[i];
+          console.log(currentPlaying.filename, song.filename);
 
-            if (element.classList.contains('clicked')) {
-              element.classList.remove('clicked');
-              break;
+          if (document.getElementById('table')) {
+            const children = document.getElementById('table').children;
+            const clickedEle = children[index];
+
+            for (let i = 0; i < children.length; i++) {
+              const element = children[i];
+
+              if (element.classList.contains('clicked')) {
+                element.classList.remove('clicked');
+                break;
+              }
             }
-        } 
 
-        clickedEle.classList.add('clicked');
+            clickedEle.classList.add('clicked');
+          }
 
           this.currentPlayingChanged()
         }
