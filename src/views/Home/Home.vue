@@ -11,6 +11,7 @@
 <script>
 import Searchbox from './components/TheSearchbox'
 import DownloadStatus from './components/TheDownloadStatus'
+import { Stream } from 'stream'
 
 export default {
   name: 'Home',
@@ -23,11 +24,15 @@ export default {
       searchboxHidden: false,
       searchboxDisplayNone: false,
       downloadShow: false,
-      downloadDisplayNone: true
+      downloadDisplayNone: true,
+      currentDownloadStream: Stream
     }
   },
   methods: {
-    searched(value) {
+    stopDownload() {
+      
+    },
+    searched(arr) {
       this.searchboxHidden = true;
 
       setTimeout(() => {
@@ -37,7 +42,7 @@ export default {
 
       setTimeout(() => this.downloadShow = true, 750)
 
-      this.playlistDownloader(value)
+      this.playlistDownloader(arr)
     },
     back() {
       if (!this.$store.state.currentDownload.currentlyDownloading) {
@@ -51,7 +56,11 @@ export default {
       setTimeout(() => this.searchboxHidden = false, 750)
       }
     },
-    playlistDownloader(url) {
+    playlistDownloader(arr) {
+
+        let [url, playlistName, downloadLimit ] = arr;
+
+        playlistName = playlistName.replace(/[/\\?%*:|"<>]/g, '');
 
         let currentDownload = this.$store.state.currentDownload;
 
@@ -77,7 +86,7 @@ export default {
 
         // Get playlist metadata
         ytpl(url, {
-            limit: 10
+            limit: downloadLimit
         })
             .then(res => {
                 console.log(res)
@@ -109,7 +118,6 @@ export default {
                 currentDownload.currentProcess = 'Saving metadata in documents...';
 
                 /* saving playlist to documents as json file */
-                const playlistName = 'Super Epic Playlist';
                 const jsonPlaylist = JSON.stringify(playlist);
                 await fs.promises.mkdir(documentsPath + '/mustap/playlists/', { recursive: true })
                     .then(async () => {
@@ -205,17 +213,23 @@ export default {
             });
             /* calculate the progress on the download */
 
-            ytdl(songInfo.url, { quality: 'highestaudio', filter: 'audioonly' })
+             this.currentDownloadStream = ytdl(songInfo.url, { quality: 'highestaudio', filter: 'audioonly' })
                 .on('error', err => {
                     console.log(' Failed to download. Retrying...', err)
                     currentDownload.currentProcess = 'Failed to download. Retrying...';
                     downloadSongs(index, tries + 1)
-                })
+                });
+
+                console.log(this.currentDownloadStream)
+
+            this.currentDownloadStream
                 .pipe(str)
                 .pipe(fs.createWriteStream(songsPath + songInfo.filename)
                     .on('close', () => { /* once the song is finished downloading call the function again for the next song in the array*/
                         downloadSongs(index + 1, 0)
-                    }));
+                    })
+                    .on('error', err => console.log(err)));
+                
 
       }
     }
@@ -239,9 +253,8 @@ export default {
 
     &__searchbox {
       margin: auto;
-      width: 100%;
-      max-width: 500px;
-      height: 50px;
+      max-width: 455px;
+      height: 40px;
       opacity: 1;
       display: flex;
       transition: opacity .7s ease-in;
