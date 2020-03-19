@@ -235,24 +235,19 @@ export default {
             });
             /* calculate the progress on the download */
 
-             this.currentDownloadStream = ytdl(songInfo.url, { quality: 'highestaudio', filter: 'audioonly' })
-                .on('error', err => {
-                    console.log(' Failed to download. Retrying...', err)
-                    currentDownload.currentProcess = 'Failed to download. Retrying...';
-                    downloadSongs(index, tries + 1)
-                });
-
-                console.log(this.currentDownloadStream)
-
-            this.currentDownloadStream
-                .pipe(str)
-                .pipe(fs.createWriteStream(songsPath + songInfo.filename)
-                    .on('close', () => { /* once the song is finished downloading call the function again for the next song in the array*/
-                        downloadSongs(index + 1, 0)
-                    })
-                    .on('error', err => console.log(err)));
-                
-
+            ytdl(songInfo.url, { quality: 'highestaudio', filter: 'audioonly' })
+              .on('error', err => {
+                  console.log(' Failed to download. Retrying...', err)
+                  currentDownload.currentProcess = 'Failed to download. Retrying...';
+                  downloadSongs(index, tries + 1)
+              })
+              .pipe(str)
+              .pipe(fs.createWriteStream(songsPath + songInfo.filename)
+                .on('close', () => { /* once the song is finished downloading call the function again for the next song in the array*/
+                    downloadSongs(index + 1, 0)
+                })
+                .on('error', err => console.log(err)));
+              
       }
     }
   },
