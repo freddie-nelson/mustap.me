@@ -1,19 +1,19 @@
 <template>
   <div class="table" id="table">
     <DataTableCell v-for="(data, index) in array" :data="data" :key="index" @clicked="formatDataSongs" :index="index + 1" />
-    <button @click="backLibrary" class="home__back-btn">
-      Back <span>&#8250;</span>
-    </button>
+    <backBtn @back="back" />
   </div>
 </template>
 
 <script>
 import DataTableCell from './DataTableCell'
+import BackBtn from '../../../components/BackBtn'
 
 export default {
     name: 'DataTable',
     components: {
-      DataTableCell
+      DataTableCell,
+      BackBtn
     },
     data() {
       return {
@@ -21,7 +21,8 @@ export default {
         forPlaylistsBool: this.forPlaylists,
         playlist: [],
         playlists: [],
-        playlistNames: []
+        playlistNames: [],
+        datesAdded: []
       }
     },
     props: {
@@ -29,11 +30,12 @@ export default {
       forPlaylists: Boolean
     },
     methods: {
-      backLibrary() {
+      back() {
         if (this.forPlaylistsBool) {
             return
         } else {
           this.forPlaylistsBool = true;
+          this.$emit('back')
           this.formatDataPlaylists()
         }
       },
@@ -52,12 +54,11 @@ export default {
 
           this.playlists = this.playlistsProp.map(playlist => playlist.data)
           this.playlistNames = this.playlistsProp.map(playlist => playlist.name)
+          this.datesAdded = this.playlistsProp.map(playlist => playlist.added)
 
           this.playlists.forEach((arr, index) => {
             obj.leftTop = this.playlistNames[index];
-            let views = JSON.stringify(arr.reduce((objA, objB) => Number.parseInt(objA.views) + Number.parseInt(objB.views)));
-            let viewsLength = views.length;
-            obj.leftBottom = views.slice(0, 2) + '0'.repeat(viewsLength - 2) + '+ views';
+            obj.leftBottom = this.datesAdded[index];
             obj.rightTop = arr.length + ' Songs';
 
             array.push(obj);
@@ -66,7 +67,7 @@ export default {
 
           this.array = array;
           window.console.log(array);
-        }, 80)
+        }, 100)
     },
     formatDataSongs(e) {
       if (!this.forPlaylistsBool) {
@@ -99,6 +100,7 @@ export default {
         this.currentPlayingChanged();
       } else {
         this.forPlaylistsBool = false;
+        this.$emit('clicked-playlist')
         const index = e - 1;
         this.playlist = this.playlists[index];
         let array = [];

@@ -2,22 +2,22 @@
   <main class="home">
       <Searchbox @searched="searched" :class="{ home__searchbox: true, hidden: searchboxHidden, displaynone: searchboxDisplayNone }" />
       <DownloadStatus :class="{ home__downloadstatus: true,  show: downloadShow, displaynone: downloadDisplayNone }" />
-      <button @click="back" class="home__back-btn">
-        Back <span>&#8250;</span>
-      </button>
+      <backBtn @back="back" />
   </main>
 </template>
 
 <script>
 import Searchbox from './components/TheSearchbox'
 import DownloadStatus from './components/TheDownloadStatus'
+import BackBtn from '../../components/BackBtn'
 import { Stream } from 'stream'
 
 export default {
   name: 'Home',
   components: {
     Searchbox,
-    DownloadStatus
+    DownloadStatus,
+    BackBtn
   },
   data() {
     return {
@@ -25,7 +25,8 @@ export default {
       searchboxDisplayNone: false,
       downloadShow: false,
       downloadDisplayNone: true,
-      currentDownloadStream: Stream
+      currentDownloadStream: Stream,
+      backBtnHide: true
     }
   },
   methods: {
@@ -254,6 +255,8 @@ export default {
       this.downloadDisplayNone = false;
       this.downloadShow = true;
     }
+
+    setTimeout(() => this.backBtnHide = false, 580)
   }
 }
 </script>
@@ -290,14 +293,19 @@ export default {
       color: rgba(255, 255, 255, 0.253);
       font-size: 18px;
       font-weight: 500;
-      bottom: 3px;
-      right: 10px;
+      top: 15px;
+      left: 316px;
       cursor: pointer;
-      transition: color .4s ease-in;
+      opacity: .2;
+      transition: opacity .4s ease-in;
       outline: none !important;
 
+      &.opacityNone {
+        opacity: 0;
+      }
+
       &:hover {
-        color: white;
+        opacity: 1;
       }
     }
   }

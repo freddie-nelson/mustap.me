@@ -5,14 +5,14 @@
                 <path fill-rule="evenodd" d="M18.406 16.624l6.725 6.725a1.26 1.26 0 0 1-.001 1.783 1.26 1.26 0 0 1-1.783-.001l-6.725-6.725a10 10 0 0 1-13.627-1.295 10 10 0 0 1 .432-13.682 10 10 0 0 1 13.681-.432 10 10 0 0 1 1.296 13.627h.001zM10.5 18a7.5 7.5 0 0 0 7.5-7.5A7.5 7.5 0 0 0 10.5 3 7.5 7.5 0 0 0 3 10.5a7.5 7.5 0 0 0 7.5 7.5z" fill="#fff"/>
             </svg>
             <div class="search-box__seperator"></div>
-            <input id="playlist-url" @keyup.enter="searched" type="text" placeholder="Enter your playlist link here">
+            <input id="playlist-url" v-model="link" @keyup.enter="searched" type="text" value="" placeholder="Enter your playlist link here">
         </div>
         <div class="search-box__options">
             <div class="search-box__options-input-container">
-                <input type="text" id="playlist-name" placeholder="Playlist name...">
+                <input type="text" v-model="playlistName" id="playlist-name" placeholder="Playlist name...">
             </div>
             <div class="search-box__options-input-container">
-                <input type="text" id="download-limit" placeholder="Download limit...">
+                <input type="text" v-model="downloadLimit" id="download-limit" placeholder="Download limit...">
             </div>
         </div>
     </div>
@@ -21,16 +21,19 @@
 <script>
 export default {
     name: 'Searchbox',
+    data() {
+        return {
+            link: '',
+            playlistName: '',
+            downloadLimit: 0,
+        }
+    },
     methods: {
         searched() {
-            const value = document.getElementById('playlist-url').value;
-            const playlistName = document.getElementById('playlist-name').value;
-            const downloadLimit = Number.parseInt(document.getElementById('download-limit').value);
-
-            if (!value || !playlistName || !downloadLimit|| isNaN(downloadLimit)) {
+            if (!this.link || !this.playlistName || !this.downloadLimit|| isNaN(this.downloadLimit)) {
                 return;
             } else {
-                this.$emit('searched', [value, playlistName, downloadLimit])
+                this.$emit('searched', [this.link, this.playlistName, this.downloadLimit])
             }
         } 
     }

@@ -1,9 +1,9 @@
 <template>
   <main class="library">
-    <h1>Your Library</h1>
-    <h2>Select a playlist</h2>
+    <h1>{{ mainTitle }}</h1>
+    <h2>{{ subTitle }}</h2>
     <div class="container">
-        <DataTable :playlistsProp="playlists" :forPlaylists="true" />
+        <DataTable @back="changeTitles" @clicked-playlist="changeTitles" :playlistsProp="playlists" :forPlaylists="true" />
     </div>
   </main>
 </template>
@@ -19,9 +19,23 @@ export default {
     data() {
         return {
             playlists: [],
+            mainTitle: 'Your Library',
+            subTitle: 'Select a playlist'
         }
     },
     methods: {
+        changeTitles() {
+            setTimeout(() => {
+                if (this.mainTitle == 'Your Library') {
+                    this.mainTitle = 'Currently Playing From'
+                    const currentPlaylist = this.$store.state.playlists[this.$store.state.currentPlaylist];
+                    this.subTitle = `${currentPlaylist.name} - ${currentPlaylist.data.length} tracks`
+                } else {
+                    this.mainTitle = 'Your Library';
+                    this.subTitle = 'Select a playlist';
+                }
+            }, 100)
+        },
         async getPlaylists() {
             const fs = require('fs');
             const { remote } = require('electron');
@@ -35,7 +49,13 @@ export default {
                 .then(arr => {
                     arr.forEach(async file => {
                         fs.promises.readFile(playlistsLocation + '/' + file)
-                            .then(data => playlists.push({ name: file.split('.')[0], data: JSON.parse(data) }))
+                            .then(data => {
+                                const date = new Date(fs.statSync(playlistsLocation + '/' + file).mtimeMs);
+                                const day = ("0" + date.getDate()).slice(-2);
+                                const month = ("0" + (date.getMonth() + 1)).slice(-2);
+                                const year = date.getFullYear();
+                                playlists.push({ name: file.split('.')[0], data: JSON.parse(data), added: `${day}/${month}/${year}` })
+                            })
                             .catch(err => window.console.log(err));
                     });
                 })
