@@ -90,11 +90,11 @@
             </svg>
           </div>
 
-          <div class="nav__music-controller__controls-bar"><div id="music-progress" :style="{ width: this.$store.state.currentPlaying.progress }"></div></div>
+          <vue-range-slider ref="volume-slider" @slide-end="changeCurrentPlayingTime" :value="$store.state.currentPlaying.sound.currentTime" :max="$store.state.currentPlaying.lengthSeconds" :min="0" :step="1" :direction="'horizontal'" :tooltip="false" :dot-size="16" :height="10" :width="260" style="display: block; padding: 0; margin: 0; cursor: pointer;"></vue-range-slider>
           <div class="nav__music-controller__controls-buttons">
             
-            <svg class="nav__music-controller__controls-buttons-repeat" xmlns="http://www.w3.org/2000/svg" width="20" height="15" fill="none"><g clip-path="url(#B)">
-              <path d="M.001 7.25c0-1.592.614-3.086 1.73-4.21a5.84 5.84 0 0 1 4.177-1.745h6.54V-.834l6.443 3.75-6.443 3.75V4.54h-6.54c-1.48 0-2.684 1.214-2.684 2.707l.008.218-2.918 1.7a5.97 5.97 0 0 1-.313-1.918zm18.27 4.71c-.546.554-1.197.994-1.915 1.294s-1.488.454-2.266.452H7.56v2.13l-6.45-3.754 6.45-3.754v2.13h6.527c1.482 0 2.688-1.217 2.688-2.71l-.008-.206 2.925-1.703c.203.608.308 1.25.308 1.9 0 1.593-.615 3.09-1.73 4.215z" fill="#fff" fill-opacity=".7" stroke="#242424"/></g>
+            <svg @click="$store.state.repeatPlaylist = !$store.state.repeatPlaylist" class="nav__music-controller__controls-buttons-repeat" xmlns="http://www.w3.org/2000/svg" width="20" height="15" fill="none"><g clip-path="url(#B)">
+              <path :fill-opacity="$store.state.repeatPlaylist ? '1' : '.7'" d="M.001 7.25c0-1.592.614-3.086 1.73-4.21a5.84 5.84 0 0 1 4.177-1.745h6.54V-.834l6.443 3.75-6.443 3.75V4.54h-6.54c-1.48 0-2.684 1.214-2.684 2.707l.008.218-2.918 1.7a5.97 5.97 0 0 1-.313-1.918zm18.27 4.71c-.546.554-1.197.994-1.915 1.294s-1.488.454-2.266.452H7.56v2.13l-6.45-3.754 6.45-3.754v2.13h6.527c1.482 0 2.688-1.217 2.688-2.71l-.008-.206 2.925-1.703c.203.608.308 1.25.308 1.9 0 1.593-.615 3.09-1.73 4.215z" fill="#fff" stroke="#242424"/></g>
               <defs><clipPath id="B"><path fill="#fff" d="M0 0h20v15H0z"/></clipPath></defs>
             </svg>
 
@@ -125,8 +125,8 @@
               <defs><clipPath id="A"><path transform="matrix(-1 0 0 1 22 0)" fill="#fff" d="M0 0h18v20H0z"/></clipPath></defs>
             </svg>
 
-            <svg xmlns="http://www.w3.org/2000/svg" class="nav__music-controller__controls-buttons-shuffle" width="17" height="15" fill="none"> 
-              <path d="M12.83 4.64h.782v2.477L17 3.633 13.6.15v2.066h-.782c-3.14 0-4.9 2.37-6.472 4.458-1.404 1.88-2.618 3.504-4.578 3.504H0V12.6h1.78c3.14 0 4.9-2.368 6.472-4.46C9.655 6.262 10.87 4.64 12.83 4.64h0zM4.6 6.166l.405-.54 1.064-1.38C4.944 3.177 3.6 2.4 1.78 2.4H0v2.422h1.78c1.128 0 2.008.54 2.82 1.353zM13.6 10.35h-.782c-1.196 0-2.114-.607-2.967-1.504l-.258.344-1.223 1.573c1.153 1.146 2.55 2.01 4.447 2.01h.782v2.075L17 11.367l-3.4-3.483v2.467z" fill="#fff" fill-opacity=".7"/>
+            <svg @click="$store.state.shufflePlaylist = !$store.state.shufflePlaylist" xmlns="http://www.w3.org/2000/svg" class="nav__music-controller__controls-buttons-shuffle" width="17" height="15" fill="none"> 
+              <path :fill-opacity="$store.state.shufflePlaylist ? '1' : '.7'" d="M12.83 4.64h.782v2.477L17 3.633 13.6.15v2.066h-.782c-3.14 0-4.9 2.37-6.472 4.458-1.404 1.88-2.618 3.504-4.578 3.504H0V12.6h1.78c3.14 0 4.9-2.368 6.472-4.46C9.655 6.262 10.87 4.64 12.83 4.64h0zM4.6 6.166l.405-.54 1.064-1.38C4.944 3.177 3.6 2.4 1.78 2.4H0v2.422h1.78c1.128 0 2.008.54 2.82 1.353zM13.6 10.35h-.782c-1.196 0-2.114-.607-2.967-1.504l-.258.344-1.223 1.573c1.153 1.146 2.55 2.01 4.447 2.01h.782v2.075L17 11.367l-3.4-3.483v2.467z" fill="#fff"/>
             </svg>
 
           </div>
@@ -145,6 +145,9 @@ export default {
       }
     },
     methods: {
+      changeCurrentPlayingTime(val) {
+        this.$store.state.currentPlaying.sound.currentTime = val;
+      },
       currentPlayingChanged() {
         const { remote } = require('electron');
 
@@ -165,12 +168,33 @@ export default {
         }
       },
       nextBack(num) {
+        const currentPlaying = this.$store.state.currentPlaying;
+        let index = currentPlaying.index + num;
+        const playlistLength = this.$store.state.playlists[this.$store.state.currentPlaylist].data.length;
+
+        if (this.$store.state.shufflePlaylist) {
+          let randomIndex;
+
+          do {
+            randomIndex = Math.floor(Math.random() * playlistLength);
+          } while (randomIndex == currentPlaying.index);
+
+          index = randomIndex;
+        }
+
+        if (index >= playlistLength || index < 0) {
+          if (this.$store.state.repeatPlaylist) {
+            index = 0;
+          } else {
+            return
+          }
+        }
+
         if (this.$store.state.currentPlaying.title === 'N / A') {
           return
         } else {
-          const currentPlaying = this.$store.state.currentPlaying;
-          const index = currentPlaying.index + num;
-          const song = this.$store.state.playlists[this.$store.state.currentPlaylist][index];
+          const song = this.$store.state.playlists[this.$store.state.currentPlaylist].data[index];
+
           currentPlaying.sound.pause();
           
           currentPlaying.thumbnail = song.thumbnailUrl;
@@ -375,7 +399,7 @@ export default {
         height: 70px;
         top: 60px;
         color: white;
-        margin-left: 20px;
+        margin-left: 10px;
 
         .image {
           width: 70px;

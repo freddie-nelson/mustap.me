@@ -29,8 +29,9 @@ export default new Vuex.Store({
       volume: 1
     },
     playlists: [],
-    playlistNames: [],
-    currentPlaylist: 0
+    currentPlaylist: 0,
+    repeatPlaylist: true,
+    shufflePlaylist: false
   },
   mutations: {
   },

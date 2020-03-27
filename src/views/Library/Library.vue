@@ -3,7 +3,7 @@
     <h1>Your Library</h1>
     <h2>Select a playlist</h2>
     <div class="container">
-        <DataTable :playlists="playlists" :playlistNames="playlistNames" :forPlaylists="true" />
+        <DataTable :playlistsProp="playlists" :forPlaylists="true" />
     </div>
   </main>
 </template>
@@ -19,7 +19,6 @@ export default {
     data() {
         return {
             playlists: [],
-            playlistNames: []
         }
     },
     methods: {
@@ -31,27 +30,22 @@ export default {
             const playlistsLocation = documents + '/mustap/playlists';
 
             let playlists = [];
-            let playlistNames = [];
 
             await fs.promises.readdir(playlistsLocation)
                 .then(arr => {
                     arr.forEach(async file => {
                         fs.promises.readFile(playlistsLocation + '/' + file)
-                            .then(data => playlists.push(JSON.parse(data)))
+                            .then(data => playlists.push({ name: file.split('.')[0], data: JSON.parse(data) }))
                             .catch(err => window.console.log(err));
                     });
-
-                    playlistNames = arr.map(name => name.split('.')[0]);
                 })
                 .catch(err => window.console.log(err))
 
-            window.console.log(playlists, playlistNames)
+            window.console.log(playlists,)
 
             this.playlists = playlists;
-            this.playlistNames = playlistNames;
 
             this.$store.state.playlists = this.playlists;
-            this.$store.state.playlistNames = this.playlistNames;
         }
     },
     mounted() {

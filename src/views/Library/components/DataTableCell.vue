@@ -27,7 +27,17 @@ export default {
       index: Number,
   },
   mounted() {
-    setTimeout(() => document.getElementById(this.id).classList.remove('created'), 100 + this.index * 100)
+    if (this.index >= 100) {
+      document.getElementById(this.id).classList.remove('created')
+    } else {
+      setTimeout(() => {
+        if (!document.getElementById(this.id)) {
+          return
+        } else {
+          document.getElementById(this.id).classList.remove('created')
+        }
+      }, 100 + this.index * 100)
+    }
   }
 };
 </script>

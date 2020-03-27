@@ -29,9 +29,6 @@ export default {
     }
   },
   methods: {
-    stopDownload() {
-      
-    },
     searched(arr) {
       this.searchboxHidden = true;
 

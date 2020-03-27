@@ -1,6 +1,9 @@
 <template>
   <div class="table" id="table">
     <DataTableCell v-for="(data, index) in array" :data="data" :key="index" @clicked="formatDataSongs" :index="index + 1" />
+    <button @click="backLibrary" class="home__back-btn">
+      Back <span>&#8250;</span>
+    </button>
   </div>
 </template>
 
@@ -16,15 +19,24 @@ export default {
       return {
         array: [],
         forPlaylistsBool: this.forPlaylists,
-        playlist: []
+        playlist: [],
+        playlists: [],
+        playlistNames: []
       }
     },
     props: {
-      playlists: Array,
-      playlistNames: Array,
+      playlistsProp: Array,
       forPlaylists: Boolean
     },
     methods: {
+      backLibrary() {
+        if (this.forPlaylistsBool) {
+            return
+        } else {
+          this.forPlaylistsBool = true;
+          this.formatDataPlaylists()
+        }
+      },
       currentPlayingChanged() {
         const { remote } = require('electron');
 
@@ -37,6 +49,9 @@ export default {
         setTimeout(() => {
           let array = []
           let obj = {};
+
+          this.playlists = this.playlistsProp.map(playlist => playlist.data)
+          this.playlistNames = this.playlistsProp.map(playlist => playlist.name)
 
           this.playlists.forEach((arr, index) => {
             obj.leftTop = this.playlistNames[index];
@@ -51,7 +66,7 @@ export default {
 
           this.array = array;
           window.console.log(array);
-        }, 50)
+        }, 80)
     },
     formatDataSongs(e) {
       if (!this.forPlaylistsBool) {
