@@ -67,6 +67,7 @@ export default {
         height: 100%;
         color: white;
         flex-direction: column;
+        overflow-y: hidden;
 
         h1 {
             font-size: 36px;
@@ -78,6 +79,13 @@ export default {
             font-size: 28px;
             font-weight: 500;
             margin-left: 60px
+        }
+
+        .container {
+            height: 80%;
+            overflow: hidden;
+            margin-top: 40px;
+            margin-bottom: 40px;
         }
     }
 </style>

@@ -14,19 +14,6 @@ export default {
   name: 'App',
   components: {
     Navbar
-  },
-  mounted() {
-    clearInterval(intervalTimer);
-    const intervalTimer = setInterval(() => {
-      console.log('Interval ran')
-      const currentPlaying = this.$store.state.currentPlaying;
-      currentPlaying.currentTimeSeconds = Math.ceil(currentPlaying.sound.currentTime);
-      const num = currentPlaying.currentTimeSeconds % 60 < 10 ? '0' + currentPlaying.currentTimeSeconds % 60 : currentPlaying.currentTimeSeconds % 60;
-      currentPlaying.currentTime = Math.floor(currentPlaying.currentTimeSeconds / 60) + ':' + num;
-      currentPlaying.progress = (currentPlaying.currentTimeSeconds / currentPlaying.lengthSeconds * 100).toFixed(2) + '%';
-      console.log(currentPlaying.progress, currentPlaying.currentTimeSeconds)
-    }, 1000)
-    console.log(intervalTimer)
   }
 }
 </script>

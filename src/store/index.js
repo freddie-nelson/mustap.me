@@ -25,7 +25,8 @@ export default new Vuex.Store({
       lengthSeconds: 0,
       filename: '',
       playing: false,
-      index: 0
+      index: 0,
+      volume: 1
     },
     playlists: [],
     playlistNames: [],

@@ -71,8 +71,32 @@
         </div>
 
         <div class="nav__music-controller__controls">
+
+          <div class="nav__music-controller__controls-volume-buttons">
+            <div class="nav__music-controller__controls-volume-buttons-audio-controller" v-if="showVolumeControls" id="music-volume-controller">
+              <vue-range-slider ref="volume-slider" v-model="$store.state.currentPlaying.sound.volume" :max="1" :min="0" :step="0.01" :direction="'vertical'" :tooltip="false" :dot-size="12" :height="90" :width="8" style="display: block; margin: block;"></vue-range-slider>
+            </div>
+
+            <svg v-if="$store.state.currentPlaying.sound.volume > 0.4" @click="showVolumeControls = !showVolumeControls" class="nav__music-controller__controls-volume-full nav__music-controller__controls-volume-buttons-button" xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none">
+              <path d="M7.84 2.065L4.596 5.4H.875C.392 5.4 0 5.803 0 6.3v5.4c0 .497.392.9.875.9h3.72l3.244 3.335c.548.564 1.494.168 1.494-.636V2.7c0-.805-.946-1.2-1.494-.636zM17.5 9c0-2.382-1.17-4.573-3.127-5.86-.408-.268-.95-.143-1.207.28s-.138.983.27 1.25c1.45.952 2.314 2.57 2.314 4.328s-.865 3.376-2.314 4.328c-.408.268-.53.828-.27 1.25.237.39.77.568 1.207.28C16.33 13.572 17.5 11.382 17.5 9zm-5.17-2.882c-.422-.237-.955-.08-1.19.354s-.08.982.345 1.223c.47.266.763.766.763 1.305s-.292 1.04-.763 1.305c-.423.24-.577.787-.344 1.223s.767.592 1.19.354C13.36 11.3 14 10.195 14 9a3.31 3.31 0 0 0-1.669-2.882z" fill="#fff"/>
+            </svg>
+
+            <svg v-if="$store.state.currentPlaying.sound.volume <= 0.4 && $store.state.currentPlaying.sound.volume > 0" @click="showVolumeControls = !showVolumeControls" class="nav__music-controller__controls-volume-one nav__music-controller__controls-volume-buttons-button" xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none">
+              <path d="M7.84 2.065L4.596 5.4H.875C.392 5.4 0 5.803 0 6.3v5.4c0 .497.392.9.875.9h3.72l3.244 3.335c.548.564 1.494.168 1.494-.636V2.7c0-.805-.946-1.2-1.494-.636zm4.492 4.053c-.422-.237-.955-.08-1.19.354s-.08.982.345 1.223c.47.266.763.766.763 1.305s-.292 1.04-.763 1.305c-.423.24-.577.787-.344 1.223s.767.592 1.19.354C13.36 11.3 14 10.195 14 9a3.31 3.31 0 0 0-1.669-2.882z" fill="#fff"/>
+            </svg>
+
+            <svg v-if="$store.state.currentPlaying.sound.volume == 0" @click="showVolumeControls = !showVolumeControls" xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none">
+              <path d="M7.84 2.065L4.596 5.4H.875C.392 5.4 0 5.803 0 6.3v5.4c0 .497.392.9.875.9h3.72l3.244 3.335c.548.564 1.494.168 1.494-.636V2.7c0-.805-.946-1.2-1.494-.636z" fill="#fff"/>
+            </svg>
+          </div>
+
           <div class="nav__music-controller__controls-bar"><div id="music-progress" :style="{ width: this.$store.state.currentPlaying.progress }"></div></div>
           <div class="nav__music-controller__controls-buttons">
+            
+            <svg class="nav__music-controller__controls-buttons-repeat" xmlns="http://www.w3.org/2000/svg" width="20" height="15" fill="none"><g clip-path="url(#B)">
+              <path d="M.001 7.25c0-1.592.614-3.086 1.73-4.21a5.84 5.84 0 0 1 4.177-1.745h6.54V-.834l6.443 3.75-6.443 3.75V4.54h-6.54c-1.48 0-2.684 1.214-2.684 2.707l.008.218-2.918 1.7a5.97 5.97 0 0 1-.313-1.918zm18.27 4.71c-.546.554-1.197.994-1.915 1.294s-1.488.454-2.266.452H7.56v2.13l-6.45-3.754 6.45-3.754v2.13h6.527c1.482 0 2.688-1.217 2.688-2.71l-.008-.206 2.925-1.703c.203.608.308 1.25.308 1.9 0 1.593-.615 3.09-1.73 4.215z" fill="#fff" fill-opacity=".7" stroke="#242424"/></g>
+              <defs><clipPath id="B"><path fill="#fff" d="M0 0h20v15H0z"/></clipPath></defs>
+            </svg>
 
             <svg @click="nextBack(-1)" class="nav__music-controller__controls-buttons-button" xmlns="http://www.w3.org/2000/svg" width="22" height="20" fill="none"><g clip-path="url(#A)">
               <path d="M4.948 8.385L19.09.257C20.24-.404 22 .237 22 1.87v16.254c0 1.465-1.635 2.348-2.91 1.613L4.948 11.612c-1.262-.723-1.266-2.504 0-3.227z" fill="#fff"/></g>
@@ -101,6 +125,10 @@
               <defs><clipPath id="A"><path transform="matrix(-1 0 0 1 22 0)" fill="#fff" d="M0 0h18v20H0z"/></clipPath></defs>
             </svg>
 
+            <svg xmlns="http://www.w3.org/2000/svg" class="nav__music-controller__controls-buttons-shuffle" width="17" height="15" fill="none"> 
+              <path d="M12.83 4.64h.782v2.477L17 3.633 13.6.15v2.066h-.782c-3.14 0-4.9 2.37-6.472 4.458-1.404 1.88-2.618 3.504-4.578 3.504H0V12.6h1.78c3.14 0 4.9-2.368 6.472-4.46C9.655 6.262 10.87 4.64 12.83 4.64h0zM4.6 6.166l.405-.54 1.064-1.38C4.944 3.177 3.6 2.4 1.78 2.4H0v2.422h1.78c1.128 0 2.008.54 2.82 1.353zM13.6 10.35h-.782c-1.196 0-2.114-.607-2.967-1.504l-.258.344-1.223 1.573c1.153 1.146 2.55 2.01 4.447 2.01h.782v2.075L17 11.367l-3.4-3.483v2.467z" fill="#fff" fill-opacity=".7"/>
+            </svg>
+
           </div>
         </div>
 
@@ -111,6 +139,11 @@
 <script>
 export default {
     name: 'Navbar',
+    data() {
+      return {
+        showVolumeControls: false,
+      }
+    },
     methods: {
       currentPlayingChanged() {
         const { remote } = require('electron');
@@ -184,7 +217,27 @@ export default {
 
         this.$router.push({ name: parent.id })
       }
-    }
+    },
+    mounted() {
+    clearInterval(intervalTimer);
+    const intervalTimer = setInterval(() => {
+      const currentPlaying = this.$store.state.currentPlaying;
+
+      if (currentPlaying.title === 'N / A') {
+        return;
+      } else {
+        console.log('Interval ran')
+        currentPlaying.currentTimeSeconds = Math.ceil(currentPlaying.sound.currentTime);
+        const num = currentPlaying.currentTimeSeconds % 60 < 10 ? '0' + currentPlaying.currentTimeSeconds % 60 : currentPlaying.currentTimeSeconds % 60;
+        currentPlaying.currentTime = Math.floor(currentPlaying.currentTimeSeconds / 60) + ':' + num;
+        currentPlaying.progress = (currentPlaying.currentTimeSeconds / currentPlaying.lengthSeconds * 100).toFixed(2) + '%';
+
+        if (currentPlaying.currentTime == currentPlaying.duration) {
+          this.nextBack(1);
+        }
+      }
+    }, 1000)
+  }
 }
 </script>
 
@@ -368,6 +421,47 @@ export default {
         height: 50px;
         width: calc(100% - 40px);
 
+        &-volume-buttons {
+            position: absolute;
+            top: -28px;
+            right: 0;
+            cursor: pointer;
+
+            &:hover {
+              & .nav__music-controller__controls-volume-buttons-button {
+                transform: rotate(-10deg);
+              }
+            }
+
+            &-button {
+              transition: transform .2s ease-out;
+            }
+
+            & .hide {
+              display: none;
+            }
+
+            &-audio-controller {
+              width: 30px;
+              height: 100px;
+              background: rgb(22, 22, 22);
+              position: absolute;
+              top: -105px;
+              right: -6px;
+              border-radius: 8px;
+              display: flex;
+
+              &__level-bar {
+                appearance: none;
+                width: 80px;
+                height: 6px;
+                outline: none !important;
+                transform: rotate(-90deg);
+                position: absolute;
+              }
+            }
+        }
+
         &-bar {
           width: 100%;
           height: 10px;
@@ -408,7 +502,7 @@ export default {
             cursor: pointer;
           }
 
-          &-button:nth-of-type(3) {
+          &-button:nth-of-type(4) {
             transform: rotate(180deg);
           }
 
@@ -419,6 +513,16 @@ export default {
 
           &-button-pause {
             margin: 0 35px;
+            cursor: pointer;
+          }
+
+          &-shuffle {
+            margin-left: 25px;
+            cursor: pointer;
+          }
+
+          &-repeat {
+            margin-right: 25px;
             cursor: pointer;
           }
         }

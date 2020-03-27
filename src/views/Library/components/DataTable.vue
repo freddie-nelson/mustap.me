@@ -100,7 +100,7 @@ export default {
 
         this.$store.state.currentPlaylist = index;
 
-        this.array = array.slice(0, 50);
+        this.array = array;
       }
     }
   },
@@ -111,11 +111,27 @@ export default {
 </script>
 
 <style lang="scss">
+  ::-webkit-scrollbar {
+    background: transparent;
+    width: 12px;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: rgb(31, 31, 31);
+    border-radius: 20px;
+  }
+
+  ::-webkit-scrollbar-corner {
+    display: none;
+  }
+
   .table {
     max-width: 680px;
     margin-left: 60px;
-    margin-top: 40px;
     width: 100%;
     height: 100%;
+    overflow: scroll;
+    padding-right: 8px;
+    overflow-x: hidden;
   }
 </style>
