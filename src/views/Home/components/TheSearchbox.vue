@@ -11,7 +11,7 @@
             <div class="searchbox-options__modal">
                 <p>Playlist name:</p>
                 <input type="text" name="playlist-name" v-model="playlistName">
-                <Button @clicked="searched" class="button" :filled="false" :text="'Next ➜'" :fontSize="15" />
+                <Button @clicked="playlistName.length !== 0 ? searched() : null" class="button" :filled="false" :text="'Next ➜'" :fontSize="15" />
             </div>
         </div>
     </div>
@@ -66,7 +66,7 @@ export default {
         &__seperator {
             width: 5px;
             height: 40px;
-            background: linear-gradient(to bottom, #E91E63, #E91EA4);
+            background: var(--accent-color);
             border-radius: 3px;
             margin-left: 15px;
             margin-right: 10px;
@@ -107,18 +107,18 @@ export default {
         animation-fill-mode: forwards;
 
         &__modal {
-            background: $main-bg;
+            background: var(--main-bg);
             padding: 20px;
             border-radius: 10px;
 
             p {
                 margin-bottom: 5px;
                 opacity: .6;
-                color: $primary-text;
+                color: var(--primary-text);
             }
 
             input {
-                background: $lighter-bg;
+                background: var(--lighter-bg);
                 border: none;
                 outline: none !important;
                 font-size: 16px;

@@ -2,19 +2,24 @@
   <main class="library">
     <h1>{{ mainTitle }}</h1>
     <h2>{{ subTitle }}</h2>
-    <div class="container">
-        <DataTable @back="changeTitles" @clicked-playlist="changeTitles" :playlistsProp="playlists" :forPlaylists="true" />
-    </div>
+    <section class="library__main-container">
+        <div class="container">
+            <DataTable @back="changeTitles" @clicked-playlist="changeTitles" :playlistsProp="playlists" :forPlaylists="true" />
+        </div>
+        <CurrentPlaying />
+    </section>
   </main>
 </template>
 
 <script>
 import DataTable from './components/DataTable'
+import CurrentPlaying from './components/CurrentPlaying'
 
 export default {
     name: 'Library',
     components: {
-        DataTable
+        DataTable,
+        CurrentPlaying
     },
     data() {
         return {
@@ -79,7 +84,7 @@ export default {
         display: flex;
         width: 100%;
         height: 100%;
-        color: $primary-text;
+        color: var(--primary-text);
         flex-direction: column;
         overflow-y: hidden;
 
@@ -95,11 +100,18 @@ export default {
             margin-left: 60px
         }
 
+        &__main-container {
+            display: flex;
+            flex-direction: row;
+            height: calc(100% - 162px);
+            padding: 40px 60px;
+        }
+
         .container {
-            height: 80%;
+            height: 100%;
+            width: 680px;
+            min-width: 600px;
             overflow: hidden;
-            margin-top: 40px;
-            margin-bottom: 40px;
         }
     }
 </style>

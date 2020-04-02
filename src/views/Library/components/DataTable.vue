@@ -1,6 +1,6 @@
 <template>
   <div class="table" id="table">
-    <DataTableCell v-for="(data, index) in array" :data="data" :key="index" @clicked="formatDataSongs" :index="index + 1" />
+    <DataTableCell v-for="(data, index) in array" :data="data" :key="index" @clicked="formatDataSongs" :index="index + 1" :forPlaylists="forPlaylists" />
     <backBtn @back="back" />
   </div>
 </template>
@@ -35,6 +35,18 @@ export default {
             return
         } else {
           this.forPlaylistsBool = true;
+
+          const children = document.getElementById('table').children;
+          
+          for (let i = 0; i < children.length; i++) {
+            const element = children[i];
+
+            if (element.classList.contains('clicked')) {
+              element.classList.remove('clicked');
+              break;
+            }
+          }
+
           this.$emit('back')
           this.formatDataPlaylists()
         }
@@ -74,8 +86,8 @@ export default {
         const song = this.playlist[e - 1];
         const currentPlaying = this.$store.state.currentPlaying;
 
-        currentPlaying.thumbnail = song.thumbnailUrl;
-        currentPlaying.title = song.title.length > 18 ? song.title.split('').slice(0, 18).join('') + '...' : song.title;
+        currentPlaying.thumbnail = song.thumbnailUrl.replace('hqdefault', 'maxresdefault');
+        currentPlaying.title = song.title;
         currentPlaying.artist = song.artist;
         currentPlaying.duration = song.duration;
         currentPlaying.currentTime = '0:00';
@@ -118,6 +130,31 @@ export default {
         this.$store.state.currentPlaylist = index;
 
         this.array = array;
+
+        setTimeout(() => {
+          const currentPlaying = this.$store.state.currentPlaying;
+
+          if (currentPlaying.title != 'N / A') {
+            const elements = document.querySelectorAll('p.cell__left-text-top');
+            for (let i = 0; i < elements.length; i++) {
+              const ele = elements[i];
+
+              let title = currentPlaying.title;
+
+              if (title[0] == ' ') {
+                title = title.slice(1, title.length);
+              }
+
+              if (ele.innerText == title) {
+                document.getElementById('table').children[i].classList.add('clicked');
+                document.getElementById('table').scrollTo({top: document.getElementById('table').children[i].offsetTop - 205, behavior: 'smooth'});
+                break;
+              }
+            }
+          }
+
+        }, 100);
+
       }
     }
   },
@@ -134,7 +171,7 @@ export default {
   }
 
   ::-webkit-scrollbar-thumb {
-    background: $lighter-bg;
+    background: var(--lighter-bg);
     border-radius: 20px;
   }
 
@@ -143,8 +180,6 @@ export default {
   }
 
   .table {
-    max-width: 680px;
-    margin-left: 60px;
     width: 100%;
     height: 100%;
     overflow: scroll;

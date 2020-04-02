@@ -207,6 +207,8 @@ export default {
               console.log('----- Finished downloading all songs. -----');
               currentDownload.currentProcess = 'Finished downloading all songs.';
               currentDownload.currentlyDownloading = false;
+              currentDownload.currentDownloadTitle = 'N / A';
+              currentDownload.index = 0;
               return;
           }
 

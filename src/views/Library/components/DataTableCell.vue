@@ -13,30 +13,31 @@
 </template>
 
 <script>
-import { v4 as uuidv4 } from 'uuid';
+import { v4 as uuidv4 } from "uuid";
 
 export default {
   name: "DataTableCell",
   data() {
     return {
-      id: uuidv4(),
-    }
+      id: uuidv4()
+    };
   },
   props: {
-      data: Object,
-      index: Number,
+    data: Object,
+    index: Number,
+    forPlaylists: Boolean
   },
   mounted() {
-    if (this.index >= 100) {
-      document.getElementById(this.id).classList.remove('created')
+    if (this.index >= 0) {
+      document.getElementById(this.id).classList.remove("created");
     } else {
       setTimeout(() => {
         if (!document.getElementById(this.id)) {
-          return
+          return;
         } else {
-          document.getElementById(this.id).classList.remove('created')
+          document.getElementById(this.id).classList.remove("created");
         }
-      }, 100 + this.index * 100)
+      }, 100 + this.index * 100);
     }
   }
 };
@@ -49,35 +50,36 @@ export default {
 }
 
 .cell {
-  width: 100%;
+  max-width: 100%;
   height: 64px;
   margin: 12px 0;
-  background-color: $main-bg;
+  background-color: var(--main-bg);
   border-radius: 10px;
   display: flex;
   cursor: pointer;
-  transition: background-color .3s ease-in, color .2s ease-in, transform .4s ease-out, opacity .4s ease-out;
+  transition: background-color 0.3s ease-in, color 0.2s ease-in,
+    transform 0.4s ease-out, opacity 0.4s ease-out;
   transform: translateX(0);
   opacity: 1;
 
   &.clicked {
-    color: $accent-color;
+    color: var(--accent-color);
 
     & .cell__right-text-top {
-      color: $accent-color;
+      color: var(--accent-color);
     }
   }
 
   &:hover {
-      background-color: $lighter-bg;
+    background-color: var(--lighter-bg);
   }
 
   &__index {
     margin: auto 0;
     font-family: helvetica;
     font-size: 16px;
-    color: white;
-    opacity: .3;
+    color: var(--primary-text);
+    opacity: 0.3;
     width: 40px;
     text-align: center;
   }
@@ -88,11 +90,15 @@ export default {
 
     &-top {
       font-size: 18px;
+      overflow: hidden;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+      max-width: 350px;
     }
 
     &-bottom {
       font-size: 14px;
-      color: $secondary-text;
+      color: var(--secondary-text);
       margin-top: -2px;
     }
   }
@@ -103,7 +109,7 @@ export default {
 
     &-top {
       font-size: 16px;
-      color: $secondary-text;
+      color: var(--secondary-text);
     }
   }
 }

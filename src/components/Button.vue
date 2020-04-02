@@ -1,5 +1,5 @@
 <template>
-  <button @click="$emit('clicked', e)" :class="{ filled: filled || false }" :style="{ fontSize: `${ fontSize }px` }">
+  <button @click="$emit('clicked')" :class="{ filled: filled || false }" :style="{ fontSize: `${ fontSize }px` }">
       {{ text }}
   </button>
 </template>
@@ -18,7 +18,7 @@ export default {
 <style scoped lang="scss">
     button {
         background: none;
-        color: $accent-color-secondary;
+        color: var(--accent-color-secondary);
         border: none;
         outline: none !important;
         border-radius: 6px;
@@ -27,17 +27,17 @@ export default {
         transition: color ease-in .3s;
 
         &:hover {
-            color: $accent-color;
+            color: var(--accent-color);
         }
 
         .filled {
-            background-color: $accent-color-secondary;
+            background-color: var(--accent-color-secondary);
             transition: background-color ease-in .7s;
             color: white;
             padding: 7px 8px;
 
             &:hover {
-                background-color: $accent-color;
+                background-color: var(--accent-color);
             }
         }
     }

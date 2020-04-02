@@ -28,17 +28,17 @@ export default {
         flex-direction: column;
 
         &__text-container {
-            color: rgb(207, 207, 207);
+            color: var(--secondary-text);
             font-size: 24px;
             width: 100%;
             
             #current-process {
-                color: white;
+                color: var(--primary-text);
             }
 
             span {
                 text-align: right;
-                color: #E91EA4;
+                color: var(--accent-color);
             }
             
             #download-index {
@@ -51,7 +51,7 @@ export default {
           width: 100%;
           max-width: 500px;
           height: 8px;
-          background-color: #292929;
+          background-color: var(--lighter-bg);
           border-radius: 4px;
           cursor: pointer;
           margin-top: 20px;
@@ -60,14 +60,14 @@ export default {
             height: 8px;
             border-radius: 4px;
             width: 1%;
-            background: linear-gradient(to right, #E91E63, #E91EA4);
+            background: var(--accent-color);
             position: relative;
             transition: width .2s ease-out;
           }
         }
 
         #download-progress-percentage {
-            color: white;
+            color: var(--primary-text);
             font-weight: 600;
             font-size: 18px;
             margin-top: 2px;
