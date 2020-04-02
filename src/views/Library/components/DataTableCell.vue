@@ -52,31 +52,32 @@ export default {
   width: 100%;
   height: 64px;
   margin: 12px 0;
-  background: none;
+  background-color: $main-bg;
   border-radius: 10px;
   display: flex;
   cursor: pointer;
-  transition: background .3s ease-in, color .2s ease-in, transform .4s ease-out, opacity .4s ease-out;
+  transition: background-color .3s ease-in, color .2s ease-in, transform .4s ease-out, opacity .4s ease-out;
   transform: translateX(0);
   opacity: 1;
 
   &.clicked {
-    color: #E91EA4;
+    color: $accent-color;
 
     & .cell__right-text-top {
-      color: #E91EA4;
+      color: $accent-color;
     }
   }
 
   &:hover {
-      background: #242424;
+      background-color: $lighter-bg;
   }
 
   &__index {
     margin: auto 0;
     font-family: helvetica;
     font-size: 16px;
-    color: rgba(255, 255, 255, 0.404);
+    color: white;
+    opacity: .3;
     width: 40px;
     text-align: center;
   }
@@ -91,7 +92,7 @@ export default {
 
     &-bottom {
       font-size: 14px;
-      color: rgba(255, 255, 255, 0.7);
+      color: $secondary-text;
       margin-top: -2px;
     }
   }
@@ -102,7 +103,7 @@ export default {
 
     &-top {
       font-size: 16px;
-      color: rgba(255, 255, 255, 0.7);
+      color: $secondary-text;
     }
   }
 }

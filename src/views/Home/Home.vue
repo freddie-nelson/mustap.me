@@ -1,7 +1,7 @@
 <template>
   <main class="home">
-      <Searchbox @searched="searched" :class="{ home__searchbox: true, hidden: searchboxHidden, displaynone: searchboxDisplayNone }" />
-      <DownloadStatus :class="{ home__downloadstatus: true,  show: downloadShow, displaynone: downloadDisplayNone }" />
+      <Searchbox @searched="searched" v-if="!searchboxDisplayNone" :class="{ home__searchbox: true, hidden: searchboxHidden }" />
+      <DownloadStatus v-if="!downloadDisplayNone" :class="{ home__downloadstatus: true,  show: downloadShow }" />
       <backBtn @back="back" />
   </main>
 </template>
@@ -56,7 +56,7 @@ export default {
     },
     playlistDownloader(arr) {
       
-      let [url, playlistName, downloadLimit ] = arr;
+      let [url, playlistName ] = arr;
 
       playlistName = playlistName.replace(/[/\\?%*:|"<>]/g, '');
 
@@ -92,7 +92,7 @@ export default {
         if (name.toLowerCase() === artist.toLowerCase()) {
           name = title.split('-')[0];
 
-          if (!name || name.length === 1) {
+          if (!name || (name.length === 1 || name.length === 0)) {
             name = title;
           }
         }
@@ -108,7 +108,7 @@ export default {
       currentDownload.currentProcess = 'Fetching metadata...';
       // Get playlist metadata
       ytpl(url, {
-          limit: downloadLimit
+          limit: 0
       })
           .then(res => {
               console.log(res)
@@ -117,7 +117,7 @@ export default {
                   return {
                       videoId: song.id,
                       url: song.url,
-                      title: removeArtist(song.title.replace(/(official lyrics video)|(Official Lyrics Video)|(OFFICIAL LYRICS VIDEO)|(official lyric video)|(Official Lyric Video)|(OFFICIAL LYRIC VIDEO)|(lyric video)|(Lyric Video)|(LYRIC VIDEO)|(official music video)|(Official Music Video)|(OFFICIAL MUSIC VIDEO)|(music video)|(Music Video)|(MUSIC VIDEO)|(official video)|(Official Video)|(OFFICIAL VIDEO)|(official audio)|(Official Audio)|(OFFICIAL AUDIO)|(audio)|(Audio)|(AUDIO)|(Dir. by @_ColeBennet_)|(\[official audio\])|(\[Official Audio\])|(\[OFFICIAL AUDIO\])|(\[VIDEO\])|(lyric)|(Lyric)|(lyrics)|(Lyrics)/g, '').replace(/\(\)/g, ''), song.author.name),
+                      title: removeArtist(song.title.replace(/ *\([^)]*\) */g, "").replace(/\[.*?\]/g, "") || song.title, song.author.name),
                       filename: song.title.replace(/[/\\?%*:|"<>]/g, '') + '.mp3',
                       artist: song.author.name,                                    
                       thumbnailUrl: song.thumbnail,
@@ -229,7 +229,7 @@ export default {
 
           str.on('progress', progress => {
               currentDownload.progress = Math.round(progress.percentage);
-              console.log('progress')
+              console.log(progress)
           });
           /* calculate the progress on the download */
 

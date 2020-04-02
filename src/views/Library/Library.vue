@@ -79,7 +79,7 @@ export default {
         display: flex;
         width: 100%;
         height: 100%;
-        color: white;
+        color: $primary-text;
         flex-direction: column;
         overflow-y: hidden;
 

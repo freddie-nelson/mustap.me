@@ -134,7 +134,7 @@ export default {
   }
 
   ::-webkit-scrollbar-thumb {
-    background: rgb(31, 31, 31);
+    background: $lighter-bg;
     border-radius: 20px;
   }
 

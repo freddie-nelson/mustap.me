@@ -21,6 +21,14 @@ export default {
 <style lang="scss">
   @import url('https://fonts.googleapis.com/css?family=Poppins:400,500,600,700&display=swap');
 
+  .vue-range-slider > .slider {
+    background-color: rgba(255, 255, 255, 0.15) !important;
+
+    .slider-process {
+      background-color: $accent-color !important;
+    }
+  }
+
   * {
     margin: 0;
     padding: 0;
@@ -32,7 +40,7 @@ export default {
   body {
     width: 100%;
     height: 100vh;
-    background-color: #121212;
+    background-color: $main-bg;
     overflow: hidden;
   }
 

@@ -90,7 +90,7 @@
             </svg>
           </div>
 
-          <vue-range-slider ref="volume-slider" @slide-end="changeCurrentPlayingTime" :value="$store.state.currentPlaying.sound.currentTime" :max="$store.state.currentPlaying.lengthSeconds" :min="0" :step="1" :direction="'horizontal'" :tooltip="false" :dot-size="16" :height="10" :width="260" style="display: block; padding: 0; margin: 0; cursor: pointer;"></vue-range-slider>
+          <vue-range-slider @slide-end="changeCurrentPlayingTime" :value="$store.state.currentPlaying.sound.currentTime" :max="$store.state.currentPlaying.lengthSeconds" :min="0" :step="1" :direction="'horizontal'" :tooltip="false" :dot-size="16" :height="10" :width="260" style="display: block; padding: 0; margin: 0; cursor: pointer;"></vue-range-slider>
           <div class="nav__music-controller__controls-buttons">
             
             <svg @click="$store.state.repeatPlaylist = !$store.state.repeatPlaylist" class="nav__music-controller__controls-buttons-repeat" xmlns="http://www.w3.org/2000/svg" width="20" height="15" fill="none"><g clip-path="url(#B)">
@@ -278,7 +278,7 @@ export default {
     width: 15.6vw;
     min-width: 300px;
     height: 100vh;
-    background-color: black;
+    background-color: $dark-bg;
 
     &__logo {
       width: 100%;
@@ -290,12 +290,12 @@ export default {
         max-width: 100%;
         height: auto;
         top: 0;
-        fill: white;
+        fill: $primary-text;
       }
 
       h1 {
         position: absolute;
-        color: black;
+        color: $dark-bg;
         font-size: 42px;
         margin-left: 20px;
         line-height: 36px;
@@ -308,7 +308,7 @@ export default {
           right: -10px;
           bottom: 3px;
           border-radius: 5px;
-          background-color: black;
+          background-color: $dark-bg;
           position: absolute;
         }
       }
@@ -326,7 +326,7 @@ export default {
         display: flex;
         align-items: center;
         margin-top: 30px;
-        color: white;
+        color: $primary-text;
         cursor: pointer;
 
         svg {
@@ -337,13 +337,13 @@ export default {
         }
 
         svg > path {
-          fill: white;
+          fill: $primary-text;
           transition: all .2s ease-in;
         }
 
         &#Settings svg > path {
           fill: none;
-          stroke: white;
+          stroke: $primary-text;
         }
 
         &:hover {
@@ -367,16 +367,16 @@ export default {
 
         &.selected {
           svg > path {
-            fill: rgb(233, 30, 155);
+            fill: $accent-color;
           }
 
           svg {
-            filter: drop-shadow(0px 0px 15px #E91EA4);
+            filter: drop-shadow(0px 0px 15px $accent-color);
           }
 
           &#Settings > svg > path  {
             fill: none;
-            stroke: rgb(233, 30, 155);
+            stroke: $accent-color;
           }
         }
       }
@@ -391,6 +391,10 @@ export default {
         width: 100%;
         height: auto;
         overflow: hidden;
+
+        path {
+          fill: $lighter-bg;
+        }
       }
 
       &__album-details {
@@ -398,7 +402,7 @@ export default {
         position: absolute;
         height: 70px;
         top: 60px;
-        color: white;
+        color: $primary-text;
         margin-left: 10px;
 
         .image {
@@ -468,7 +472,7 @@ export default {
             &-audio-controller {
               width: 30px;
               height: 100px;
-              background: rgb(22, 22, 22);
+              background: $main-bg;
               position: absolute;
               top: -105px;
               right: -6px;
@@ -486,34 +490,6 @@ export default {
             }
         }
 
-        &-bar {
-          width: 100%;
-          height: 10px;
-          background-color: #4D4D4D;
-          border-radius: 5px;
-          cursor: pointer;
-
-          #music-progress {
-            height: 10px;
-            border-radius: 5px;
-            width: 0%;
-            background: linear-gradient(to right, #E91E63, #E91EA4);
-            position: relative;
-            transition: width 1s linear;
-
-            &::after {
-              content: '';
-              width: 15px;
-              height: 15px;
-              background: white;
-              border-radius: 8px;
-              position: absolute;
-              right: -7.5px;
-              top: -2px;
-            }
-          }
-        }
-
         &-buttons {
           display: flex;
           width: 100%;
@@ -524,6 +500,10 @@ export default {
           &-button {
             transform: scale(.9);
             cursor: pointer;
+
+            & path, & rect {
+              fill: $primary-text;
+            }
           }
 
           &-button:nth-of-type(4) {
@@ -533,21 +513,37 @@ export default {
           &-button-play {
             margin: 0 35px;
             cursor: pointer;
+
+            & path {
+              fill: $primary-text;
+            }
           }
 
           &-button-pause {
             margin: 0 35px;
             cursor: pointer;
+
+            & path {
+              fill: $primary-text;
+            }
           }
 
           &-shuffle {
             margin-left: 25px;
             cursor: pointer;
+
+            & path {
+              fill: $primary-text;
+            }
           }
 
           &-repeat {
             margin-right: 25px;
             cursor: pointer;
+
+            & path {
+              fill: $primary-text;
+            }
           }
         }
       }
