@@ -6,7 +6,7 @@
         <div class="container">
             <DataTable @back="changeTitles" @clicked-playlist="changeTitles" :playlistsProp="playlists" :forPlaylists="true" />
         </div>
-        <CurrentPlaying />
+        <CurrentPlaying class="library__current-playing" />
     </section>
   </main>
 </template>
@@ -109,9 +109,49 @@ export default {
 
         .container {
             height: 100%;
-            width: 680px;
-            min-width: 600px;
+            min-width: 680px;
             overflow: hidden;
         }
     }
+
+    @media screen and (max-width: 1620px) {
+        .library {
+
+            .container {
+                min-width: 600px;
+            }
+        }
+    } 
+
+    @media screen and (max-width: 1525px) {
+        .library {
+
+            .container {
+                min-width: 540px;
+            }
+        }
+    }  
+
+    @media screen and (max-width: 1375px) {
+        .library {
+
+            .container {
+                min-width: 480px;
+            }
+        }
+    }   
+
+    @media screen and (max-width: 1310px) {
+        .library {
+
+            &__current-playing {
+                display: none;
+            }
+
+            .container {
+                min-width: none;
+                width: 100%;
+            }
+        }
+    } 
 </style>

@@ -107,6 +107,8 @@ export default {
         let index = currentPlaying.index + num;
         const playlistLength = this.$store.state.playlists[this.$store.state.currentPlaylist].data.length;
 
+        const indexForScroll = currentPlaying.index;
+
         if (this.$store.state.shufflePlaylist) {
           let randomIndex;
 
@@ -162,7 +164,7 @@ export default {
 
               clickedEle.classList.add('clicked');
 
-              if (num === 1) {
+              if (index > indexForScroll) {
                 if (clickedEle.getBoundingClientRect().top - 205 > document.getElementById('table').clientHeight) {
                   document.getElementById('table').scrollTo({top: clickedEle.offsetTop - 205, behavior: 'smooth'});
                 }

@@ -69,14 +69,35 @@ export default {
             color: var(--secondary-text);
             line-height: 30px;
             margin-top: 15px;
-        }
-
-        &__title {
             overflow: hidden;
             white-space: nowrap;
             text-overflow: ellipsis;
+        }
+
+        &__title {
             color: var(--primary-text) !important;
             margin-top: 0 !important;
+        }
+    }
+
+    @media screen and (max-width: 1525px) {
+        .current-playing-details {
+
+            &__image {
+                width: 175px;
+                height: 175px;
+            }
+
+            &__text {
+                height: 175px;
+                margin-left: 20px;
+
+                p {
+                    font-size: 26px;
+                    line-height: 26px;
+                    margin-top: 10px;
+                }
+            }
         }
     }
 </style>

@@ -101,21 +101,12 @@ export default {
 
         setTimeout(() => currentPlaying.sound.play(), 500);
       },
-      playPause() {
-        const currentPlaying = this.$store.state.currentPlaying;
-        currentPlaying.playing = !currentPlaying.playing;
-        console.log(currentPlaying.sound)
-
-        if (currentPlaying.playing) {
-          currentPlaying.sound.play();
-        } else {
-          currentPlaying.sound.pause()
-        }
-      },
       nextBack(num) {
         const currentPlaying = this.$store.state.currentPlaying;
         let index = currentPlaying.index + num;
         const playlistLength = this.$store.state.playlists[this.$store.state.currentPlaylist].data.length;
+
+        const indexForScroll = currentPlaying.index;
 
         if (this.$store.state.shufflePlaylist) {
           let randomIndex;
@@ -171,7 +162,16 @@ export default {
               }
 
               clickedEle.classList.add('clicked');
-              clickedEle.scrollIntoView({behavior: "smooth", block: "end", inline: "nearest"});
+              
+              if (index > indexForScroll) {
+                if (clickedEle.getBoundingClientRect().top - 205 > document.getElementById('table').clientHeight) {
+                  document.getElementById('table').scrollTo({top: clickedEle.offsetTop - 205, behavior: 'smooth'});
+                }
+              } else {
+                if (clickedEle.getBoundingClientRect().top - 205 < document.getElementById('table').clientHeight) {
+                  document.getElementById('table').scrollTo({top: clickedEle.offsetTop - 205, behavior: 'smooth'});
+                }
+              }
             }
           }
 
@@ -225,6 +225,7 @@ export default {
     flex-direction: column;
     width: 15.6vw;
     min-width: 300px;
+    max-width: 300px;
     height: 100vh;
     background-color: var(--dark-bg);
 
@@ -235,7 +236,7 @@ export default {
       svg {
         z-index: 0;
         display: block;
-        max-width: 100%;
+        width: 100%;
         height: auto;
         top: 0;
         
