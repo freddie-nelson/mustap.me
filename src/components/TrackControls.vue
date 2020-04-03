@@ -139,7 +139,7 @@ export default {
           currentPlaying.artist = song.artist;
           currentPlaying.duration = song.duration;
           currentPlaying.currentTime = '0:00';
-          currentPlaying.lengthSeconds = song.duration[0] * 60 + Number.parseInt(song.duration.split(':')[1]);
+          currentPlaying.lengthSeconds = song.duration.split(':')[0] * 60 + Number.parseInt(song.duration.split(':')[1]);
           currentPlaying.filename = song.filename;
           currentPlaying.playing = song.thmbnailUrl === currentPlaying.thumbnail ? currentPlaying.playing = !currentPlaying.playing : currentPlaying.playing = true;
           currentPlaying.index = index;

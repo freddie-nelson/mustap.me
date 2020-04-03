@@ -120,9 +120,9 @@ export default {
                       title: removeArtist(song.title.replace(/ *\([^)]*\) */g, "").replace(/\[.*?\]/g, "") || song.title, song.author.name),
                       filename: song.title.replace(/[/\\?%*:|"<>]/g, '') + '.mp3',
                       artist: song.author.name,                                    
-                      thumbnailUrl: song.thumbnail,
+                      thumbnailUrl: song.thumbnail.replace('hqdefault', '0'),
                       duration: song.duration,
-                      views: 0
+                      playlistLink: url
                   }
                 });
           
