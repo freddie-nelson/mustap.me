@@ -3,7 +3,7 @@
 
           <div class="controls__volume-buttons" :style="{ padding: `0 ${ padding }px 0 0` }">
             <div class="volume-buttons__audio-controller" v-if="showVolumeControls" ref="music-volume-controller" :style="{ margin: `0 ${ padding }px 0 0`, backgroundColor: `var(${ bgColor })` }">
-                <vue-range-slider ref="volume-slider" v-model="$store.state.currentPlaying.sound.volume" :max="1" :min="0" :step="0.01" :direction="'vertical'" :tooltip="false" :dot-size="12" :height="90" :width="8" style="display: block; margin: block;"></vue-range-slider>
+                <vue-range-slider ref="volume-slider" v-model="$store.state.currentPlaying.sound.volume" :max="1" :min="0" :step="0.01" :direction="'vertical'" :tooltip="false" :dot-size="12" :height="130" :width="8" style="display: block; margin: block;"></vue-range-slider>
             </div>
 
             <svg v-if="$store.state.currentPlaying.sound.volume > 0.4" @click="showVolumeControls = !showVolumeControls" class="volume-buttons__controls-volume-full volume-buttons__button" xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none">
@@ -257,7 +257,7 @@ export default {
           })
 
           if (!ret) {
-            alert(`${ key.name } registration failed. Another app must be using this key.`)
+            console.log(`${ key.name } registration failed. Another app must be using this key.`)
           }
         }
       });
@@ -293,9 +293,9 @@ export default {
 
             .volume-buttons__audio-controller {
                 width: 30px;
-                height: 100px;
+                height: 140px;
                 position: absolute;
-                top: -105px;
+                top: -145px;
                 right: -6px;
                 border-radius: 8px;
                 display: flex;

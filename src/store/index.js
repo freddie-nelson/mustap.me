@@ -30,8 +30,8 @@ export default new Vuex.Store({
       missing: false
     },
     playlists: [],
-    currentPlaylist: null,
-    currentPlaylistViewing: null,
+    currentPlaylist: -1,
+    currentPlaylistViewing: -1,
     repeatPlaylist: true,
     shufflePlaylist: false,
     mountedTrackControlsCount: 0,
@@ -40,8 +40,8 @@ export default new Vuex.Store({
       name: '',
       link: ''
     },
-    currentView: 'Home',
-    missingSongsCount: 0
+    missingSongsCount: 0,
+    documentsPath: ''
   },
   mutations: {
   },

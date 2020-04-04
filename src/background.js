@@ -1,11 +1,24 @@
 'use strict'
 
-import { app, protocol, BrowserWindow, globalShortcut } from 'electron'
+import { app, protocol, BrowserWindow, globalShortcut, Menu } from 'electron'
 import {
   createProtocol,
   installVueDevtools
 } from 'vue-cli-plugin-electron-builder/lib'
 const isDevelopment = process.env.NODE_ENV !== 'production'
+const path = require('path')
+const fs = require('fs');
+const windowStateKeeper = require('electron-window-state');
+
+const currentThemePath = app.getPath('documents') + '/mustap/themes/currentTheme.json';
+let bgColor = '';
+
+if (fs.existsSync(currentThemePath)) {
+  const obj = fs.readFileSync(currentThemePath);
+  bgColor = obj.mainColor;
+} else {
+  bgColor = '#121212';
+}
 
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
@@ -15,12 +28,28 @@ let win
 protocol.registerSchemesAsPrivileged([{scheme: 'app', privileges: { secure: true, standard: true } }])
 
 function createWindow () {
+  let mainWindowState = windowStateKeeper({
+    defaultWidth: 1200,
+    defaultHeight: 950
+  });
+
   // Create the browser window.
-  win = new BrowserWindow({ width: 1080, height: 900, webPreferences: {
-    nodeIntegration: true, 
-    devTools: true, // CHANGE HERE TO FALSE TO DISABLE DEVTOOLS FOR PRODUCTION -----------------------------------------------------------------------
-    webSecurity: false
+  win = new BrowserWindow({
+    title: 'Mustap',
+    show: false,
+    x: mainWindowState.x,
+    y: mainWindowState.y,
+    width: mainWindowState.width,
+    height: mainWindowState.height,
+    icon: path.join(__dirname, '/512x512.png'),
+    backgroundColor: bgColor,
+    webPreferences: {
+      nodeIntegration: true, 
+      devTools: false, // CHANGE HERE TO FALSE TO DISABLE DEVTOOLS FOR PRODUCTION -----------------------------------------------------------------------
+      webSecurity: false
   }})
+
+  mainWindowState.manage(win);
 
   win.setMenuBarVisibility(false);
 
@@ -33,9 +62,18 @@ function createWindow () {
     // Load the index.html when not in development
     win.loadURL('app://./index.html')
   }
-
+  
   win.on('closed', () => {
     win = null
+  })
+
+  win.on('ready-to-show', () => {
+    win.show();
+    win.focus();
+  });
+
+  win.webContents.on('did-finish-load', () => {
+    win.setTitle('Mustap');
   })
 }
 
@@ -95,5 +133,51 @@ if (isDevelopment) {
       app.quit()
     })
   }
+}
+
+let menu = new Menu();
+
+if (process.platform === 'darwin') {
+  var template = [{
+    label: 'FromScratch',
+    submenu: [{
+      label: 'Quit',
+      accelerator: 'CmdOrCtrl+Q',
+      click: function () {
+        app.quit();
+      }
+    }]
+  }, {
+    label: 'Edit',
+    submenu: [{
+      label: 'Undo',
+      accelerator: 'CmdOrCtrl+Z',
+      selector: 'undo:'
+    }, {
+      label: 'Redo',
+      accelerator: 'Shift+CmdOrCtrl+Z',
+      selector: 'redo:'
+    }, {
+      type: 'separator'
+    }, {
+      label: 'Cut',
+      accelerator: 'CmdOrCtrl+X',
+      selector: 'cut:'
+    }, {
+      label: 'Copy',
+      accelerator: 'CmdOrCtrl+C',
+      selector: 'copy:'
+    }, {
+      label: 'Paste',
+      accelerator: 'CmdOrCtrl+V',
+      selector: 'paste:'
+    }, {
+      label: 'Select All',
+      accelerator: 'CmdOrCtrl+A',
+      selector: 'selectAll:'
+    }]
+  }];
+  var osxMenu = menu.buildFromTemplate(template);
+  menu.setApplicationMenu(osxMenu);
 }
 

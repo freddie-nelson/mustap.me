@@ -1,6 +1,8 @@
 {
-  "name": "mustap.me",
+  "name": "mustap",
+  "productName": "Mustap",
   "version": "0.1.0",
+  "author": "Freddie Nelson <freddienelson@freddienelson.co.uk>",
   "private": true,
   "scripts": {
     "serve": "vue-cli-service serve",
@@ -14,6 +16,7 @@
   "main": "background.js",
   "dependencies": {
     "core-js": "^3.6.4",
+    "electron-window-state": "^5.0.3",
     "node-sass": "^4.13.1",
     "progress-stream": "^2.0.0",
     "sass-loader": "^8.0.2",

@@ -18,8 +18,10 @@
          <Button @clicked="$emit('delete-playlist')" :disabled="this.forPlaylists" :text="'Delete Playlist'" :filled="true" :fontSize="15" :modalPopup="true" :modalText="'Are you sure you want to delete this playlist?'" :modalButtonText="'Yes, I\'m sure.'" />
          <input @keyup="search" v-model="filter" class="current-playing-details-container__searchbox" type="text" placeholder="Search..." />
          <div class="matches-list">
-             <div class="matches-list__match" v-for="(match, i) in matches" :key="i" @click="searchResultClicked(match.index)">
-                <span>{{ match.title }}</span>
+             <div v-if="!this.forPlaylists">
+                <div class="matches-list__match" v-for="(match, i) in matches" :key="i" @click="searchResultClicked(match.index)">
+                    <span>{{ match.title }} by {{ match.artist }}</span>
+                </div>
             </div>
          </div>
     </div>
@@ -46,12 +48,17 @@ export default {
     },
     methods: {
         search() {
-            const elements = Array.from(document.querySelectorAll('p.cell__left-text-top'));
-            const table = document.getElementById('table');
+            if (this.forPlaylists) {
+                this.matches = [];
+                return
+            }
+
+            const titleElements = Array.from(document.querySelectorAll('p.cell__left-text-top'));
+            const artistElements = Array.from(document.querySelectorAll('p.cell__left-text-bottom'))
 
             this.matches = []
 
-            const titles = elements.map(ele => {
+            const titles = titleElements.map(ele => {
                 let title = ele.textContent || ele.innerText;
 
                 if (title[0] == ' ') {
@@ -61,17 +68,31 @@ export default {
                 return title;
             });
 
-            for (let i = 0; i < elements.length; i++) {
+            const artists = artistElements.map(ele => {
+                let artist = ele.textContent || ele.innerText;
+
+                if (artist[0] == ' ') {
+                    artist = artist.slice(1, artist.length);
+                }
+
+                return artist;
+            });
+
+            for (let i = 0; i < titleElements.length; i++) {
                 const title = titles[i];
-                if (title.toUpperCase().indexOf(this.filter.toUpperCase()) > -1) {
-                    const match = table.children[i].children[1].children[0].innerText;
-                    console.log(match)
-                    
-                    this.matches.push({ title: match, index: i})
+                if (title.toUpperCase().indexOf(this.filter.toUpperCase()) > -1) {     
+                    this.matches.push({ title: titles[i], artist: artists[i], index: i})
                 }
             }
+
+            this.matches = this.matches.slice(0, 16);
         },
         searchResultClicked(index) {
+            if (this.forPlaylists) {
+                this.matches = [];
+                return
+            }
+            this.$store.state.currentPlaylist = this.$store.state.currentPlaylistViewing;
             this.$refs.trackControls.nextBack(index, 'CurrentPlaying');
         }
     }

@@ -137,12 +137,35 @@ export default {
         })
 
         this.$store.state.currentPlaylistViewing = index;
-        
-        if (this.$store.state.curerntPlaylist === null && this.$store.state.curerntPlaylistViewing !== null) {
-          this.$store.state.currentPlaylist = index;
-        }
 
-        console.log(this.$store.state.playlists[this.$store.state.currentPlaylist])
+        console.log(this.$store.state.currentPlaylist)
+        
+        if (this.$store.state.currentPlaying.title == 'N / A' && this.$store.state.currentPlaylist === -1) {
+          this.$store.state.currentPlaylist = index;
+          const index = 0;
+          let song = this.playlist[index];
+          const currentPlaying = this.$store.state.currentPlaying;
+
+          if (song.missing) {
+            do {
+              song = this.playlist[index + 1];
+            } while (song.missing);
+          }
+
+          this.$store.state.currentPlaylist = this.$store.state.currentPlaylistViewing;
+
+          currentPlaying.thumbnail = song.thumbnailUrl.replace('hqdefault', 'maxresdefault');
+          currentPlaying.title = song.title;
+          currentPlaying.artist = song.artist;
+          currentPlaying.duration = song.duration;
+          currentPlaying.currentTime = '0:00';
+          currentPlaying.lengthSeconds = song.duration.split(':')[0] * 60 + Number.parseInt(song.duration.split(':')[1]);
+          currentPlaying.filename = song.filename;
+          currentPlaying.playing = song.thmbnailUrl === currentPlaying.thumbnail ? currentPlaying.playing = !currentPlaying.playing : currentPlaying.playing = true;
+          currentPlaying.index = index;
+
+          this.currentPlayingChanged()
+        }
 
         this.array = array;
 

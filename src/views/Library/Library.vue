@@ -47,7 +47,6 @@ export default {
                 this.$store.state.currentDownload.currentlyDownloading = true;
 
                 this.$router.push({ name: 'Home' })
-                this.$store.state.currentView = 'Home';
             }
         },
         async deletePlaylist() {
@@ -130,17 +129,26 @@ export default {
 
             await fs.promises.readdir(playlistsLocation)
                 .then(arr => {
-                    arr.forEach(async file => {
+                    console.log(arr);
+                    readFile(0);
+                    function readFile(i) {
+                        if (!arr[i]) {
+                            return
+                        }
+
+                        const file = arr[i];
+
                         fs.promises.readFile(playlistsLocation + '/' + file)
-                            .then(data => {
-                                const date = new Date(fs.statSync(playlistsLocation + '/' + file).mtimeMs);
-                                const day = ("0" + date.getDate()).slice(-2);
-                                const month = ("0" + (date.getMonth() + 1)).slice(-2);
-                                const year = date.getFullYear();
-                                playlists.push({ name: file.split('.')[0], data: JSON.parse(data), added: `${day}/${month}/${year}` })
-                            })
-                            .catch(err => window.console.log(err));
-                    });
+                        .then(data => {
+                            const date = new Date(fs.statSync(playlistsLocation + '/' + file).mtimeMs);
+                            const day = ("0" + date.getDate()).slice(-2);
+                            const month = ("0" + (date.getMonth() + 1)).slice(-2);
+                            const year = date.getFullYear();
+                            playlists.push({ name: file.split('.')[0], data: JSON.parse(data), added: `${day}/${month}/${year}` })
+                            readFile(i + 1);
+                        })
+                        .catch(err => window.console.log(err));
+                    }
                 })
                 .catch(err => window.console.log(err))
 

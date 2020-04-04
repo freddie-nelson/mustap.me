@@ -2,7 +2,7 @@
   <main class="home">
       <Searchbox @searched="searched" v-if="!searchboxDisplayNone" :class="{ home__searchbox: true, hidden: searchboxHidden }" />
       <DownloadStatus v-if="!downloadDisplayNone" :class="{ home__downloadstatus: true,  show: downloadShow }" />
-      <backBtn @back="back" />
+      <backBtn v-if="onDownloadView" @back="back" />
   </main>
 </template>
 
@@ -26,7 +26,7 @@ export default {
       downloadShow: false,
       downloadDisplayNone: true,
       currentDownloadStream: Stream,
-      backBtnHide: true
+      onDownloadView: false
     }
   },
   methods: {
@@ -38,7 +38,7 @@ export default {
         this.downloadDisplayNone = false;
       }, 720)
 
-      setTimeout(() => this.downloadShow = true, 750)
+      setTimeout(() => { this.downloadShow = true; this.onDownloadView = true; }, 750)
 
       this.playlistDownloader(arr)
     },
@@ -51,7 +51,7 @@ export default {
         this.searchboxDisplayNone = false;
       }, 720)
 
-      setTimeout(() => this.searchboxHidden = false, 750)
+      setTimeout(() => { this.searchboxHidden = false; this.onDownloadView = false; } , 750)
       }
     },
     playlistDownloader(arr) {
@@ -264,8 +264,6 @@ export default {
     if (updatingPlaylist.updatePlaylist) {
       this.playlistDownloader([ updatingPlaylist.link, updatingPlaylist.name ])
     }
-
-    setTimeout(() => this.backBtnHide = false, 580)
   }
 }
 </script>

@@ -18,9 +18,11 @@ export default {
   mounted() {
     console.log('----App Mounted----')
     const fs = require('fs');
-    const { remote } = require('electron');
+    const { remote } = require('electron')
 
-    const themesPath = remote.app.getPath('documents') + '/mustap/themes/';
+    this.$store.state.documentsPath = remote.app.getPath('documents');
+
+    const themesPath = this.$store.state.documentsPath + '/mustap/themes/';
     const defaultColorsPath = themesPath + 'default.json';
     const currentColorsPath = themesPath + 'currentTheme.json'
 
