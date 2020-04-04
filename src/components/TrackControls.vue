@@ -100,7 +100,7 @@ export default {
         }
       }
     },
-    nextBack(num) {
+    nextBack(num, caller) {
       if (this.$store.state.currentPlaying.title != 'N / A') {
 
         const currentPlaying = this.$store.state.currentPlaying;
@@ -108,23 +108,27 @@ export default {
         const playlistLength = this.$store.state.playlists[this.$store.state.currentPlaylist].data.length;
 
         const indexForScroll = currentPlaying.index;
+        
+        if (!caller) {
+          if (this.$store.state.shufflePlaylist) {
+            let randomIndex;
 
-        if (this.$store.state.shufflePlaylist) {
-          let randomIndex;
+            do {
+              randomIndex = Math.floor(Math.random() * playlistLength);
+            } while (randomIndex == currentPlaying.index);
 
-          do {
-            randomIndex = Math.floor(Math.random() * playlistLength);
-          } while (randomIndex == currentPlaying.index);
-
-          index = randomIndex;
-        }
-
-        if (index >= playlistLength || index < 0) {
-          if (this.$store.state.repeatPlaylist) {
-            index = 0;
-          } else {
-            return
+            index = randomIndex;
           }
+
+          if (index >= playlistLength || index < 0) {
+            if (this.$store.state.repeatPlaylist) {
+              index = 0;
+            } else {
+              return
+            }
+          }
+        } else {
+          index = num;
         }
 
         const { remote } = require('electron');
