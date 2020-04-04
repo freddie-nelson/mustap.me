@@ -18,7 +18,7 @@
     "progress-stream": "^2.0.0",
     "sass-loader": "^8.0.2",
     "scroll-into-view-if-needed": "^2.2.24",
-    "uuid": "^7.0.2",
+    "uuid": "^7.0.3",
     "vue": "^2.6.11",
     "vue-page-transition": "^0.2.2",
     "vue-range-component": "^1.0.3",

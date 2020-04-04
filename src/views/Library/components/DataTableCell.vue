@@ -1,5 +1,5 @@
 <template>
-  <div class="cell created" :id="id" @click="$emit('clicked', index)">
+  <div class="cell created" :id="id" @click="clicked">
     <span class="cell__index">{{ index }}</span>
     <div class="cell__left-text">
       <p class="cell__left-text-top">{{ data.leftTop }}</p>
@@ -26,6 +26,13 @@ export default {
     data: Object,
     index: Number,
     forPlaylists: Boolean
+  },
+  methods: {
+    clicked() {
+      if (this.forPlaylists || !this.$store.state.playlists[this.$store.state.currentPlaylistViewing].data[this.index - 1].missing) {
+        this.$emit('clicked', this.index)
+      } 
+    }
   },
   mounted() {
     if (this.index >= 0) {
@@ -68,6 +75,10 @@ export default {
     & .cell__right-text-top {
       color: var(--accent-color);
     }
+  }
+
+  &.missing {
+    background-color: #dc35462a !important;
   }
 
   &:hover {

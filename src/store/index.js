@@ -26,12 +26,22 @@ export default new Vuex.Store({
       filename: '',
       playing: false,
       index: 0,
-      volume: 1
+      volume: 1,
+      missing: false
     },
     playlists: [],
-    currentPlaylist: 0,
+    currentPlaylist: null,
+    currentPlaylistViewing: null,
     repeatPlaylist: true,
-    shufflePlaylist: false
+    shufflePlaylist: false,
+    mountedTrackControlsCount: 0,
+    updatingPlaylist: { 
+      updatePlaylist: false,
+      name: '',
+      link: ''
+    },
+    currentView: 'Home',
+    missingSongsCount: 0
   },
   mutations: {
   },

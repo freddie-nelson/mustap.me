@@ -1,6 +1,6 @@
 'use strict'
 
-import { app, protocol, BrowserWindow } from 'electron'
+import { app, protocol, BrowserWindow, globalShortcut } from 'electron'
 import {
   createProtocol,
   installVueDevtools
@@ -72,9 +72,14 @@ app.on('ready', async () => {
     } catch (e) {
       console.error('Vue Devtools failed to install:', e.toString())
     }
-
   }
+
   createWindow()
+})
+
+app.on('will-quit', () => {
+  // Unregister all shortcuts.
+  globalShortcut.unregisterAll()
 })
 
 // Exit cleanly on request from parent process in development mode.

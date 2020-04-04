@@ -1,7 +1,7 @@
 <template>
-  <div class="table" id="table">
-    <DataTableCell v-for="(data, index) in array" :data="data" :key="index" @clicked="formatDataSongs" :index="index + 1" :forPlaylists="forPlaylists" />
-    <backBtn @back="back" />
+  <div class="table" id="table" :class="{ forPlaylists: forPlaylistsBool }">
+    <DataTableCell v-for="(data, index) in array" :data="data" :key="index" @clicked="formatDataSongs" :index="index + 1" :forPlaylists="forPlaylistsBool" />
+    <backBtn v-if="!this.forPlaylistsBool" @back="back" />
   </div>
 </template>
 
@@ -35,11 +35,16 @@ export default {
             return
         } else {
           this.forPlaylistsBool = true;
+          this.$emit('for-playlists-changed', true)
 
           const children = document.getElementById('table').children;
           
           for (let i = 0; i < children.length; i++) {
             const element = children[i];
+
+            if (element.classList.contains('missing')) {
+              element.classList.remove('missing')
+            }
 
             if (element.classList.contains('clicked')) {
               element.classList.remove('clicked');
@@ -83,8 +88,11 @@ export default {
     },
     formatDataSongs(e) {
       if (!this.forPlaylistsBool) {
-        const song = this.playlist[e - 1];
+        const index = e - 1;
+        const song = this.playlist[index];
         const currentPlaying = this.$store.state.currentPlaying;
+
+        this.$store.state.currentPlaylist = this.$store.state.currentPlaylistViewing;
 
         currentPlaying.thumbnail = song.thumbnailUrl.replace('hqdefault', 'maxresdefault');
         currentPlaying.title = song.title;
@@ -94,7 +102,7 @@ export default {
         currentPlaying.lengthSeconds = song.duration.split(':')[0] * 60 + Number.parseInt(song.duration.split(':')[1]);
         currentPlaying.filename = song.filename;
         currentPlaying.playing = song.thmbnailUrl === currentPlaying.thumbnail ? currentPlaying.playing = !currentPlaying.playing : currentPlaying.playing = true;
-        currentPlaying.index = e - 1;
+        currentPlaying.index = index;
 
         const children = document.getElementById('table').children;
         const clickedEle = children[currentPlaying.index];
@@ -112,6 +120,7 @@ export default {
         this.currentPlayingChanged();
       } else {
         this.forPlaylistsBool = false;
+        this.$emit('for-playlists-changed', false)
         this.$emit('clicked-playlist')
         const index = e - 1;
         this.playlist = this.playlists[index];
@@ -127,28 +136,65 @@ export default {
           obj = {};
         })
 
-        this.$store.state.currentPlaylist = index;
+        this.$store.state.currentPlaylistViewing = index;
+        
+        if (this.$store.state.curerntPlaylist === null && this.$store.state.curerntPlaylistViewing !== null) {
+          this.$store.state.currentPlaylist = index;
+        }
+
+        console.log(this.$store.state.playlists[this.$store.state.currentPlaylist])
 
         this.array = array;
 
         setTimeout(() => {
-          const currentPlaying = this.$store.state.currentPlaying;
+          const { remote } = require('electron');
+          const fs = require('fs');
 
-          if (currentPlaying.title != 'N / A') {
-            const elements = document.querySelectorAll('p.cell__left-text-top');
-            for (let i = 0; i < elements.length; i++) {
-              const ele = elements[i];
+          const children = document.getElementById('table').children;
+          const songsPath = remote.app.getPath('documents') + '/mustap/songs/';
 
-              let title = currentPlaying.title;
+          this.$store.state.missingSongsCount = 0;
 
-              if (title[0] == ' ') {
-                title = title.slice(1, title.length);
-              }
+          for (let i = 0; i < children.length - 1; i++) {
+            const element = children[i];
+            
+            const filename = songsPath + this.$store.state.playlists[this.$store.state.currentPlaylistViewing].data[i].filename;
 
-              if (ele.innerText == title) {
-                document.getElementById('table').children[i].classList.add('clicked');
-                document.getElementById('table').scrollTo({top: document.getElementById('table').children[i].offsetTop - 205, behavior: 'smooth'});
-                break;
+            if (!fs.existsSync(filename)) {
+              element.classList.add('missing')
+              this.$store.state.missingSongsCount++;
+              this.$store.state.playlists[this.$store.state.currentPlaylistViewing].data[i].missing = true;
+            }
+          }
+        
+          if (this.$store.state.currentPlaylist == this.$store.state.currentPlaylistViewing) {
+            const currentPlaying = this.$store.state.currentPlaying;
+
+            if (currentPlaying.title != 'N / A') {
+              const elements = document.querySelectorAll('p.cell__left-text-top');
+              for (let i = 0; i < elements.length; i++) {
+                const ele = elements[i];
+
+                let title = currentPlaying.title;
+
+                if (title[0] == ' ') {
+                  title = title.slice(1, title.length);
+                }
+
+                if (ele.innerText == title) {
+                  const clickedEle = document.getElementById('table').children[i];
+                  clickedEle.classList.add('clicked');
+                  if (i > 0) {
+                    if (clickedEle.getBoundingClientRect().top - clickedEle.parentElement.offsetTop > document.getElementById('table').clientHeight) {
+                      document.getElementById('table').scrollTo({top: clickedEle.offsetTop - clickedEle.parentElement.offsetTop, behavior: 'smooth'});
+                    }
+                  } else {
+                    if (clickedEle.getBoundingClientRect().bottom - clickedEle.parentElement.offsetTop < 0) {
+                      document.getElementById('table').scrollTo({top: clickedEle.offsetTop - clickedEle.parentElement.offsetTop, behavior: 'smooth'});
+                    }
+                  }
+                  break;
+                }
               }
             }
           }

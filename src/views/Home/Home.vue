@@ -217,6 +217,8 @@ export default {
           currentDownload.index = i + 1;
           currentDownload.currentProcess = 'Downloading...'
 
+          const estimatedSize = songInfo.duration.split(':')[0] * 60 + Number.parseInt(songInfo.duration.split(':')[1]) * 142000;
+
           if (tries === 2) {
               console.log(`Sorry the download of ${songInfo.title} has been attempted 3 times and has failed. This song cannot be downloaded.`)
               currentDownload.currentProcess = 'Sorry this song cannot be downloaded.'
@@ -225,13 +227,12 @@ export default {
 
           /* calculate the progress on the download */
           let str = progress({
-              length: songInfo.duration * 127000,
+              length: estimatedSize,
               time: 100 /* ms */
           });
 
           str.on('progress', progress => {
               currentDownload.progress = Math.round(progress.percentage);
-              console.log(progress)
           });
           /* calculate the progress on the download */
 
@@ -256,6 +257,12 @@ export default {
       this.searchboxDisplayNone = true;
       this.downloadDisplayNone = false;
       this.downloadShow = true;
+    }
+
+    const updatingPlaylist = this.$store.state.updatingPlaylist;
+
+    if (updatingPlaylist.updatePlaylist) {
+      this.playlistDownloader([ updatingPlaylist.link, updatingPlaylist.name ])
     }
 
     setTimeout(() => this.backBtnHide = false, 580)

@@ -127,10 +127,52 @@ export default {
           }
         }
 
+        const { remote } = require('electron');
+        const fs = require('fs');
+
+        const currentPlaylist = this.$store.state.playlists[this.$store.state.currentPlaylist].data;
+        const songsPath = remote.app.getPath('documents') + '/mustap/songs/';    
+        const filename = songsPath + currentPlaylist[index].filename;
+
+        if (!fs.existsSync(filename)) {
+          
+          if (this.$store.state.shufflePlaylist) {
+            this.nextBack(num);
+
+          } else {
+
+            if (num === 1 && index + 1 <= currentPlaylist.length - 1) {
+              let filenameAlt;
+
+              do {
+                index++;
+                filenameAlt = songsPath + currentPlaylist[index].filename;
+              } while (!fs.existsSync(filenameAlt));
+
+            } else if (num === -1 && index - 1 >= 0) {
+              let filenameAlt;
+
+              do {
+                index--;
+                filenameAlt = songsPath + currentPlaylist[index].filename;
+              } while (!fs.existsSync(filenameAlt));
+
+            } else {
+              return
+            }
+
+          }
+
+        }
+        
         if (this.$store.state.currentPlaying.title === 'N / A') {
           return
         } else {
-          const song = this.$store.state.playlists[this.$store.state.currentPlaylist].data[index];
+          const song = currentPlaylist[index];
+
+          if (song.missing) {
+            return
+          }
 
           currentPlaying.sound.pause();
           
@@ -148,38 +190,73 @@ export default {
 
           console.log(currentPlaying.filename, song.filename);
 
-          if (document.getElementById('table')) {
-            if (document.getElementById('table').children[index]) {
-              const children = document.getElementById('table').children;
-              const clickedEle = children[index];
+          if (this.$store.state.currentPlaylist == this.$store.state.currentPlaylistViewing) {
+            if (document.getElementById('table') && !document.getElementById('table').classList.contains('forPlaylists')) {
+              if (document.getElementById('table').children[index]) {
+                const children = document.getElementById('table').children;
+                const clickedEle = children[index];
 
-              for (let i = 0; i < children.length; i++) {
-                const element = children[i];
+                for (let i = 0; i < children.length; i++) {
+                  const element = children[i];
 
-                if (element.classList.contains('clicked')) {
-                  element.classList.remove('clicked');
-                  break;
+                  if (element.classList.contains('clicked')) {
+                    element.classList.remove('clicked');
+                    break;
+                  }
                 }
+
+                clickedEle.classList.add('clicked');
+
+                if (index > indexForScroll) {
+                  if (clickedEle.getBoundingClientRect().top - clickedEle.parentElement.offsetTop > document.getElementById('table').clientHeight) {
+                    document.getElementById('table').scrollTo({top: clickedEle.offsetTop - clickedEle.parentElement.offsetTop, behavior: 'smooth'});
+                  }
+                } else {
+                  if (clickedEle.getBoundingClientRect().bottom - clickedEle.parentElement.offsetTop < 0) {
+                    document.getElementById('table').scrollTo({top: clickedEle.offsetTop - clickedEle.parentElement.offsetTop, behavior: 'smooth'});
+                  }
+                }
+                
               }
-
-              clickedEle.classList.add('clicked');
-
-              if (index > indexForScroll) {
-                if (clickedEle.getBoundingClientRect().top - 205 > document.getElementById('table').clientHeight) {
-                  document.getElementById('table').scrollTo({top: clickedEle.offsetTop - 205, behavior: 'smooth'});
-                }
-              } else {
-                if (clickedEle.getBoundingClientRect().top - 205 < document.getElementById('table').clientHeight) {
-                  document.getElementById('table').scrollTo({top: clickedEle.offsetTop - 205, behavior: 'smooth'});
-                }
-              }
-              
             }
           }
 
           this.currentPlayingChanged()
         }
       }
+    }
+  },
+  mounted() {
+    if (this.$store.state.mountedTrackControlsCount === 0) {
+      this.$store.state.mountedTrackControlsCount = 1;
+      console.log('registering keys')
+
+      const { remote } = require('electron')
+      const globalShortcut = remote.globalShortcut;
+
+      globalShortcut.unregisterAll();
+
+      const mediaKeys = [
+        { name: 'Alt+P', function: () => this.playPause() },
+        { name: 'Alt+]', function: () => this.nextBack(1) },
+        { name: 'Alt+[', function: () => this.nextBack(-1) },
+        { name: 'Alt+I', function: () => this.$store.state.repeatPlaylist = !this.$store.state.repeatPlaylist },
+        { name: 'Alt+O', function: () => this.$store.state.shufflePlaylist = !this.$store.state.shufflePlaylist },
+        { name: 'Alt+-', function: () => this.$store.state.currentPlaying.sound.volume - 0.1 < 0 ? this.$store.state.currentPlaying.sound.volume = 0 : this.$store.state.currentPlaying.sound.volume -= 0.1 },
+        { name: 'Alt+=', function: () => this.$store.state.currentPlaying.sound.volume + 0.1 > 1 ? this.$store.state.currentPlaying.sound.volume = 1 : this.$store.state.currentPlaying.sound.volume += 0.1 },
+      ];
+
+      mediaKeys.forEach(key => {
+        if (!globalShortcut.isRegistered(key.name)) {
+          const ret = globalShortcut.register(key.name, () => {
+            key.function()
+          })
+
+          if (!ret) {
+            alert(`${ key.name } registration failed. Another app must be using this key.`)
+          }
+        }
+      });
     }
   }
 }

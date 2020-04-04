@@ -1,12 +1,14 @@
 <template>
   <main class="library">
     <h1>{{ mainTitle }}</h1>
-    <h2>{{ subTitle }}</h2>
+    <h2>{{ subTitle }} 
+        <Button v-if="this.$store.state.missingSongsCount > 0 && !this.forPlaylists" style="margin-left: 20px;" @clicked="updatePlaylist" :text="`🛈 ${ this.$store.state.missingSongsCount } missing songs - Click to download`" :filled="false" :fontSize="16" />
+    </h2>
     <section class="library__main-container">
         <div class="container">
-            <DataTable @back="changeTitles" @clicked-playlist="changeTitles" :playlistsProp="playlists" :forPlaylists="true" />
+            <DataTable ref="dataTable" @for-playlists-changed="forPlaylists = $event" @back="changeTitles" @clicked-playlist="changeTitles" :playlistsProp="playlists" :forPlaylists="true" />
         </div>
-        <CurrentPlaying class="library__current-playing" />
+        <CurrentPlaying @update-playlist="updatePlaylist" @delete-playlist="deletePlaylist" class="library__current-playing" :forPlaylists="forPlaylists" />
     </section>
   </main>
 </template>
@@ -14,26 +16,102 @@
 <script>
 import DataTable from './components/DataTable'
 import CurrentPlaying from './components/CurrentPlaying'
+import Button from '@/components/Button'
 
 export default {
     name: 'Library',
     components: {
         DataTable,
-        CurrentPlaying
+        CurrentPlaying,
+        Button
     },
     data() {
         return {
             playlists: [],
             mainTitle: 'Your Library',
-            subTitle: 'Select a playlist'
+            subTitle: 'Select a playlist',
+            forPlaylists: true
         }
     },
     methods: {
+        updatePlaylist() {
+            console.log(this.forPlaylists)
+            if (!this.forPlaylists) {
+                const currentPlaylist = this.$store.state.playlists[this.$store.state.currentPlaylistViewing]
+                const updatingPlaylist = this.$store.state.updatingPlaylist;
+
+                updatingPlaylist.updatePlaylist = true;
+                updatingPlaylist.name = currentPlaylist.name;
+                updatingPlaylist.link = currentPlaylist.data[0].playlistLink;
+
+                this.$store.state.currentDownload.currentlyDownloading = true;
+
+                this.$router.push({ name: 'Home' })
+                this.$store.state.currentView = 'Home';
+            }
+        },
+        async deletePlaylist() {
+            const fs = require('fs');
+            const { remote } = require('electron');
+
+            const songsPath = remote.app.getPath('documents') + '/mustap/songs/';
+            
+            const state = this.$store.state;
+            const playlist = state.playlists[state.currentPlaylistViewing];
+            const playlistData = playlist.data;
+            const playlists = state.playlists.filter(obj => obj.name !== playlist.name)
+
+            console.log('Playlists: ', playlists)
+
+            const filenames = playlistData.map(obj => songsPath + obj.filename);
+
+            const filenamesFiltered = filenames.filter(file => {
+
+                for (let i = 0; i < playlists.length; i++) {
+                    let otherFilenames = playlists[i].data;
+
+                    otherFilenames = otherFilenames.map(obj => songsPath + obj.filename)
+
+                    let foundMatch = false;
+
+                    for (let j = 0; j < otherFilenames.length; j++) {
+                        const otherFile = otherFilenames[j];
+
+                        if (file === otherFile) {
+                            foundMatch = true;
+                        }
+                    }
+                    
+                    if (!foundMatch) {
+                        return file;
+                    }
+                }
+
+            });
+
+            filenamesFiltered.forEach(async file => {
+                    fs.promises.unlink(file)
+                        .then(e => {
+                            console.log(e);
+                        })
+                        .catch(e => console.log(e))
+                });
+
+            const playlistPath = remote.app.getPath('documents') + '/mustap/playlists/' + playlist.name + '.json';
+
+            await fs.promises.unlink(playlistPath)
+                .then(e => {
+                    console.log(e);
+                    this.$refs.dataTable.back()
+                    this.getPlaylists()
+                })
+                .catch(e => console.log(e));
+        },
         changeTitles() {
             setTimeout(() => {
                 if (this.mainTitle == 'Your Library') {
-                    this.mainTitle = 'Currently Playing From'
-                    const currentPlaylist = this.$store.state.playlists[this.$store.state.currentPlaylist];
+                    this.mainTitle = 'Currently Viewing'
+                    const currentPlaylist = this.$store.state.playlists[this.$store.state.currentPlaylistViewing];
                     this.subTitle = `${currentPlaylist.name} - ${currentPlaylist.data.length} tracks`
                 } else {
                     this.mainTitle = 'Your Library';
@@ -65,8 +143,6 @@ export default {
                     });
                 })
                 .catch(err => window.console.log(err))
-
-            window.console.log(playlists,)
 
             this.playlists = playlists;
 
@@ -149,7 +225,7 @@ export default {
             }
 
             .container {
-                min-width: none;
+                min-width: 240px;
                 width: 100%;
             }
         }

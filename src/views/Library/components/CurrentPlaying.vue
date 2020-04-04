@@ -14,16 +14,23 @@
         </div>
 
          <TrackControls :currentTime="$store.state.currentPlaying.sound.currentTime" :padding="0" :bgColor="'--lighter-bg'" />
+         <Button style="margin-right: 30px;" @clicked="$emit('update-playlist')" :disabled="this.forPlaylists" :text="'Update Playlist'" :filled="false" :fontSize="15" />
+         <Button @clicked="$emit('delete-playlist')" :disabled="this.forPlaylists" :text="'Delete Playlist'" :filled="true" :fontSize="15" :modalPopup="true" :modalText="'Are you sure you want to delete this playlist?'" :modalButtonText="'Yes, I\'m sure.'" />
     </div>
 </template>
 
 <script>
 import TrackControls from '@/components/TrackControls'
+import Button from '@/components/Button'
 
 export default {
     name: 'CurrentPlaying',
     components: {
-        TrackControls
+        TrackControls,
+        Button
+    },
+    props: {
+        forPlaylists: Boolean
     }
 }
 </script>
