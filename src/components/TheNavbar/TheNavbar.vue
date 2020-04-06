@@ -70,7 +70,7 @@
           </div>
         </div>
 
-        <TrackControls class="nav__music-controller__controls" :currentTime="$store.state.currentPlaying.sound.currentTime" :padding="20" :bgColor="'--main-bg'" />
+        <TrackControls ref="trackControls" class="nav__music-controller__controls" :currentTime="$store.state.currentPlaying.sound.currentTime" :padding="20" :bgColor="'--main-bg'" />
 
       </div>
   </nav>
@@ -99,85 +99,6 @@ export default {
 
         setTimeout(() => currentPlaying.sound.play(), 500);
       },
-      nextBack(num) {
-        const currentPlaying = this.$store.state.currentPlaying;
-        let index = currentPlaying.index + num;
-        const playlistLength = this.$store.state.playlists[this.$store.state.currentPlaylist].data.length;
-
-        const indexForScroll = currentPlaying.index;
-
-        if (this.$store.state.shufflePlaylist) {
-          let randomIndex;
-
-          do {
-            randomIndex = Math.floor(Math.random() * playlistLength);
-          } while (randomIndex == currentPlaying.index);
-
-          index = randomIndex;
-        }
-
-        if (index >= playlistLength || index < 0) {
-          if (this.$store.state.repeatPlaylist) {
-            index = 0;
-          } else {
-            return
-          }
-        }
-
-        if (this.$store.state.currentPlaying.title === 'N / A') {
-          return
-        } else {
-          const song = this.$store.state.playlists[this.$store.state.currentPlaylist].data[index];
-
-          currentPlaying.sound.pause();
-          
-          currentPlaying.thumbnail = song.thumbnailUrl;
-          currentPlaying.title = song.title;
-          currentPlaying.artist = song.artist;
-          currentPlaying.duration = song.duration;
-          currentPlaying.currentTime = '0:00';
-          currentPlaying.lengthSeconds = song.duration.split(':')[0] * 60 + Number.parseInt(song.duration.split(':')[1]);
-          currentPlaying.filename = song.filename;
-          currentPlaying.playing = song.thmbnailUrl === currentPlaying.thumbnail ? currentPlaying.playing = !currentPlaying.playing : currentPlaying.playing = true;
-          currentPlaying.index = index;
-
-          console.log(currentPlaying.index);
-
-          console.log(currentPlaying.filename, song.filename);
-
-          if (this.$store.state.currentPlaylist == this.$store.state.currentPlaylistViewing) {
-            if (document.getElementById('table')) {
-              if (document.getElementById('table').children[index]) {
-                const children = document.getElementById('table').children;
-                const clickedEle = children[index];
-
-                for (let i = 0; i < children.length; i++) {
-                  const element = children[i];
-
-                  if (element.classList.contains('clicked')) {
-                    element.classList.remove('clicked');
-                    break;
-                  }
-                }
-
-                clickedEle.classList.add('clicked');
-                
-                if (index > indexForScroll) {
-                  if (clickedEle.getBoundingClientRect().top - 205 > document.getElementById('table').clientHeight) {
-                    document.getElementById('table').scrollTo({top: clickedEle.offsetTop - 205, behavior: 'smooth'});
-                  }
-                } else {
-                  if (clickedEle.getBoundingClientRect().top - 205 < document.getElementById('table').clientHeight) {
-                    document.getElementById('table').scrollTo({top: clickedEle.offsetTop - 205, behavior: 'smooth'});
-                  }
-                }
-              }
-            }
-          }
-
-          this.currentPlayingChanged()
-        }
-      },
       changeView(e) {
         const parent = e.srcElement.parentNode
 
@@ -200,8 +121,9 @@ export default {
           currentPlaying.currentTime = Math.floor(currentPlaying.currentTimeSeconds / 60) + ':' + num;
           currentPlaying.progress = (currentPlaying.currentTimeSeconds / currentPlaying.lengthSeconds * 100).toFixed(2) + '%';
 
-          if (currentPlaying.currentTime == currentPlaying.duration) {
-            this.nextBack(1);
+          const difference = currentPlaying.lengthSeconds - currentPlaying.currentTimeSeconds;
+          if (difference === 1 || difference === 0) {
+            this.$refs.trackControls.nextBack(1);
           }
         }
       }, 1000)
