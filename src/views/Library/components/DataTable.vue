@@ -85,7 +85,7 @@ export default {
 
           this.array = array;
           window.console.log(array);
-        }, 100)
+        }, 200)
     },
     formatDataSongs(e) {
       if (!this.forPlaylistsBool) {
@@ -209,11 +209,11 @@ export default {
                   const clickedEle = document.getElementById('table').children[i];
                   clickedEle.classList.add('clicked');
                   if (i > 0) {
-                    if (clickedEle.getBoundingClientRect().top - clickedEle.parentElement.offsetTop > document.getElementById('table').clientHeight) {
+                    if (clickedEle.getBoundingClientRect().top - clickedEle.parentElement.offsetTop >= document.getElementById('table').clientHeight - 64) {
                       document.getElementById('table').scrollTo({top: clickedEle.offsetTop - clickedEle.parentElement.offsetTop, behavior: 'smooth'});
                     }
                   } else {
-                    if (clickedEle.getBoundingClientRect().bottom - clickedEle.parentElement.offsetTop < 0) {
+                    if (clickedEle.getBoundingClientRect().bottom - clickedEle.parentElement.offsetTop <= 0) {
                       document.getElementById('table').scrollTo({top: clickedEle.offsetTop - clickedEle.parentElement.offsetTop, behavior: 'smooth'});
                     }
                   }
