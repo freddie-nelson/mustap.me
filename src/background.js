@@ -45,7 +45,7 @@ function createWindow () {
     backgroundColor: bgColor,
     webPreferences: {
       nodeIntegration: true, 
-      devTools: false, // CHANGE HERE TO FALSE TO DISABLE DEVTOOLS FOR PRODUCTION -----------------------------------------------------------------------
+      devTools: true, // CHANGE HERE TO FALSE TO DISABLE DEVTOOLS FOR PRODUCTION -----------------------------------------------------------------------
       webSecurity: false
   }})
 

@@ -56,12 +56,13 @@ export default {
           this.formatDataPlaylists()
         }
       },
-      currentPlayingChanged() {
+      async currentPlayingChanged() {
         const { remote } = require('electron');
 
         const currentPlaying = this.$store.state.currentPlaying;
-        currentPlaying.sound.src = 'file://' + remote.app.getPath('documents') + '/mustap/songs/' + currentPlaying.filename;
-
+        const filename = 'file://' + remote.app.getPath('documents') + '/mustap/songs/' + currentPlaying.filename;
+        currentPlaying.sound.src = filename;
+        
         setTimeout(() => currentPlaying.sound.play(), 500);
       },
       formatDataPlaylists() {

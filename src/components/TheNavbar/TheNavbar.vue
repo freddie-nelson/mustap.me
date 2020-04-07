@@ -194,13 +194,15 @@ export default {
         if (currentPlaying.title === 'N / A') {
           return;
         } else {
-          console.log('Interval ran')
+          
           currentPlaying.currentTimeSeconds = Math.ceil(currentPlaying.sound.currentTime);
           const num = currentPlaying.currentTimeSeconds % 60 < 10 ? '0' + currentPlaying.currentTimeSeconds % 60 : currentPlaying.currentTimeSeconds % 60;
           currentPlaying.currentTime = Math.floor(currentPlaying.currentTimeSeconds / 60) + ':' + num;
           currentPlaying.progress = (currentPlaying.currentTimeSeconds / currentPlaying.lengthSeconds * 100).toFixed(2) + '%';
 
-          if (currentPlaying.currentTime == currentPlaying.duration) {
+          const difference = currentPlaying.lengthSeconds - currentPlaying.currentTimeSeconds;
+
+          if (difference === 0 || difference === 1) {
             this.nextBack(1);
           }
         }
