@@ -41,7 +41,9 @@ export default new Vuex.Store({
       link: ''
     },
     missingSongsCount: 0,
-    documentsPath: ''
+    documentsPath: '',
+    alerts: [],
+    deleteClickedIndex: -1
   },
   mutations: {
   },

@@ -6,7 +6,7 @@
     </h2>
     <section class="library__main-container">
         <div class="container">
-            <DataTable ref="dataTable" @for-playlists-changed="forPlaylists = $event" @back="changeTitles" @clicked-playlist="changeTitles" :playlistsProp="playlists" :forPlaylists="true" />
+            <DataTable ref="dataTable" @for-playlists-changed="forPlaylists = $event" @back="changeTitles" @clicked-playlist="changeTitles" :playlistsProp="this.$store.state.playlists" />
         </div>
         <CurrentPlaying @update-playlist="updatePlaylist" @delete-playlist="deletePlaylist" class="library__current-playing" :forPlaylists="forPlaylists" />
     </section>
@@ -27,7 +27,6 @@ export default {
     },
     data() {
         return {
-            playlists: [],
             mainTitle: 'Your Library',
             subTitle: 'Select a playlist',
             forPlaylists: true
@@ -151,10 +150,10 @@ export default {
                     }
                 })
                 .catch(err => window.console.log(err))
-
-            this.playlists = playlists;
-
-            this.$store.state.playlists = this.playlists;
+            
+            this.$store.state.playlists = playlists;
+            
+            setTimeout(() => this.$refs.dataTable.formatDataPlaylists(), 100)
         }
     },
     mounted() {
@@ -171,6 +170,8 @@ export default {
         color: var(--primary-text);
         flex-direction: column;
         overflow-y: hidden;
+        width: calc(100vw - 300px);
+        position: relative;
 
         h1 {
             font-size: 36px;
@@ -193,37 +194,14 @@ export default {
 
         .container {
             height: 100%;
-            min-width: 680px;
+            width: 50%;
             overflow: hidden;
         }
+
+        .current-playing-details-container {
+            width: calc(50% - 50px);
+        }
     }
-
-    @media screen and (max-width: 1620px) {
-        .library {
-
-            .container {
-                min-width: 600px;
-            }
-        }
-    } 
-
-    @media screen and (max-width: 1525px) {
-        .library {
-
-            .container {
-                min-width: 540px;
-            }
-        }
-    }  
-
-    @media screen and (max-width: 1375px) {
-        .library {
-
-            .container {
-                min-width: 480px;
-            }
-        }
-    }   
 
     @media screen and (max-width: 1310px) {
         .library {

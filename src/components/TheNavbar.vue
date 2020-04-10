@@ -102,7 +102,9 @@ export default {
       changeView(e) {
         const parent = e.srcElement.parentNode
 
-        if (this.$route.name !== parent.id) {
+        if (this.$route.name === parent.id) {
+          return
+        } else {
           this.$router.push({ name: parent.id })
         }
       }
@@ -281,6 +283,7 @@ export default {
           background-size: 240%;
           background-position: center;
           border-radius: 8px;
+          background-color: var(--main-bg);
         }
 
         div {

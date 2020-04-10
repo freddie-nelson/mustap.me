@@ -103,8 +103,8 @@ export default {
 
     .current-playing-details-container {
         margin-left: 50px;
-        width: 100%;
         max-width: 760px;
+        position: relative;
 
         h2.current-playing-details-container__heading {
             margin: 0 0 30px 0;
@@ -128,23 +128,35 @@ export default {
     .current-playing-details {
 
         &__image {
-            width: 250px;
-            height: 250px;
+            width: 220px;
+            height: 220px;
             background-size: 240%;
             background-position: center;
             border-radius: 12px;
-            display: inline-block;
+            display: inline-flex;
+
+            &::after {
+                content: 'No image found';
+                display: flex;
+                color: var(--secondary-text);
+                justify-content: center;
+                align-items: center;
+                z-index: -1;
+                width: 100%;
+                height: 100%;
+                background-color: var(--lighter-bg);
+                border-radius: 12px;
+            }
         }
 
         &__text {
             display: inline-flex;
-            height: 250px;
+            height: 220px;
             vertical-align: top;
             flex-direction: column;
             justify-content: center;
             margin-left: 40px;
-            width: calc(100% - 290px);
-            min-width: 165px;
+            width: calc(40% - 30px);
         }
 
         p {
@@ -156,6 +168,10 @@ export default {
             overflow: hidden;
             white-space: nowrap;
             text-overflow: ellipsis;
+
+            &:last-of-type {
+                text-overflow: clip;
+            }
         }
 
         &__title {
@@ -172,7 +188,7 @@ export default {
         display: flex;
         flex-direction: column;
         overflow: scroll;
-        height: 140px;
+        max-height: 140px;
 
         &::-webkit-scrollbar-thumb {
             background: var(--main-bg)

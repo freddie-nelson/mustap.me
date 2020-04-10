@@ -187,7 +187,7 @@ export default {
           currentPlaying.currentTime = '0:00';
           currentPlaying.lengthSeconds = song.duration.split(':')[0] * 60 + Number.parseInt(song.duration.split(':')[1]);
           currentPlaying.filename = song.filename;
-          currentPlaying.playing = song.thmbnailUrl === currentPlaying.thumbnail ? currentPlaying.playing = !currentPlaying.playing : currentPlaying.playing = true;
+          currentPlaying.playing = song.title !== undefined ? true : false;
           currentPlaying.index = index;
 
           console.log(currentPlaying.index);
@@ -212,11 +212,11 @@ export default {
                 clickedEle.classList.add('clicked');
 
                 if (index > indexForScroll) {
-                  if (clickedEle.getBoundingClientRect().top - clickedEle.parentElement.offsetTop >= document.getElementById('table').clientHeight - 64) {
+                  if (clickedEle.getBoundingClientRect().top - clickedEle.parentElement.offsetTop <= 64 || clickedEle.getBoundingClientRect().top - clickedEle.parentElement.offsetTop >= document.getElementById('table').clientHeight - 64) {
                     document.getElementById('table').scrollTo({top: clickedEle.offsetTop - clickedEle.parentElement.offsetTop, behavior: 'smooth'});
                   }
                 } else {
-                  if (clickedEle.getBoundingClientRect().bottom - clickedEle.parentElement.offsetTop <= 0) {
+                  if (clickedEle.getBoundingClientRect().bottom - clickedEle.parentElement.offsetTop <= 64 || clickedEle.getBoundingClientRect().bottom - clickedEle.parentElement.offsetTop >= 0) {
                     document.getElementById('table').scrollTo({top: clickedEle.offsetTop - clickedEle.parentElement.offsetTop, behavior: 'smooth'});
                   }
                 }
@@ -241,13 +241,13 @@ export default {
       globalShortcut.unregisterAll();
 
       const mediaKeys = [
-        { name: 'Alt+P', function: () => this.playPause() },
-        { name: 'Alt+]', function: () => this.nextBack(1) },
-        { name: 'Alt+[', function: () => this.nextBack(-1) },
-        { name: 'Alt+I', function: () => this.$store.state.repeatPlaylist = !this.$store.state.repeatPlaylist },
-        { name: 'Alt+O', function: () => this.$store.state.shufflePlaylist = !this.$store.state.shufflePlaylist },
-        { name: 'Alt+-', function: () => this.$store.state.currentPlaying.sound.volume - 0.1 < 0 ? this.$store.state.currentPlaying.sound.volume = 0 : this.$store.state.currentPlaying.sound.volume -= 0.1 },
-        { name: 'Alt+=', function: () => this.$store.state.currentPlaying.sound.volume + 0.1 > 1 ? this.$store.state.currentPlaying.sound.volume = 1 : this.$store.state.currentPlaying.sound.volume += 0.1 },
+        { name: 'Alt+P', label: 'play-pause', function: () => this.playPause() },
+        { name: 'Alt+]', label: 'next-track', function: () => this.nextBack(1) },
+        { name: 'Alt+[', label: 'previous-track', function: () => this.nextBack(-1) },
+        { name: 'Alt+I', label: 'repeat-playlist', function: () => this.$store.state.repeatPlaylist = !this.$store.state.repeatPlaylist },
+        { name: 'Alt+O', label: 'shuffle-playlist', function: () => this.$store.state.shufflePlaylist = !this.$store.state.shufflePlaylist },
+        { name: 'Alt+-', label: 'volume-down', function: () => this.$store.state.currentPlaying.sound.volume - 0.1 < 0 ? this.$store.state.currentPlaying.sound.volume = 0 : this.$store.state.currentPlaying.sound.volume -= 0.1 },
+        { name: 'Alt+=', label: 'volume-up', function: () => this.$store.state.currentPlaying.sound.volume + 0.1 > 1 ? this.$store.state.currentPlaying.sound.volume = 1 : this.$store.state.currentPlaying.sound.volume += 0.1 },
       ];
 
       mediaKeys.forEach(key => {
@@ -257,7 +257,7 @@ export default {
           })
 
           if (!ret) {
-            console.log(`${ key.name } registration failed. Another app must be using this key.`)
+            this.$store.state.alerts.push({ text: `${ key.name } (${ key.label }) registration failed. Another app must be using this key.`, type: 'alert' });
           }
         }
       });

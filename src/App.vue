@@ -4,16 +4,33 @@
     <vue-page-transition name="fade-in-right" class="transition">
       <router-view></router-view>
     </vue-page-transition>
+    <div class="alerts-container">
+      <Alert v-for="(alert, index) in this.$store.state.alerts" 
+        @close="closeAlert(index)"
+        :key="index" 
+        :alert="alert.type === 'alert' ? true : false" 
+        :warning="alert.type === 'warning' ? true : false" 
+        :icon="'🛈'" 
+        :text="alert.text"
+      />
+    </div>
   </div>
 </template>
 
 <script>
 import Navbar from './components/TheNavbar'
+import Alert from './components/Alert'
 
 export default {
   name: 'App',
   components: {
-    Navbar
+    Navbar,
+    Alert
+  },
+  methods: {
+    closeAlert(index) {
+      this.$store.state.alerts = this.$store.state.alerts.filter((alert, i) => i !== index)
+    }
   },
   mounted() {
     console.log('----App Mounted----')
@@ -30,8 +47,8 @@ export default {
       const currentColors = JSON.parse(fs.readFileSync(currentColorsPath))
       const root = document.documentElement.style;
 
-      const propNames = [ '--dark-bg', '--main-bg', '--lighter-bg', '--primary-text', '--secondary-text', '--accent-color', '--accent-color-secondary', '--navbar-logo-bg' ];
-      const currentColorsPropNames = [ 'darkBg', 'mainBg', 'lighterBg', 'primaryText', 'secondaryText', 'accentColor', 'accentColorSecondary', 'navbarLogoBg' ];
+      const propNames = [ '--dark-bg', '--main-bg', '--lighter-bg', '--primary-text', '--secondary-text', '--accent-color', '--accent-color-secondary', '--navbar-logo-bg', '--alert-hover-color' ];
+      const currentColorsPropNames = [ 'darkBg', 'mainBg', 'lighterBg', 'primaryText', 'secondaryText', 'accentColor', 'accentColorSecondary', 'navbarLogoBg', 'alertHoverColor' ];
 
       propNames.forEach((val, index) => root.setProperty(val, currentColors[currentColorsPropNames[index]]));
 
@@ -44,7 +61,8 @@ export default {
         secondaryText: 'rgba(255, 255, 255, 0.7)',
         accentColor: '#E91EA4',
         accentColorSecondary: '#E91E63',
-        navbarLogoBg: '#FFF'
+        navbarLogoBg: '#FFF',
+        alertHoverColor: '#353535' // a bit lighter than lighterBG
       }
 
       fs.promises.mkdir(themesPath, { recursive: true })
@@ -79,6 +97,7 @@ export default {
     --accent-color: #E91EA4;
     --accent-color-secondary: #E91E63;
     --navbar-logo-bg: #FFF;
+    --alert-hover-color: #353535;
   }
 
   * {
@@ -105,5 +124,14 @@ export default {
 
   .transition {
     width: 100%;
+  }
+
+  .alerts-container {
+    position: absolute;
+    bottom: 10px;
+    right: 10px;
+    display: flex;
+    flex-direction: column;
+    width: 320px;
   }
 </style>

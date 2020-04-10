@@ -1,7 +1,7 @@
 <template>
   <div class="table" id="table" :class="{ forPlaylists: forPlaylistsBool }">
-    <DataTableCell v-for="(data, index) in array" :data="data" :key="index" @clicked="formatDataSongs" :index="index + 1" :forPlaylists="forPlaylistsBool" />
-    <backBtn v-if="!this.forPlaylistsBool" @back="back" />
+    <DataTableCell v-for="(data, index) in array" :data="data" :key="index" @clicked="formatDataSongs" @deleteSong="deleteSong" :index="index + 1" :forPlaylists="forPlaylistsBool" />
+    <backBtn style="left: 16px" v-if="!this.forPlaylistsBool" @back="back" />
   </div>
 </template>
 
@@ -18,7 +18,7 @@ export default {
     data() {
       return {
         array: [],
-        forPlaylistsBool: this.forPlaylists,
+        forPlaylistsBool: true,
         playlist: [],
         playlists: [],
         playlistNames: [],
@@ -27,7 +27,6 @@ export default {
     },
     props: {
       playlistsProp: Array,
-      forPlaylists: Boolean
     },
     methods: {
       back() {
@@ -56,6 +55,66 @@ export default {
           this.formatDataPlaylists()
         }
       },
+      deleteSong(index) {
+        this.$store.state.deleteClickedIndex = -1;
+        console.log(this.$store.state.deleteClickedIndex);
+        const i = index - 1;
+        const fs = require('fs');
+
+        const playlist = this.$store.state.playlists[this.$store.state.currentPlaylistViewing]; 
+        const song = playlist.data[i];
+        const path = this.$store.state.documentsPath + '/mustap/songs/' + song.filename;
+        const playlistPath = this.$store.state.documentsPath + '/mustap/playlists/' + playlist.name + '.json';
+
+        playlist.data = playlist.data.filter((song, index) => index !== i);
+        this.playlist = playlist.data;
+
+        fs.promises.writeFile(playlistPath, JSON.stringify(playlist.data));
+        
+        let array = [];
+        let obj = {};
+        
+        playlist.data.forEach(song => {
+          obj.leftTop = song.title;
+          obj.leftBottom = song.artist;
+          obj.rightTop = song.duration;
+
+          array.push(obj);
+          obj = {};
+        });
+
+        this.array = array;
+
+        fs.promises.unlink(path)
+          .then(() => {
+            this.$store.state.alerts.push({ text: `${ song.title } has been deleted from playlist '${ playlist.name }'.`, type: 'alert' })
+          })
+          .catch(err => {
+            this.$store.state.alerts.push({ text: `${ song.title } has been could not be delete from playlist '${ playlist.name }'. Error: ${ err }`, type: 'warning' })
+          });
+
+        if (this.$store.state.currentPlaying.index === i) {
+          document.getElementById('table').children[i].classList.remove('clicked');
+          const currentPlaying = this.$store.state.currentPlaying;
+
+          currentPlaying.sound.pause();
+
+          currentPlaying.thumbnail = 'N / A';
+          currentPlaying.title = 'N / A';
+          currentPlaying.artist = 'N / A';
+          currentPlaying.duration = '0:00';
+          currentPlaying.currentTime = '0:00';
+          currentPlaying.lengthSeconds = 0;
+          currentPlaying.filename = '';
+          currentPlaying.playing = false;
+          currentPlaying.index = 0;
+          currentPlaying.sound.src = '';
+          currentPlaying.currentTimeSeconds = 0;
+        }
+
+        this.addClasses()
+        this.playlist = playlist.data;
+      },
       async currentPlayingChanged() {
         const { remote } = require('electron');
 
@@ -66,35 +125,34 @@ export default {
         setTimeout(() => currentPlaying.sound.play(), 500);
       },
       formatDataPlaylists() {
-        setTimeout(() => {
-          let array = []
-          let obj = {};
+        let array = []
+        let obj = {};
 
-          this.playlists = this.playlistsProp.map(playlist => playlist.data)
-          this.playlistNames = this.playlistsProp.map(playlist => playlist.name)
-          this.datesAdded = this.playlistsProp.map(playlist => playlist.added)
+        this.playlists = this.playlistsProp.map(playlist => playlist.data)
+        this.playlistNames = this.playlistsProp.map(playlist => playlist.name)
+        this.datesAdded = this.playlistsProp.map(playlist => playlist.added)
 
-          this.playlists.forEach((arr, index) => {
-            obj.leftTop = this.playlistNames[index];
-            obj.leftBottom = this.datesAdded[index];
-            obj.rightTop = arr.length + ' Songs';
+        this.playlists.forEach((arr, index) => {
+          obj.leftTop = this.playlistNames[index];
+          obj.leftBottom = this.datesAdded[index];
+          obj.rightTop = arr.length + ' Songs';
 
-            array.push(obj);
-            obj = {};
-          });
+          array.push(obj);
+          obj = {};
+        });
 
-          this.array = array;
-          window.console.log(array);
-        }, 200)
+        this.array = array;
     },
     formatDataSongs(e) {
       if (!this.forPlaylistsBool) {
+        /* Get the song that the user clicked on */
         const index = e - 1;
         const song = this.playlist[index];
         const currentPlaying = this.$store.state.currentPlaying;
 
         this.$store.state.currentPlaylist = this.$store.state.currentPlaylistViewing;
 
+        /* setting all the properties of the song that is going to be played (the first song) */
         currentPlaying.thumbnail = song.thumbnailUrl.replace('hqdefault', 'maxresdefault');
         currentPlaying.title = song.title;
         currentPlaying.artist = song.artist;
@@ -102,9 +160,11 @@ export default {
         currentPlaying.currentTime = '0:00';
         currentPlaying.lengthSeconds = song.duration.split(':')[0] * 60 + Number.parseInt(song.duration.split(':')[1]);
         currentPlaying.filename = song.filename;
-        currentPlaying.playing = song.thmbnailUrl === currentPlaying.thumbnail ? currentPlaying.playing = !currentPlaying.playing : currentPlaying.playing = true;
+        currentPlaying.playing = true;
         currentPlaying.index = index;
 
+
+        /* remove the clicked class from all elements in the table and apply the clicked class to the song thats playing */
         const children = document.getElementById('table').children;
         const clickedEle = children[currentPlaying.index];
 
@@ -120,6 +180,7 @@ export default {
         clickedEle.classList.add('clicked');
         this.currentPlayingChanged();
       } else {
+        /* open the playlist that was clicked on */
         this.forPlaylistsBool = false;
         this.$emit('for-playlists-changed', false)
         this.$emit('clicked-playlist')
@@ -137,9 +198,8 @@ export default {
           obj = {};
         })
 
+        /* set the playlist that was clicked as the one we are viewing in vuex */
         this.$store.state.currentPlaylistViewing = index;
-
-        console.log(this.$store.state.currentPlaylist)
         
         if (this.$store.state.currentPlaying.title == 'N / A' && this.$store.state.currentPlaylist === -1) {
           this.$store.state.currentPlaylist = index;
@@ -147,14 +207,16 @@ export default {
           let song = this.playlist[index];
           const currentPlaying = this.$store.state.currentPlaying;
 
+          /* check if the song we are trying to play is missing and if it is then loop until we find a song */
           if (song.missing) {
             do {
               song = this.playlist[index + 1];
             } while (song.missing);
           }
 
-          this.$store.state.currentPlaylist = this.$store.state.currentPlaylistViewing;
+          this.$store.state.currentPlaylist = this.$store.state.currentPlaylistViewing; // if we aren't playing from any other playlist then set the currentPlaylist to the one we are viewing
 
+          /* setting all the properties of the song that is going to be played */
           currentPlaying.thumbnail = song.thumbnailUrl.replace('hqdefault', 'maxresdefault');
           currentPlaying.title = song.title;
           currentPlaying.artist = song.artist;
@@ -162,51 +224,63 @@ export default {
           currentPlaying.currentTime = '0:00';
           currentPlaying.lengthSeconds = song.duration.split(':')[0] * 60 + Number.parseInt(song.duration.split(':')[1]);
           currentPlaying.filename = song.filename;
-          currentPlaying.playing = song.thmbnailUrl === currentPlaying.thumbnail ? currentPlaying.playing = !currentPlaying.playing : currentPlaying.playing = true;
+          currentPlaying.playing = song.title !== undefined ? true : false;
           currentPlaying.index = index;
 
           this.currentPlayingChanged()
         }
 
         this.array = array;
+        this.addClasses()
 
-        setTimeout(() => {
-          const { remote } = require('electron');
-          const fs = require('fs');
+      }
+    },
+    addClasses() {
+      /* check for missing songs once the table has loaded, also apply the clicked class to a song if it is playing and then scroll it into view as well */
+      setTimeout(() => {
+        const fs = require('fs');
 
-          const children = document.getElementById('table').children;
-          const songsPath = remote.app.getPath('documents') + '/mustap/songs/';
+        const children = document.getElementById('table').children;
+        const songsPath = this.$store.state.documentsPath + '/mustap/songs/';
 
-          this.$store.state.missingSongsCount = 0;
-
-          for (let i = 0; i < children.length - 1; i++) {
-            const element = children[i];
-            
-            const filename = songsPath + this.$store.state.playlists[this.$store.state.currentPlaylistViewing].data[i].filename;
-
-            if (!fs.existsSync(filename)) {
-              element.classList.add('missing')
-              this.$store.state.missingSongsCount++;
-              this.$store.state.playlists[this.$store.state.currentPlaylistViewing].data[i].missing = true;
-            }
-          }
+        this.$store.state.missingSongsCount = 0;
         
-          if (this.$store.state.currentPlaylist == this.$store.state.currentPlaylistViewing) {
-            const currentPlaying = this.$store.state.currentPlaying;
+        /* check for missing songs and apply the missing class to the ones found */
+        for (let i = 0; i < children.length - 1; i++) {
+          const element = children[i];
 
-            if (currentPlaying.title != 'N / A') {
-              const elements = document.querySelectorAll('p.cell__left-text-top');
-              for (let i = 0; i < elements.length; i++) {
-                const ele = elements[i];
+          const song = this.$store.state.playlists[this.$store.state.currentPlaylistViewing].data[i];
+          
+          const filename = songsPath + song.filename;
 
-                let title = currentPlaying.title;
+          element.classList.remove('missing');
+          element.classList.remove('clicked');
 
-                if (title[0] == ' ') {
-                  title = title.slice(1, title.length);
-                }
+          if (!fs.existsSync(filename)) {
+            element.classList.add('missing')
+            this.$store.state.missingSongsCount++;
+            this.$store.state.playlists[this.$store.state.currentPlaylistViewing].data[i].missing = true;
+          }
+        }
 
-                if (ele.innerText == title) {
-                  const clickedEle = document.getElementById('table').children[i];
+        /* if this is the currentplaylist that we are playing from check for the playing song and apply the clicked class to it */
+        if (this.$store.state.currentPlaylist == this.$store.state.currentPlaylistViewing) {
+          const currentPlaying = this.$store.state.currentPlaying;
+
+          if (currentPlaying.title != 'N / A') {
+            const elements = document.querySelectorAll('p.cell__left-text-top');
+            for (let i = 0; i < elements.length; i++) {
+              const ele = elements[i];
+
+              let title = currentPlaying.title;
+
+              if (title[0] == ' ') {
+                title = title.slice(1, title.length);
+              }
+
+              if (ele.innerText == title) {
+                const clickedEle = document.getElementById('table').children[i];
+                if (!clickedEle.classList.contains('missing')) {
                   clickedEle.classList.add('clicked');
                   if (i > 0) {
                     if (clickedEle.getBoundingClientRect().top - clickedEle.parentElement.offsetTop >= document.getElementById('table').clientHeight - 64) {
@@ -217,19 +291,15 @@ export default {
                       document.getElementById('table').scrollTo({top: clickedEle.offsetTop - clickedEle.parentElement.offsetTop, behavior: 'smooth'});
                     }
                   }
-                  break;
                 }
+                break;
               }
             }
           }
+        }
 
-        }, 100);
-
-      }
+      }, 100);
     }
-  },
-  mounted() {
-    this.formatDataPlaylists()
   }
 }
 </script>

@@ -7,19 +7,30 @@
     </div>
 
     <div class="cell__right-text">
-      <p class="cell__right-text-top">{{ data.rightTop }}</p>
+      <p class="cell__right-text-top">{{ this.$store.state.currentPlaying.index === index - 1 && !this.forPlaylists ? this.$store.state.currentPlaying.currentTime : false || data.rightTop }}</p>
+      <Button 
+        @clicked="() => { $emit('deleteSong', index); this.$store.state.deleteClickedIndex = index; }" 
+        class="cell__right-text-bottom" 
+        :text="'🗑'"
+        v-if="!this.forPlaylists"
+      />
     </div>
   </div>
 </template>
 
 <script>
 import { v4 as uuidv4 } from "uuid";
+import Button from '@/components/Button'
 
 export default {
   name: "DataTableCell",
+  components: {
+    Button
+  },
   data() {
     return {
-      id: uuidv4()
+      id: uuidv4(),
+      deleteClicked: false
     };
   },
   props: {
@@ -29,9 +40,12 @@ export default {
   },
   methods: {
     clicked() {
-      if (this.forPlaylists || !this.$store.state.playlists[this.$store.state.currentPlaylistViewing].data[this.index - 1].missing) {
-        this.$emit('clicked', this.index)
-      } 
+      setTimeout(() => {
+        if (this.$store.state.deleteClickedIndex === this.index) { return }
+        if (this.forPlaylists || !this.$store.state.playlists[this.$store.state.currentPlaylistViewing].data[this.index - 1].missing) {
+          this.$emit('clicked', this.index)
+        } 
+      }, 100)
     }
   },
   mounted() {
@@ -83,6 +97,10 @@ export default {
 
   &:hover {
     background-color: var(--lighter-bg);
+
+    .cell__right-text-bottom {
+      opacity: 1 !important;
+    }
   }
 
   &__index {
@@ -98,13 +116,13 @@ export default {
   &__left-text {
     font-weight: 500;
     margin: auto 0;
+    max-width: 70%;
 
     &-top {
       font-size: 18px;
       overflow: hidden;
       white-space: nowrap;
       text-overflow: ellipsis;
-      max-width: 350px;
     }
 
     &-bottom {
@@ -117,10 +135,16 @@ export default {
   &__right-text {
     font-weight: 400;
     margin: 8px 12px 0 auto;
+    text-align: right;
 
     &-top {
       font-size: 16px;
       color: var(--secondary-text);
+    }
+
+    &-bottom {
+      opacity: 0 !important;
+      transition: opacity .3s ease-in;
     }
   }
 }
