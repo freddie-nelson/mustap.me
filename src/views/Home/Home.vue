@@ -250,7 +250,7 @@ export default {
           currentDownload.index = i + 1;
           currentDownload.currentProcess = 'Downloading...'
 
-          const estimatedSize = songInfo.duration.split(':')[0] * 60 + Number.parseInt(songInfo.duration.split(':')[1]) * 142000;
+          const estimatedSize = (Number.parseInt(songInfo.duration.split(':')[0] * 60) + Number.parseInt(songInfo.duration.split(':')[1])) * 144000;
 
           if (tries === 2) {
               console.log(`Sorry the download of ${songInfo.title} has been attempted 3 times and has failed. This song cannot be downloaded.`)
@@ -266,6 +266,9 @@ export default {
 
           str.on('progress', progress => {
               currentDownload.progress = Math.round(progress.percentage);
+              if (currentDownload.progress >= 100) {
+                currentDownload.progresss = 100;
+              }
           });
           /* calculate the progress on the download */
 

@@ -95,6 +95,10 @@ export default {
     background-color: #dc35462a !important;
   }
 
+  &.deleted {
+    background-color: #dcd1352a !important;
+  }
+
   &:hover {
     background-color: var(--lighter-bg);
 

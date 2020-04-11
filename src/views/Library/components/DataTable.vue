@@ -65,11 +65,21 @@ export default {
         const song = playlist.data[i];
         const path = this.$store.state.documentsPath + '/mustap/songs/' + song.filename;
         const playlistPath = this.$store.state.documentsPath + '/mustap/playlists/' + playlist.name + '.json';
+        const deletedPlaylistPath = this.$store.state.documentsPath + '/mustap/playlists/' + playlist.name + '__deleted__.json'
 
         playlist.data = playlist.data.filter((song, index) => index !== i);
         this.playlist = playlist.data;
 
         fs.promises.writeFile(playlistPath, JSON.stringify(playlist.data));
+
+        if (fs.existsSync(deletedPlaylistPath)) {
+          const data = JSON.parse(fs.readFileSync(deletedPlaylistPath));
+          data.push(song);
+
+          fs.promises.writeFile(deletedPlaylistPath, JSON.stringify(data))
+        } else {
+          fs.promises.writeFile(deletedPlaylistPath, JSON.stringify([ song ]))
+        }
         
         let array = [];
         let obj = {};
@@ -128,9 +138,12 @@ export default {
         let array = []
         let obj = {};
 
-        this.playlists = this.playlistsProp.map(playlist => playlist.data)
-        this.playlistNames = this.playlistsProp.map(playlist => playlist.name)
-        this.datesAdded = this.playlistsProp.map(playlist => playlist.added)
+        const playlistsFiltered = this.playlistsProp.filter(playlist => playlist.name.indexOf('__deleted__') === -1)
+        console.log(playlistsFiltered);
+
+        this.playlists = playlistsFiltered.map(playlist => playlist.data)
+        this.playlistNames = playlistsFiltered.map(playlist => playlist.name)
+        this.datesAdded = playlistsFiltered.map(playlist => playlist.added)
 
         this.playlists.forEach((arr, index) => {
           obj.leftTop = this.playlistNames[index];
@@ -279,7 +292,7 @@ export default {
               }
 
               if (ele.innerText == title) {
-                const clickedEle = document.getElementById('table').children[i];
+                const clickedEle = children[i];
                 if (!clickedEle.classList.contains('missing')) {
                   clickedEle.classList.add('clicked');
                   if (i > 0) {
@@ -294,6 +307,20 @@ export default {
                 }
                 break;
               }
+            }
+          }
+        }
+        
+        const deletedPlaylist = this.$store.state.playlists.filter(playlist => playlist.name === this.$store.state.playlists[this.$store.state.currentPlaylistViewing].name + '__deleted__');
+        const deletedPlaylistData = deletedPlaylist[0].data;
+        console.log(deletedPlaylistData)
+
+        for (let i = 0; i < this.playlist.length; i++) {
+          const song = this.playlist[i];
+          
+          for (let j = 0; j < deletedPlaylistData.length; j++) { 
+            if (song.title === deletedPlaylistData[j].title) {
+              children[i].classList.add('deleted')
             }
           }
         }
