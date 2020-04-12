@@ -33,6 +33,7 @@ export default new Vuex.Store({
       missing: false
     },
     playlists: [],
+    playlistsFiltered: [],
     currentPlaylist: -1,
     currentPlaylistViewing: -1,
     repeatPlaylist: true,

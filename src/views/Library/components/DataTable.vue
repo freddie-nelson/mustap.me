@@ -174,7 +174,7 @@ export default {
         let array = []
         let obj = {};
 
-        const playlistsFiltered = this.playlistsProp.filter(playlist => playlist.name.indexOf('__deleted__') === -1)
+        const playlistsFiltered = this.playlistsProp;
         console.log(playlistsFiltered);
 
         this.playlists = playlistsFiltered.map(playlist => playlist.data)
@@ -298,7 +298,7 @@ export default {
         for (let i = 0; i < children.length - 1; i++) {
           const element = children[i];
 
-          const song = this.$store.state.playlists[this.$store.state.currentPlaylistViewing].data[i];
+          const song = this.$store.state.playlistsFiltered[this.$store.state.currentPlaylistViewing].data[i];
           
           const filename = songsPath + song.filename;
 

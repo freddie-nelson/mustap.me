@@ -115,9 +115,9 @@ export default {
             const songsPath = this.$store.state.documentsPath + '/mustap/songs/';
             
             const state = this.$store.state;
-            const playlist = state.playlists[state.currentPlaylistViewing];
+            const playlist = state.playlistsFiltered[state.currentPlaylistViewing];
             const playlistData = playlist.data;
-            const playlists = state.playlists.filter(obj => obj.name !== playlist.name)
+            const playlists = state.playlistsFiltered.filter(obj => obj.name !== playlist.name)
 
             console.log('Playlists: ', playlists)
 
@@ -176,7 +176,7 @@ export default {
             setTimeout(() => {
                 if (this.mainTitle == 'Your Library' || refresh) {
                     this.mainTitle = 'Currently Viewing'
-                    const currentPlaylist = this.$store.state.playlists[this.$store.state.currentPlaylistViewing];
+                    const currentPlaylist = this.$store.state.playlistsFiltered[this.$store.state.currentPlaylistViewing];
                     this.subTitle = `${currentPlaylist.name} - ${currentPlaylist.data.length} tracks`
                 } else {
                     this.mainTitle = 'Your Library';
@@ -220,6 +220,8 @@ export default {
                 .catch(err => window.console.log(err))
             
             this.$store.state.playlists = playlists;
+            this.$store.state.playlistsFiltered = playlists.filter(playlist => playlist.name.indexOf('__deleted__') === -1)
+            console.log(this.$store.state.playlistsFiltered)
             
             setTimeout(() => this.$refs.dataTable.formatDataPlaylists(), 100)
         }
