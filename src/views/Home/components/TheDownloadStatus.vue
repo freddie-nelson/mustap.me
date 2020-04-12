@@ -25,14 +25,15 @@ export default {
 
             if (currentDownload.stream === null) { return }
             
-            currentDownload.stream._destroy();
+            
+            currentDownload.stream.destroy();
 
             const fs = require('fs');
             const path = currentDownload.path;
 
             if (fs.existsSync(path)) {
                 fs.promises.unlink(path)
-                    .then(() => console.log(`deleted ${ path }`))
+                    .then(() => console.log(`deleted song`))
                     .catch(err => console.log(`failed to delete ${ path }. Error: ${ err }`))
             }
 
@@ -48,20 +49,17 @@ export default {
             });
 
             playlist = playlist.filter((song) => song.title !== playlist[i].title);
-
-            console.log(playlist);
             
             if (playlist) {
                 fs.promises.writeFile(playlistPath, JSON.stringify(playlist))
-                    .then(() => console.log('written: ' + playlistPath))
+                    .then(() => console.log('done'))
                     .catch(err => console.log(err));
             } else {
                 fs.promises.unlink(playlistPath)
-                    .then(() => console.log('deleted: ' + playlistPath))
+                    .then(() => console.log('done'))
                     .catch(err => console.log(err));
             }
-
-            this.$emit('skip');
+            
         }
     }
 }

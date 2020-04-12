@@ -33,11 +33,17 @@ export default {
         if (this.forPlaylistsBool) {
             return
         } else {
-          this.forPlaylistsBool = true;
-          this.$emit('for-playlists-changed', true)
 
+          this.forPlaylistsBool = true;
+          this.$emit('for-playlists-changed', true);
+
+          // set the currentPlaylistViewing back to -1 so that other components know that we don't have a playlist open anymore
+          this.$store.state.currentPlaylistViewing = -1;
+
+          // get all the dataTableCell elements
           const children = document.getElementById('table').children;
           
+          // remove all their extra classes so they don't appear on the playlists view
           for (let i = 0; i < children.length; i++) {
             const element = children[i];
 
@@ -51,30 +57,45 @@ export default {
             }
           }
 
+          // tell library that we have went back
           this.$emit('back')
+
+          // set deleteClickedIndex back to -1 so that the cell we clicked on can be clicked again
           this.$store.state.deleteClickedIndex = -1;
+
+          // get the playlists again to put in the table
           this.formatDataPlaylists()
         }
       },
       deleteSong(index, noWriteJSON = false) {
+        // set deleteClickedIndex back to -1 so that the cell we clicked on can be clicked again
         this.$store.state.deleteClickedIndex = -1;
         
+        // correct off by one error on index
         const i = index - 1;
         const fs = require('fs');
 
+        // initialise all needed variables
         const playlist = this.$store.state.playlists[this.$store.state.currentPlaylistViewing];
         const playlists = this.$store.state.playlists.filter(obj => obj.name !== playlist.name);
+
+        // get path of the playlists and its deleted songs counterpart
         const playlistPath = this.$store.state.documentsPath + '/mustap/playlists/' + playlist.name + '.json';
         const deletedPlaylistPath = this.$store.state.documentsPath + '/mustap/playlists/' + playlist.name + '__deleted__.json';
 
+        // get the song we are deleting and everything to do with it
         const song = playlist.data[i];
+        const songTitle = song.title[0] === ' ' ? song.title.slice(1, song.title.length) : song.title; // if the song has a space at the start remove it
         const songsPath = this.$store.state.documentsPath + '/mustap/songs/';
-        const deleteSong = playlist.data[i].missing;
-        const path = songsPath + song.filename;
+        const deleteSong = playlist.data[i].missing; // boolean that will make sure we don't try to delete the song if it doesn't exist
+        const path = songsPath + song.filename; // song full path
 
+        // get rid of the song we are deleting from the playlist data
         playlist.data = playlist.data.filter((song, index) => index !== i);
         this.playlist = playlist.data;
 
+        // --- check every other playlist to see if we need the song in another one
+        // if we do then don't delete it
         let file;
 
         for (let i = 0; i < playlists.length; i++) {
@@ -96,20 +117,24 @@ export default {
             file = path;
           }
         }
+        // --- end of checking the other playlists
+        
+        if (!noWriteJSON) { // if the nowriteJSON function is passed into the function then don't write to the json
 
-        fs.promises.writeFile(playlistPath, JSON.stringify(playlist.data));
-
-        if (!noWriteJSON) {
+          // check if the deletePlaylistPath file exists and if it does then push the song onto it and rewrite it
           if (fs.existsSync(deletedPlaylistPath)) {
             const data = JSON.parse(fs.readFileSync(deletedPlaylistPath));
             data.push(song);
 
             fs.promises.writeFile(deletedPlaylistPath, JSON.stringify(data))
           } else {
+            // fif the deletePlaylistPath file has never been made then start it with the song incased in an array so we can later push to it
             fs.promises.writeFile(deletedPlaylistPath, JSON.stringify([ song ]))
           }   
+
         }
 
+        // --- refresh the data in the table
         let array = [];
         let obj = {};
         
@@ -123,21 +148,29 @@ export default {
         });
 
         this.array = array;
+        // --- end of refreshing the data in the table
 
-        console.log(this.playlist[i])
+        if (file) { // if the file is needed in other playlists don't delete it
 
-        if (file) {
           if (!deleteSong) {
+            
+            // delete the song then alert the user through the alert component
             fs.promises.unlink(file)
               .then(() => {
-                this.$store.state.alerts.push({ text: `${ song.title } has been deleted from playlist '${ playlist.name }'.`, type: 'alert' })
+                this.$store.state.alerts.push({ text: `'${ songTitle }' has been deleted from playlist '${ playlist.name }'.`, type: 'alert' })
               })
               .catch(err => {
-                this.$store.state.alerts.push({ text: `${ song.title } has been could not be delete from playlist '${ playlist.name }'. Error: ${ err }`, type: 'warning' })
+                this.$store.state.alerts.push({ text: `'${ songTitle }' has been could not be delete from playlist '${ playlist.name }'. Error: ${ err }`, type: 'warning' })
               });
+
           }
+
+        } else {
+          this.$store.state.alerts.push({ text: `'${ songTitle }' has been deleted from playlist '${ playlist.name }'.`, type: 'alert' })
         }
 
+
+        // if the song that was deleted is the one that's currently playing then reset all the currentPlaying properties
         if (this.$store.state.currentPlaying.index === i) {
           document.getElementById('table').children[i].classList.remove('clicked');
           const currentPlaying = this.$store.state.currentPlaying;
@@ -152,20 +185,27 @@ export default {
           currentPlaying.lengthSeconds = 0;
           currentPlaying.filename = '';
           currentPlaying.playing = false;
-          currentPlaying.index = 0;
+          currentPlaying.index = -1;
           currentPlaying.sound.src = '';
           currentPlaying.currentTimeSeconds = 0;
         }
 
-        this.addClasses()
-        this.$emit('deleted-song', true);
         this.playlist = playlist.data;
+
+        if (playlist.data.length !== 0) {
+
+          fs.promises.writeFile(playlistPath, JSON.stringify(playlist.data));
+          this.addClasses();
+          this.$emit('deleted-song', true);
+
+        } else {
+          // if the playlist has 0 songs left in it delete it altogther
+          this.$emit('delete-playlist')
+        }
       },
       async currentPlayingChanged() {
-        const { remote } = require('electron');
-
         const currentPlaying = this.$store.state.currentPlaying;
-        const filename = 'file://' + remote.app.getPath('documents') + '/mustap/songs/' + currentPlaying.filename;
+        const filename = 'file://' + this.$store.state.documentsPath + '/mustap/songs/' + currentPlaying.filename;
         currentPlaying.sound.src = filename;
         
         setTimeout(() => currentPlaying.sound.play(), 500);
@@ -174,12 +214,11 @@ export default {
         let array = []
         let obj = {};
 
-        const playlistsFiltered = this.playlistsProp;
-        console.log(playlistsFiltered);
+        const playlists = this.$store.state.playlists;
 
-        this.playlists = playlistsFiltered.map(playlist => playlist.data)
-        this.playlistNames = playlistsFiltered.map(playlist => playlist.name)
-        this.datesAdded = playlistsFiltered.map(playlist => playlist.added)
+        this.playlists = playlists.map(playlist => playlist.data)
+        this.playlistNames = playlists.map(playlist => playlist.name)
+        this.datesAdded = playlists.map(playlist => playlist.added)
 
         this.playlists.forEach((arr, index) => {
           obj.leftTop = this.playlistNames[index];
@@ -297,8 +336,8 @@ export default {
         /* check for missing songs and apply the missing class to the ones found */
         for (let i = 0; i < children.length - 1; i++) {
           const element = children[i];
-
-          const song = this.$store.state.playlistsFiltered[this.$store.state.currentPlaylistViewing].data[i];
+          
+          const song = this.$store.state.playlists[this.$store.state.currentPlaylistViewing].data[i];
           
           const filename = songsPath + song.filename;
 

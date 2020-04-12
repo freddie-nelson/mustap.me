@@ -7,7 +7,7 @@
     </div>
 
     <div class="cell__right-text">
-      <p class="cell__right-text-top">{{ this.$store.state.currentPlaying.index === index - 1 && !this.forPlaylists ? this.$store.state.currentPlaying.currentTime : false || data.rightTop }}</p>
+      <p class="cell__right-text-top">{{ this.$store.state.currentPlaying.index === index - 1 && !this.forPlaylists && this.$store.state.currentPlaylist === this.$store.state.currentPlaylistViewing ? this.$store.state.currentPlaying.currentTime : false || data.rightTop }}</p>
       <Button 
         @clicked="() => { $emit('deleteSong', index); this.$store.state.deleteClickedIndex = index; }" 
         class="cell__right-text-bottom" 
@@ -42,7 +42,7 @@ export default {
     clicked() {
       setTimeout(() => {
         if (this.$store.state.deleteClickedIndex === this.index) { return }
-        if (this.forPlaylists || !this.$store.state.playlists[this.$store.state.currentPlaylistViewing].data[this.index - 1].missing) {
+        if ((this.forPlaylists ? true : this.$store.state.currentPlaylistViewing !== -1) && (this.forPlaylists || !this.$store.state.playlists[this.$store.state.currentPlaylistViewing].data[this.index - 1].missing)) {
           this.$emit('clicked', this.index)
         } 
       }, 100)

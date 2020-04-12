@@ -49,9 +49,22 @@
         :style="{ height: `calc(100% - ${ this.calcHeight() }px)` }"
     >
         <div class="container">
-            <DataTable ref="dataTable" @for-playlists-changed="forPlaylists = $event" @back="changeTitles" @clicked-playlist="changeTitles" @deleted-song="changeTitles($event)" :playlistsProp="this.$store.state.playlists" />
+            <DataTable 
+                ref="dataTable" 
+                @for-playlists-changed="forPlaylists = $event" 
+                @back="changeTitles" 
+                @delete-playlist="deletePlaylist" 
+                @clicked-playlist="changeTitles" 
+                @deleted-song="changeTitles($event)" 
+                :playlistsProp="$store.state.playlists"
+            />
         </div>
-        <CurrentPlaying @update-playlist="updatePlaylist" @delete-playlist="deletePlaylist" class="library__current-playing" :forPlaylists="forPlaylists" />
+        <CurrentPlaying 
+            @update-playlist="updatePlaylist" 
+            @delete-playlist="deletePlaylist" 
+            class="library__current-playing" 
+            :forPlaylists="forPlaylists" 
+        />
     </section>
   </main>
 </template>
@@ -95,7 +108,6 @@ export default {
             this.$refs.dataTable.deleteSong(i + 1, true);
         },
         updatePlaylist() {
-            console.log(this.forPlaylists)
             if (!this.forPlaylists) {
                 const currentPlaylist = this.$store.state.playlists[this.$store.state.currentPlaylistViewing]
                 const updatingPlaylist = this.$store.state.updatingPlaylist;
@@ -111,18 +123,21 @@ export default {
         },
         async deletePlaylist() {
             const fs = require('fs');
-
+            
             const songsPath = this.$store.state.documentsPath + '/mustap/songs/';
             
+            // initialise needed variables
             const state = this.$store.state;
-            const playlist = state.playlistsFiltered[state.currentPlaylistViewing];
+            const playlist = state.playlists[state.currentPlaylistViewing];
             const playlistData = playlist.data;
-            const playlists = state.playlistsFiltered.filter(obj => obj.name !== playlist.name)
+            const playlists = state.playlists.filter(obj => obj.name !== playlist.name);
 
-            console.log('Playlists: ', playlists)
-
+            // set the currentPlaylistViewing back to -1 so other functions know we aren't viewing a playlist
+            this.$store.state.currentPlaylistViewing = -1;
+            
             const filenames = playlistData.map(obj => songsPath + obj.filename);
 
+            // filter filenames so it only contains the songs that aren't in any other playlist
             const filenamesFiltered = filenames.filter(file => {
 
                 for (let i = 0; i < playlists.length; i++) {
@@ -147,82 +162,102 @@ export default {
 
             });
 
+            // delete all the songs that we don't need in any other playlist
             filenamesFiltered.forEach(async file => {
-                    fs.promises.unlink(file)
-                        .then(e => {
-                            console.log(e);
-                        })
-                        .catch(e => console.log(e))
-                });
+                fs.promises.unlink(file)
+                    .then(e => {
+                        console.log(e);
+                    })
+                    .catch(e => console.log(e))
+            });
 
+            // get the path of the playlist we are deleting from and the __deleted__ version that contains the songs we have previously deleted
             const playlistPath = this.$store.state.documentsPath + '/mustap/playlists/' + playlist.name + '.json';
             const deletedPlaylistPath = this.$store.state.documentsPath + '/mustap/playlists/' + playlist.name + '__deleted__.json';
 
+            // if the deletedPlaylistsPath exists delete it since it isn't needed anymore
             if (fs.existsSync(deletedPlaylistPath)) {
                 await fs.promises.unlink(deletedPlaylistPath)
                     .then(e => console.log(e))
                     .catch(e => console.log(e));
             }
 
+            // wait for the playlist to be deleted then go back to the library home page and refresh the playlists
             await fs.promises.unlink(playlistPath)
-                .then(e => {
-                    console.log(e);
+                .then(() => {
+                    this.$store.state.alerts.push({ text: `Playlist '${ playlist.name }' has been successfully deleted.`, type: 'alert' })
                     this.$refs.dataTable.back()
                     this.getPlaylists()
                 })
-                .catch(e => console.log(e));
+                .catch(err => this.$store.state.alerts.push({ text: `Playlist '${ playlist.name }' could not be deleted. Error: ${ err }`, type: 'warning' }));
         },
         changeTitles(refresh) {
             setTimeout(() => {
                 if (this.mainTitle == 'Your Library' || refresh) {
-                    this.mainTitle = 'Currently Viewing'
-                    const currentPlaylist = this.$store.state.playlistsFiltered[this.$store.state.currentPlaylistViewing];
-                    this.subTitle = `${currentPlaylist.name} - ${currentPlaylist.data.length} tracks`
+
+                    this.mainTitle = 'Currently Viewing';
+                    const currentPlaylist = this.$store.state.playlists[this.$store.state.currentPlaylistViewing];
+                    this.subTitle = `${ currentPlaylist.name } - ${ currentPlaylist.data.length } tracks`;
+
                 } else {
+
                     this.mainTitle = 'Your Library';
                     this.subTitle = 'Select a playlist';
+
                 }
             }, 100)
         },
         async getPlaylists() {
+            // set deleteClickedIndex back to -1 so that the cell we clicked can be clicked again
             this.$store.state.deleteClickedIndex = -1;
+
             const fs = require('fs');
-            const { remote } = require('electron');
 
-            const documents = remote.app.getPath('documents');
-            const playlistsLocation = documents + '/mustap/playlists';
-
+            const playlistsLocation = this.$store.state.documentsPath + '/mustap/playlists';
             let playlists = [];
 
+            // read all json files in the playlists directory
             await fs.promises.readdir(playlistsLocation)
                 .then(arr => {
-                    console.log(arr);
+                    
+                    // a recursive style is used so that we read the files one by one and not all at the same time
+                    // this means that the playlists are always read and appear in the same order which gives a better UX
+
                     readFile(0);
                     function readFile(i) {
+                        // if the array has nothing left in it then stop the recursion
                         if (!arr[i]) {
                             return
                         }
 
                         const file = arr[i];
 
+                        // read the file
                         fs.promises.readFile(playlistsLocation + '/' + file)
                             .then(data => {
+                                // get the date the file was created
                                 const date = new Date(fs.statSync(playlistsLocation + '/' + file).mtimeMs);
                                 const day = ("0" + date.getDate()).slice(-2);
                                 const month = ("0" + (date.getMonth() + 1)).slice(-2);
                                 const year = date.getFullYear();
-                                playlists.push({ name: file.split('.')[0], data: JSON.parse(data), added: `${day}/${month}/${year}` })
+
+                                // only push the data to the playlists array if it isn't one used to store deleted songs
+                                if (file.indexOf('__deleted__') === -1) {
+                                    playlists.push({ name: file.split('.')[0], data: JSON.parse(data), added: `${day}/${month}/${year}` })
+                                }
+                                
+                                // start the next read
                                 readFile(i + 1);
                             })
-                            .catch(err => window.console.log(err));
+                            .catch(err => console.log(err));
                     }
                 })
-                .catch(err => window.console.log(err))
+                .catch(err => console.log(err))
             
+            // store the playlists in vuex
             this.$store.state.playlists = playlists;
-            this.$store.state.playlistsFiltered = playlists.filter(playlist => playlist.name.indexOf('__deleted__') === -1)
-            console.log(this.$store.state.playlistsFiltered)
             
+            // 100ms delay used so that there is no chance that the dataTable takes in a playlist array that has nothing in it
             setTimeout(() => this.$refs.dataTable.formatDataPlaylists(), 100)
         }
     },

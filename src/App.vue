@@ -38,10 +38,12 @@ export default {
 
     this.$store.state.documentsPath = remote.app.getPath('documents');
 
+    // Get all paths on the machine for needed themes
     const themesPath = this.$store.state.documentsPath + '/mustap/themes/';
     const defaultColorsPath = themesPath + 'default.json';
     const currentColorsPath = themesPath + 'currentTheme.json'
-
+    
+    // set colors of css variables based on the themes found
     if (fs.existsSync(defaultColorsPath)) {
       const currentColors = JSON.parse(fs.readFileSync(currentColorsPath))
       const root = document.documentElement.style;
@@ -52,6 +54,7 @@ export default {
       propNames.forEach((val, index) => root.setProperty(val, currentColors[currentColorsPropNames[index]]));
 
     } else {
+      // choses default values for colors that will be used if this is the first time the app has been loaded
       const defaultColors = {
         darkBg: '#000',
         mainBg: '#121212',

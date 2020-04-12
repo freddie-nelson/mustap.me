@@ -1,7 +1,7 @@
 <template>
   <main class="home">
       <Searchbox @searched="searched" v-if="!searchboxDisplayNone" :class="{ home__searchbox: true, hidden: searchboxHidden }" />
-      <DownloadStatus v-if="!downloadDisplayNone" @skip="downloadSongs($store.state.currentDownload.index, 0, songsPath, playlist, ytdl, progress, currentDownload, fs)" :class="{ home__downloadstatus: true,  show: downloadShow }" />
+      <DownloadStatus v-if="!downloadDisplayNone" :class="{ home__downloadstatus: true,  show: downloadShow }" />
       <backBtn v-if="onDownloadView" @back="back" />
   </main>
 </template>
@@ -26,12 +26,6 @@ export default {
       downloadDisplayNone: true,
       currentDownloadStream: Stream,
       onDownloadView: false,
-      songsPath: null,
-      playlist: null,
-      ytdl: null,
-      progress: null,
-      currentDownload: null,
-      fs: null
     }
   },
   methods: {
@@ -76,14 +70,11 @@ export default {
       /* dependencies */
       const fs = require('fs');
       const util = require('util')
-      const ytdl = require('ytdl-core');
       const ytpl = require('ytpl');
-      const progress = require('progress-stream');
       const readdir = util.promisify(fs.readdir);
-      const { remote } = require('electron');
 
       /* environment variables */
-      const documentsPath = remote.app.getPath('documents')
+      const documentsPath = this.$store.state.documentsPath;
       const songsPath = documentsPath + '/mustap/songs/';
 
       let playlist = [];
@@ -228,14 +219,8 @@ export default {
                   console.log('Starting download...');
                   currentDownload.currentProcess = 'Starting download...';
                   currentDownload.totalQueueSize = playlist.length;
-                  this.songsPath = songsPath;
-                  this.playlist = playlist;
-                  this.ytdl = ytdl;
-                  this.progress = progress;
-                  this.currentDownload = currentDownload;
-                  this.fs = fs;
                   currentDownload.playlistPath = documentsPath + '/mustap/playlists/' + playlistName + '.json';
-                  this.downloadSongs(0, 0, songsPath, playlist, ytdl, progress, currentDownload, fs);
+                  this.downloadSongs(0, 0, songsPath, playlist, currentDownload);
               }
           })
           .catch(err => {
@@ -243,7 +228,10 @@ export default {
               currentDownload.currentProcess = err;
           });
     },
-    async downloadSongs(i, tries, songsPath, playlist, ytdl, progress, currentDownload, fs) {
+    async downloadSongs(i, tries, songsPath, playlist, currentDownload) {
+      const fs = require('fs');
+      const ytdl = require('ytdl-core');
+      const progress = require('progress-stream');
       const index = i;
       const songInfo = playlist[index];
 
@@ -269,7 +257,7 @@ export default {
       if (tries === 2) {
           console.log(`Sorry the download of ${songInfo.title} has been attempted 3 times and has failed. This song cannot be downloaded.`)
           currentDownload.currentProcess = 'Sorry this song cannot be downloaded.'
-          this.downloadSongs(i + 1, 0, songsPath, playlist, ytdl, progress, currentDownload, fs)
+          this.downloadSongs(i + 1, 0, songsPath, playlist, currentDownload)
       }
 
       /* calculate the progress on the download */
@@ -288,14 +276,15 @@ export default {
 
       this.$store.state.currentDownload.stream = ytdl(songInfo.url, { quality: 'highestaudio', filter: 'audioonly' })
         .on('error', err => {
-            console.log(' Failed to download. Retrying...', err)
-            currentDownload.currentProcess = 'Failed to download. Retrying...';
-            this.downloadSongs(index, tries + 1, songsPath, playlist, ytdl, progress, currentDownload, fs)
+          console.log(' Failed to download. Retrying...', err)
+          currentDownload.currentProcess = 'Failed to download. Retrying...';
+          this.downloadSongs(index, tries + 1, songsPath, playlist, currentDownload)
         })
         .pipe(str)
         .pipe(fs.createWriteStream(songsPath + songInfo.filename)
           .on('close', () => { /* once the song is finished downloading call the function again for the next song in the array*/
-              this.downloadSongs(index + 1, 0, songsPath, playlist, ytdl, progress, currentDownload, fs)
+            console.log('stream closed')
+            this.downloadSongs(index + 1, 0, songsPath, playlist, currentDownload)
           })
           .on('error', err => console.log(err)));
     }

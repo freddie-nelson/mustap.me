@@ -28,12 +28,11 @@ export default new Vuex.Store({
       lengthSeconds: 0,
       filename: '',
       playing: false,
-      index: 0,
+      index: -1,
       volume: 1,
       missing: false
     },
     playlists: [],
-    playlistsFiltered: [],
     currentPlaylist: -1,
     currentPlaylistViewing: -1,
     repeatPlaylist: true,
