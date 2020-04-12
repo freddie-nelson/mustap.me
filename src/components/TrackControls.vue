@@ -130,9 +130,25 @@ export default {
     changeCurrentPlayingTime(val) {
       this.$store.state.currentPlaying.sound.currentTime = val;
     },
-    currentPlayingChanged() {
+    async currentPlayingChanged() {
+      const dataurl = require('dataurl');
+      const fs = require('fs');
+
+      const convertSong = (filePath) => {
+        const songPromise = new Promise((resolve, reject) => {
+          fs.readFile(filePath, (err, data) => {
+            if (err) { reject(err); }
+            resolve(dataurl.convert({ data, mimetype: 'audio/mp3' }));
+          });
+        });
+        return songPromise;
+      };
+
       const currentPlaying = this.$store.state.currentPlaying;
-      currentPlaying.sound.src = 'file://' + this.$store.state.documentsPath + '/mustap/songs/' + currentPlaying.filename;
+
+      const filename = await convertSong(this.$store.state.documentsPath + '/mustap/songs/' + currentPlaying.filename);
+
+      currentPlaying.sound.src = filename;
 
       setTimeout(() => currentPlaying.sound.play(), 500);
     },

@@ -150,12 +150,12 @@ export default {
         this.array = array;
         // --- end of refreshing the data in the table
 
-        if (file) { // if the file is needed in other playlists don't delete it
+        if (!file) { // if the file is needed in other playlists don't delete it
 
           if (!deleteSong) {
             
             // delete the song then alert the user through the alert component
-            fs.promises.unlink(file)
+            fs.promises.unlink(path)
               .then(() => {
                 this.$store.state.alerts.push({ text: `'${ songTitle }' has been deleted from playlist '${ playlist.name }'.`, type: 'alert' })
               })
@@ -204,8 +204,23 @@ export default {
         }
       },
       async currentPlayingChanged() {
+        const dataurl = require('dataurl');
+        const fs = require('fs');
+
+        const convertSong = (filePath) => {
+          const songPromise = new Promise((resolve, reject) => {
+            fs.readFile(filePath, (err, data) => {
+              if (err) { reject(err); }
+              resolve(dataurl.convert({ data, mimetype: 'audio/mp3' }));
+            });
+          });
+          return songPromise;
+        };
+
         const currentPlaying = this.$store.state.currentPlaying;
-        const filename = 'file://' + this.$store.state.documentsPath + '/mustap/songs/' + currentPlaying.filename;
+
+        const filename = await convertSong(this.$store.state.documentsPath + '/mustap/songs/' + currentPlaying.filename);
+
         currentPlaying.sound.src = filename;
         
         setTimeout(() => currentPlaying.sound.play(), 500);

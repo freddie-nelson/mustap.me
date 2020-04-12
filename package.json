@@ -16,6 +16,7 @@
   "main": "background.js",
   "dependencies": {
     "core-js": "^3.6.4",
+    "dataurl": "^0.1.0",
     "electron-window-state": "^5.0.3",
     "get-audio-duration": "^1.0.0",
     "is-online": "^8.3.0",

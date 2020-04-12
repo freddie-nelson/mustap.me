@@ -10,7 +10,7 @@ const path = require('path')
 const fs = require('fs');
 const windowStateKeeper = require('electron-window-state');
 
-const currentThemePath = app.getPath('documents') + '/mustap/themes/currentTheme.json';
+const currentThemePath = app.getPath('userData') + '/mustap/themes/currentTheme.json';
 let bgColor = '';
 
 if (fs.existsSync(currentThemePath)) {
@@ -46,7 +46,7 @@ function createWindow () {
     webPreferences: {
       nodeIntegration: true, 
       devTools: true, // CHANGE HERE TO FALSE TO DISABLE DEVTOOLS FOR PRODUCTION -----------------------------------------------------------------------
-      webSecurity: false
+      webSecurity: true
   }})
 
   mainWindowState.manage(win);

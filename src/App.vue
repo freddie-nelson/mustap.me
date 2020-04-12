@@ -36,7 +36,7 @@ export default {
     const fs = require('fs');
     const { remote } = require('electron')
 
-    this.$store.state.documentsPath = remote.app.getPath('documents');
+    this.$store.state.documentsPath = remote.app.getPath('userData');
 
     // Get all paths on the machine for needed themes
     const themesPath = this.$store.state.documentsPath + '/mustap/themes/';
