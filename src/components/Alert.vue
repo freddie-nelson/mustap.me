@@ -1,8 +1,8 @@
 <template>
   <div class="alert">
     <div class="alert__text-container">
-        <div v-if="warning" class="alert__text--warning">{{ this.icon }} </div>
-        <div v-if="alert" class="alert__text--alert">{{ this.icon }} </div>
+        <div v-if="warning" class="alert__text--warning">ⓧ </div>
+        <div v-if="alert" class="alert__text--alert">🛈 </div>
         <p class="alert__text">
         {{ this.text }}
         </p>
@@ -22,7 +22,6 @@ export default {
     props: {
         warning: Boolean,
         alert: Boolean,
-        icon: String,
         text: String
     }
 }
@@ -64,11 +63,13 @@ export default {
             margin-top: -1px;
 
             &--warning {
-                color: rgb(211, 21, 21);
+                color: var(--accent-color-secondary);
+                font-size: 15px;
+                font-weight: 600;
             }
 
             &--alert {
-                color: rgb(255, 238, 0);
+                color: var(--accent-color);
             }
         }
         

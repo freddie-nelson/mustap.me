@@ -104,7 +104,6 @@ export default {
     .current-playing-details-container {
         margin-left: 50px;
         max-width: 760px;
-        position: relative;
 
         h2.current-playing-details-container__heading {
             margin: 0 0 30px 0;

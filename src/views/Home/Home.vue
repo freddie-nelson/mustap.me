@@ -1,11 +1,10 @@
 <template>
   <main class="home">
       <Searchbox @searched="searched" v-if="!searchboxDisplayNone" :class="{ home__searchbox: true, hidden: searchboxHidden }" />
-      <DownloadStatus v-if="!downloadDisplayNone" :class="{ home__downloadstatus: true,  show: downloadShow }" />
+      <DownloadStatus v-if="!downloadDisplayNone" @skip="downloadSongs($store.state.currentDownload.index, 0, songsPath, playlist, ytdl, progress, currentDownload, fs)" :class="{ home__downloadstatus: true,  show: downloadShow }" />
       <backBtn v-if="onDownloadView" @back="back" />
   </main>
 </template>
-
 <script>
 import Searchbox from './components/TheSearchbox'
 import DownloadStatus from './components/TheDownloadStatus'
@@ -26,7 +25,13 @@ export default {
       downloadShow: false,
       downloadDisplayNone: true,
       currentDownloadStream: Stream,
-      onDownloadView: false
+      onDownloadView: false,
+      songsPath: null,
+      playlist: null,
+      ytdl: null,
+      progress: null,
+      currentDownload: null,
+      fs: null
     }
   },
   methods: {
@@ -223,68 +228,76 @@ export default {
                   console.log('Starting download...');
                   currentDownload.currentProcess = 'Starting download...';
                   currentDownload.totalQueueSize = playlist.length;
-                  downloadSongs(0, 0);
+                  this.songsPath = songsPath;
+                  this.playlist = playlist;
+                  this.ytdl = ytdl;
+                  this.progress = progress;
+                  this.currentDownload = currentDownload;
+                  this.fs = fs;
+                  currentDownload.playlistPath = documentsPath + '/mustap/playlists/' + playlistName + '.json';
+                  this.downloadSongs(0, 0, songsPath, playlist, ytdl, progress, currentDownload, fs);
               }
           })
           .catch(err => {
               console.log('An error has occured --- ' + err)
               currentDownload.currentProcess = err;
           });
+    },
+    async downloadSongs(i, tries, songsPath, playlist, ytdl, progress, currentDownload, fs) {
+      const index = i;
+      const songInfo = playlist[index];
 
-      async function downloadSongs(i, tries) {
-          const index = i;
-          const songInfo = playlist[index];
-
-          /* check if the playlist is finished downloading*/
-          if (index > playlist.length - 1) {
-              console.log('----- Finished downloading all songs. -----');
-              currentDownload.currentProcess = 'Finished downloading all songs.';
-              currentDownload.currentlyDownloading = false;
-              currentDownload.currentDownloadTitle = 'N / A';
-              currentDownload.index = 0;
-              return;
-          }
-
-          currentDownload.currentlyDownloading = true;
-          currentDownload.currentDownloadTitle = songInfo.title;
-          currentDownload.index = i + 1;
-          currentDownload.currentProcess = 'Downloading...'
-
-          const estimatedSize = (Number.parseInt(songInfo.duration.split(':')[0] * 60) + Number.parseInt(songInfo.duration.split(':')[1])) * 144000;
-
-          if (tries === 2) {
-              console.log(`Sorry the download of ${songInfo.title} has been attempted 3 times and has failed. This song cannot be downloaded.`)
-              currentDownload.currentProcess = 'Sorry this song cannot be downloaded.'
-              downloadSongs(i + 1, 0)
-          }
-
-          /* calculate the progress on the download */
-          let str = progress({
-              length: estimatedSize,
-              time: 100 /* ms */
-          });
-
-          str.on('progress', progress => {
-              currentDownload.progress = Math.round(progress.percentage);
-              if (currentDownload.progress >= 100) {
-                currentDownload.progresss = 100;
-              }
-          });
-          /* calculate the progress on the download */
-
-          ytdl(songInfo.url, { quality: 'highestaudio', filter: 'audioonly' })
-            .on('error', err => {
-                console.log(' Failed to download. Retrying...', err)
-                currentDownload.currentProcess = 'Failed to download. Retrying...';
-                downloadSongs(index, tries + 1)
-            })
-            .pipe(str)
-            .pipe(fs.createWriteStream(songsPath + songInfo.filename)
-              .on('close', () => { /* once the song is finished downloading call the function again for the next song in the array*/
-                  downloadSongs(index + 1, 0)
-              })
-              .on('error', err => console.log(err)));
+      /* check if the playlist is finished downloading*/
+      if (index > playlist.length - 1) {
+          console.log('----- Finished downloading all songs. -----');
+          currentDownload.currentProcess = 'Finished downloading all songs.';
+          currentDownload.currentlyDownloading = false;
+          currentDownload.currentDownloadTitle = 'N / A';
+          currentDownload.index = 0;
+          currentDownload.stream = null;
+          return;
       }
+
+      currentDownload.currentlyDownloading = true;
+      currentDownload.currentDownloadTitle = songInfo.title;
+      currentDownload.index = i + 1;
+      currentDownload.currentProcess = 'Downloading...'
+      currentDownload.path = songsPath + songInfo.filename;
+
+      const estimatedSize = (Number.parseInt(songInfo.duration.split(':')[0] * 60) + Number.parseInt(songInfo.duration.split(':')[1])) * 144000;
+
+      if (tries === 2) {
+          console.log(`Sorry the download of ${songInfo.title} has been attempted 3 times and has failed. This song cannot be downloaded.`)
+          currentDownload.currentProcess = 'Sorry this song cannot be downloaded.'
+          this.downloadSongs(i + 1, 0, songsPath, playlist, ytdl, progress, currentDownload, fs)
+      }
+
+      /* calculate the progress on the download */
+      let str = progress({
+          length: estimatedSize,
+          time: 100 /* ms */
+      });
+
+      str.on('progress', progress => {
+          currentDownload.progress = Math.round(progress.percentage);
+          if (currentDownload.progress >= 100) {
+            currentDownload.progresss = 100;
+          }
+      });
+      /* calculate the progress on the download */
+
+      this.$store.state.currentDownload.stream = ytdl(songInfo.url, { quality: 'highestaudio', filter: 'audioonly' })
+        .on('error', err => {
+            console.log(' Failed to download. Retrying...', err)
+            currentDownload.currentProcess = 'Failed to download. Retrying...';
+            this.downloadSongs(index, tries + 1, songsPath, playlist, ytdl, progress, currentDownload, fs)
+        })
+        .pipe(str)
+        .pipe(fs.createWriteStream(songsPath + songInfo.filename)
+          .on('close', () => { /* once the song is finished downloading call the function again for the next song in the array*/
+              this.downloadSongs(index + 1, 0, songsPath, playlist, ytdl, progress, currentDownload, fs)
+          })
+          .on('error', err => console.log(err)));
     }
   },
   mounted() {

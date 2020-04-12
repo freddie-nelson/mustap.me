@@ -3,7 +3,7 @@
       <div class="download-status__text-container">
           <p id="current-process">{{ currentDownload.currentProcess }}</p>
           <p id="current-download">{{ currentDownload.currentDownloadTitle }}</p>
-          <p id="download-index">Song {{ currentDownload.index }} of {{ currentDownload.totalQueueSize }} <span>Skip</span></p>
+          <p id="download-index">Song {{ currentDownload.index }} of {{ currentDownload.totalQueueSize }} <span @click="skip">Skip</span></p>
       </div>
 
       <div class="download-status__progress-bar"><div :style="{ width: currentDownload.progress + '%', maxWidth: '100%' }" id="download-progress"></div></div>
@@ -17,6 +17,51 @@ export default {
     data() {
         return {
             currentDownload: this.$store.state.currentDownload,
+        }
+    },
+    methods: {
+        skip() {
+            const currentDownload = this.$store.state.currentDownload;
+
+            if (currentDownload.stream === null) { return }
+            
+            currentDownload.stream._destroy();
+
+            const fs = require('fs');
+            const path = currentDownload.path;
+
+            if (fs.existsSync(path)) {
+                fs.promises.unlink(path)
+                    .then(() => console.log(`deleted ${ path }`))
+                    .catch(err => console.log(`failed to delete ${ path }. Error: ${ err }`))
+            }
+
+            const playlistPath = currentDownload.playlistPath;
+            let playlist = JSON.parse(fs.readFileSync(playlistPath));
+
+            let i;
+            
+            playlist.forEach((song, index) => {
+                if (song.title === currentDownload.currentDownloadTitle) {
+                    i = index;
+                }
+            });
+
+            playlist = playlist.filter((song) => song.title !== playlist[i].title);
+
+            console.log(playlist);
+            
+            if (playlist) {
+                fs.promises.writeFile(playlistPath, JSON.stringify(playlist))
+                    .then(() => console.log('written: ' + playlistPath))
+                    .catch(err => console.log(err));
+            } else {
+                fs.promises.unlink(playlistPath)
+                    .then(() => console.log('deleted: ' + playlistPath))
+                    .catch(err => console.log(err));
+            }
+
+            this.$emit('skip');
         }
     }
 }
@@ -38,7 +83,13 @@ export default {
 
             span {
                 text-align: right;
-                color: var(--accent-color);
+                color: var(--accent-color-secondary);
+                cursor: pointer;
+                transition: color .3s ease-in;
+
+                &:hover {
+                    color: var(--accent-color);
+                }
             }
             
             #download-index {

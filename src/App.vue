@@ -10,7 +10,6 @@
         :key="index" 
         :alert="alert.type === 'alert' ? true : false" 
         :warning="alert.type === 'warning' ? true : false" 
-        :icon="'🛈'" 
         :text="alert.text"
       />
     </div>

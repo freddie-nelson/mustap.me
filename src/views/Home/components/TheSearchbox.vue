@@ -10,7 +10,7 @@
         <div v-if="showOptionsBox" class="searchbox-options">
             <div class="searchbox-options__modal">
                 <p>Playlist name:</p>
-                <input type="text" id="modalInput" name="playlist-name" v-model="playlistName">
+                <input type="text" id="modalInput" name="playlist-name" @keyup.enter="playlistName.length !== 0 ? searched() : null" v-model="playlistName">
                 <Button style="margin-top: 12px" @clicked="playlistName.length !== 0 ? searched() : null" class="button" :filled="true" :text="'Next ➜'" :fontSize="15" />
                 <Button style="margin: 18px 20px 0 0" @clicked="showOptionsBox = false" class="button" :filled="false" :text="'Cancel'" :fontSize="15" />
             </div>

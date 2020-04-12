@@ -6,12 +6,15 @@ Vue.use(Vuex)
 export default new Vuex.Store({
   state: {
     currentDownload: {
+      playlistPath: '',
       currentProcess: 'N / A',
       currentDownloadTitle: 'N / A',
       progress: 0,
       index: 0,
       totalQueueSize: 0,
-      currentlyDownloading: false
+      currentlyDownloading: false,
+      stream: null,
+      path: ''
     },
     currentPlaying: {
       sound: new Audio(),
@@ -41,6 +44,8 @@ export default new Vuex.Store({
       link: ''
     },
     missingSongsCount: 0,
+    deletedSongsCount: 0,
+    deletedSongs: [],
     documentsPath: '',
     alerts: [],
     deleteClickedIndex: -1
