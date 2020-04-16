@@ -118,7 +118,7 @@
 
 <script>
 import TrackControls from "@/components/TrackControls";
-import { debounce } from "vue-debounce";
+import { debounce } from "debounce";
 
 export default {
   name: "Navbar",
@@ -149,14 +149,18 @@ export default {
   mounted() {
     const currentPlaying = this.$store.state.currentPlaying;
 
-    this.$store.state.currentPlaying.sound.onended = debounce(() => {
-      console.log("song ended");
-      if (currentPlaying.title === "N / A" || !currentPlaying.playing) {
-        return;
-      } else {
-        this.$refs.trackControls.nextBack(1);
-      }
-    }, 500);
+    this.$store.state.currentPlaying.sound.onended = debounce(
+      () => {
+        console.log("song ended");
+        if (currentPlaying.title === "N / A" || !currentPlaying.playing) {
+          return;
+        } else {
+          this.$refs.trackControls.nextBack(1);
+        }
+      },
+      1000,
+      true
+    );
   }
 };
 </script>
