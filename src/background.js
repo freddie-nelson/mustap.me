@@ -1,6 +1,12 @@
 'use strict'
 
-import { app, protocol, BrowserWindow, globalShortcut, Menu } from 'electron'
+import {
+  app,
+  protocol,
+  BrowserWindow,
+  globalShortcut,
+  Menu
+} from 'electron'
 import {
   createProtocol,
   installVueDevtools
@@ -25,9 +31,15 @@ if (fs.existsSync(currentThemePath)) {
 let win
 
 // Scheme must be registered before the app is ready
-protocol.registerSchemesAsPrivileged([{scheme: 'app', privileges: { secure: true, standard: true } }])
+protocol.registerSchemesAsPrivileged([{
+  scheme: 'app',
+  privileges: {
+    secure: true,
+    standard: true
+  }
+}])
 
-function createWindow () {
+function createWindow() {
   let mainWindowState = windowStateKeeper({
     defaultWidth: 1200,
     defaultHeight: 950
@@ -44,10 +56,11 @@ function createWindow () {
     icon: path.join(__dirname, '/512x512.png'),
     backgroundColor: bgColor,
     webPreferences: {
-      nodeIntegration: true, 
+      nodeIntegration: true,
       devTools: true, // CHANGE HERE TO FALSE TO DISABLE DEVTOOLS FOR PRODUCTION -----------------------------------------------------------------------
       webSecurity: true
-  }})
+    }
+  })
 
   mainWindowState.manage(win);
 
@@ -62,7 +75,7 @@ function createWindow () {
     // Load the index.html when not in development
     win.loadURL('app://./index.html')
   }
-  
+
   win.on('closed', () => {
     win = null
   })
@@ -180,4 +193,3 @@ if (process.platform === 'darwin') {
   var osxMenu = menu.buildFromTemplate(template);
   menu.setApplicationMenu(osxMenu);
 }
-

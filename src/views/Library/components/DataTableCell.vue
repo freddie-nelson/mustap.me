@@ -7,10 +7,23 @@
     </div>
 
     <div class="cell__right-text">
-      <p class="cell__right-text-top">{{ this.$store.state.currentPlaying.index === index - 1 && !this.forPlaylists && this.$store.state.currentPlaylist === this.$store.state.currentPlaylistViewing ? this.$store.state.currentPlaying.currentTime : false || data.rightTop }}</p>
-      <Button 
-        @clicked="() => { $emit('deleteSong', index); this.$store.state.deleteClickedIndex = index; }" 
-        class="cell__right-text-bottom" 
+      <p class="cell__right-text-top">
+        {{
+          this.$store.state.currentPlaying.index === index - 1 &&
+          !this.forPlaylists &&
+          this.$store.state.currentPlaylist === this.$store.state.playlists.currentPlaylistViewing
+            ? this.$store.state.currentPlaying.currentTime
+            : false || data.rightTop
+        }}
+      </p>
+      <Button
+        @clicked="
+          () => {
+            $emit('deleteSong', index);
+            this.$store.state.deleteClickedIndex = index;
+          }
+        "
+        class="cell__right-text-bottom"
         :text="'🗑'"
         v-if="!this.forPlaylists"
       />
@@ -20,7 +33,7 @@
 
 <script>
 import { v4 as uuidv4 } from "uuid";
-import Button from '@/components/Button'
+import Button from "@/components/Button";
 
 export default {
   name: "DataTableCell",
@@ -41,11 +54,16 @@ export default {
   methods: {
     clicked() {
       setTimeout(() => {
-        if (this.$store.state.deleteClickedIndex === this.index) { return }
-        if ((this.forPlaylists ? true : this.$store.state.currentPlaylistViewing !== -1) && (this.forPlaylists || !this.$store.state.playlists[this.$store.state.currentPlaylistViewing].data[this.index - 1].missing)) {
-          this.$emit('clicked', this.index)
-        } 
-      }, 100)
+        if (this.$store.state.deleteClickedIndex === this.index) {
+          return;
+        }
+        if (
+          (this.forPlaylists ? true : this.$store.state.currentPlaylistViewing !== -1) &&
+          (this.forPlaylists || !this.$store.getters.currentPlaylistViewing.data[this.index - 1].missing)
+        ) {
+          this.$emit("clicked", this.index);
+        }
+      }, 100);
     }
   },
   mounted() {
@@ -58,7 +76,14 @@ export default {
         } else {
           document.getElementById(this.id).classList.remove("created");
         }
-      }, 100 + this.index * 100);
+      }, 50 + this.index * 30);
+    }
+
+    if (
+      this.$store.state.playlists.currentPlaylistViewing >= 0 &&
+      this.index >= this.$store.getters.currentPlaylistViewing.data.length
+    ) {
+      this.$emit("loaded-cells");
     }
   }
 };
@@ -67,7 +92,7 @@ export default {
 <style lang="scss">
 .created {
   transform: translateX(30px) !important;
-  opacity: 0 !important;
+  opacity: 0;
 }
 
 .cell {
@@ -78,8 +103,7 @@ export default {
   border-radius: 10px;
   display: flex;
   cursor: pointer;
-  transition: background-color 0.3s ease-in, color 0.2s ease-in,
-    transform 0.4s ease-out, opacity 0.4s ease-out;
+  transition: background-color 0.3s ease-in, color 0.2s ease-in, transform 0.4s ease-out, opacity 0.4s ease-out;
   transform: translateX(0);
   opacity: 1;
 
@@ -148,9 +172,8 @@ export default {
 
     &-bottom {
       opacity: 0 !important;
-      transition: opacity .3s ease-in;
+      transition: opacity 0.3s ease-in;
     }
   }
 }
 </style>
-
