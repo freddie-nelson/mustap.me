@@ -87,6 +87,11 @@ export default {
       const documentsPath = this.$store.state.documentsPath;
       const songsPath = documentsPath + "/mustap/songs/";
 
+      this.$store.dispatch("setCurrentDownloadProp", {
+        prop: "playlistPath",
+        data: documentsPath + "/mustap/playlists/" + playlistName + ".json"
+      });
+
       let playlist = [];
 
       const removeArtist = (title, artist, symbol = "-", tries = 0) => {
@@ -266,8 +271,7 @@ export default {
 
             this.$store.dispatch("setCurrentDownloadMultiple", {
               currentProcess: "Starting download...",
-              totalQueueSize: playlist.length,
-              playlistPath: documentsPath + "/mustap/playlists/" + playlistName + ".json"
+              totalQueueSize: playlist.length
             });
 
             this.downloadSongs(0, 0, songsPath, playlist);

@@ -155,14 +155,13 @@ export default {
     async deletePlaylist() {
       const fs = require("fs");
 
-      const songsPath = this.$store.state.documentsPath + "/mustap/songs/";
-
       // initialise needed variables
       const state = this.$store.state;
       const playlist = this.$store.getters.currentPlaylistViewing;
       const playlistData = playlist.data;
-      const playlists = this.$store.state.playlists.filter(obj => obj.name !== playlist.name);
+      const playlists = state.playlists.playlists.filter(obj => obj.name !== playlist.name);
 
+      const songsPath = state.documentsPath + "/mustap/songs/";
       const filenames = playlistData.map(obj => songsPath + obj.filename);
 
       // filter filenames so it only contains the songs that aren't in any other playlist
