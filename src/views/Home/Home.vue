@@ -61,12 +61,19 @@ export default {
     },
     playlistDownloader(arr) {
       let [url, playlistName] = arr;
-      this.$store.dispatch("setUpdatingPlaylist", { updatingPlaylist: false, link: "", name: "" });
+      this.$store.dispatch("setUpdatingPlaylist", {
+        updatingPlaylist: false,
+        link: "",
+        name: ""
+      });
 
       playlistName = playlistName.replace(/[/\\?%*:|"<>.]/g, "");
 
       if (url === "") {
-        this.$store.dispatch("setCurrentDownloadProp", { prop: "currentProcess", data: "Please enter a playlist link." });
+        this.$store.dispatch("setCurrentDownloadProp", {
+          prop: "currentProcess",
+          data: "Please enter a playlist link."
+        });
         return;
       }
 
@@ -92,6 +99,14 @@ export default {
         if (tries < 5) {
           name = title.split(symbol)[1];
 
+          if (name && artist && name.toLowerCase() === artist.toLowerCase()) {
+            name = title.split(symbol)[0];
+
+            if (!name || name.length === 1 || name.length === 0) {
+              name = title;
+            }
+          }
+
           if (!name) {
             if (tries === 1) {
               removeArtist(title, artist, "–", tries + 1);
@@ -105,14 +120,6 @@ export default {
               name = title;
             }
           }
-
-          if (name && name.toLowerCase() === artist.toLowerCase()) {
-            name = title.split(symbol)[0];
-
-            if (!name || name.length === 1 || name.length === 0) {
-              name = title;
-            }
-          }
         }
 
         if (name.indexOf("ft.") > -1) {
@@ -123,6 +130,10 @@ export default {
           start.indexOf("feat.") > -1 ? (name = name.split("feat.")[1]) : (name = start);
         }
 
+        if (name[0] === " ") {
+          name = name.slice(1, name.length);
+        }
+
         return name;
       };
 
@@ -131,7 +142,10 @@ export default {
       // }
 
       console.log("Fetching metadata...");
-      this.$store.dispatch("setCurrentDownloadProp", { prop: "currentProcess", data: "Fetching metadata..." });
+      this.$store.dispatch("setCurrentDownloadProp", {
+        prop: "currentProcess",
+        data: "Fetching metadata..."
+      });
 
       // Get playlist metadata
       ytpl(url, {
@@ -142,19 +156,23 @@ export default {
           playlist = res.items.map(song => {
             /* map is the best way to do this as it allows us to take in all the songs from the playlist, change them, and put them back in all in one*/
             /* Take the data we want and format it nicely */
-            return {
-              videoId: song.id,
-              url: song.url,
-              title: removeArtist(
-                song.title.replace(/ *\([^)]*\) */g, "").replace(/\[.*?\]/g, "") || song.title,
-                song.author.name
-              ),
-              filename: song.title.replace(/[/\\?%*:|"<>]/g, "") + ".mp3",
-              artist: song.author.name,
-              thumbnailUrl: song.thumbnail.replace("hqdefault", "0"),
-              duration: song.duration,
-              playlistLink: url
-            };
+            if (song.duration === null) {
+              return;
+            } else {
+              return {
+                videoId: song.id,
+                url: song.url,
+                title: removeArtist(
+                  song.title.replace(/ *\([^)]*\) */g, "").replace(/\[.*?\]/g, "") || song.title,
+                  song.author.name
+                ),
+                filename: song.title.replace(/[/\\?%*:|"<>]/g, "") + ".mp3",
+                artist: song.author.name,
+                thumbnailUrl: song.thumbnail.replace("hqdefault", "0"),
+                duration: song.duration,
+                playlistLink: url
+              };
+            }
           });
 
           playlist = playlist.filter(obj => obj !== undefined); /* get rid of any songs that weren't found*/
@@ -162,10 +180,16 @@ export default {
 
           // console.log(playlist);
           console.log("Fetched all metadata.");
-          this.$store.dispatch("setCurrentDownloadProp", { prop: "currentProcess", data: "Fetched all metadata." });
+          this.$store.dispatch("setCurrentDownloadProp", {
+            prop: "currentProcess",
+            data: "Fetched all metadata."
+          });
         })
         .then(async () => {
-          this.$store.dispatch("setCurrentDownloadProp", { prop: "currentProcess", data: "Saving metadata..." });
+          this.$store.dispatch("setCurrentDownloadProp", {
+            prop: "currentProcess",
+            data: "Saving metadata..."
+          });
 
           /* saving playlist to documents as json file */
           const jsonPlaylist = JSON.stringify(playlist);
@@ -176,12 +200,21 @@ export default {
             })
             .catch(err => console.log(err));
 
-          this.$store.dispatch("setCurrentDownloadProp", { prop: "currentProcess", data: "Saved metadata." });
-          this.$store.dispatch("setCurrentDownloadProp", { prop: "currentProcess", data: "Creating songs save location..." });
+          this.$store.dispatch("setCurrentDownloadProp", {
+            prop: "currentProcess",
+            data: "Saved metadata."
+          });
+          this.$store.dispatch("setCurrentDownloadProp", {
+            prop: "currentProcess",
+            data: "Creating songs save location..."
+          });
 
           await fs.promises.mkdir(songsPath, { recursive: true }).catch(err => console.log(err));
 
-          this.$store.dispatch("setCurrentDownloadProp", { prop: "currentProcess", data: "Created songs save location." });
+          this.$store.dispatch("setCurrentDownloadProp", {
+            prop: "currentProcess",
+            data: "Created songs save location."
+          });
 
           console.log("Removing all previously installed songs...");
           this.$store.dispatch("setCurrentDownloadProp", {
@@ -193,6 +226,10 @@ export default {
 
           if (!files) {
             console.log("No songs to remove.");
+            this.$store.dispatch("setCurrentDownloadProp", {
+              prop: "currentProcess",
+              data: "No songs to remove."
+            });
           } else {
             for (let i = playlist.length - 1; i >= 0; i--) {
               if (playlist[i] === undefined) {
@@ -260,7 +297,8 @@ export default {
           currentlyDownloading: false,
           currentDownloadTitle: "N / A",
           index: 0,
-          stream: null
+          stream: null,
+          playlistPath: ""
         });
 
         return;

@@ -130,19 +130,26 @@ export default {
     },
     updatePlaylist() {
       if (!this.forPlaylists) {
-        const currentPlaylist = this.$store.getters.currentPlaylistViewing;
+        if (this.$store.state.currentDownload.currentlyDownloading) {
+          this.$store.dispatch("addAlert", {
+            text: "You cannot update this playlist as another playlist is currently being updated or downloaded.",
+            type: "alert"
+          });
+        } else {
+          const currentPlaylist = this.$store.getters.currentPlaylistViewing;
 
-        this.$store.dispatch("setUpdatingPlaylist", {
-          updatePlaylist: true,
-          name: currentPlaylist.name,
-          link: currentPlaylist.data[0].playlistLink
-        });
-        this.$store.dispatch("setCurrentDownloadProp", {
-          prop: "currentlyDownloading",
-          data: true
-        });
+          this.$store.dispatch("setUpdatingPlaylist", {
+            updatePlaylist: true,
+            name: currentPlaylist.name,
+            link: currentPlaylist.data[0].playlistLink
+          });
+          this.$store.dispatch("setCurrentDownloadProp", {
+            prop: "currentlyDownloading",
+            data: true
+          });
 
-        this.$router.push({ name: "Home" });
+          this.$router.push({ name: "Home" });
+        }
       }
     },
     async deletePlaylist() {
@@ -181,56 +188,66 @@ export default {
         }
       });
 
-      // delete all the songs that we don't need in any other playlist
-      filenamesFiltered.forEach(async file => {
-        fs.promises
-          .unlink(file)
-          .then(e => {
-            console.log(e);
-          })
-          .catch(e => console.log(e));
-      });
-
       // get the path of the playlist we are deleting from and the __deleted__ version that contains the songs we have previously deleted
       const playlistPath = state.documentsPath + "/mustap/playlists/" + playlist.name + ".json";
       const deletedPlaylistPath = state.documentsPath + "/mustap/playlists/" + playlist.name + "__deleted__.json";
 
-      // if the deletedPlaylistsPath exists delete it since it isn't needed anymore
-      if (fs.existsSync(deletedPlaylistPath)) {
-        await fs.promises
-          .unlink(deletedPlaylistPath)
-          .then(e => console.log(e))
-          .catch(e => console.log(e));
-      }
+      if (
+        this.$store.state.currentDownload.currentlyDownloading &&
+        this.$store.state.currentDownload.playlistPath === playlistPath
+      ) {
+        this.$store.dispatch("addAlert", {
+          text: "You cannot delete this playlist as it is currently being updated or downloaded.",
+          type: "alert"
+        });
+      } else {
+        // delete all the songs that we don't need in any other playlist
+        filenamesFiltered.forEach(async file => {
+          fs.promises
+            .unlink(file)
+            .then(e => {
+              console.log(e);
+            })
+            .catch(e => console.log(e));
+        });
 
-      // wait for the playlist to be deleted then go back to the library home page and refresh the playlists
-      await fs.promises
-        .unlink(playlistPath)
-        .then(() => {
-          state.alerts.push({
-            text: `Playlist '${playlist.name}' has been successfully deleted.`,
-            type: "alert"
-          });
-          // set the currentPlaylist variables back to -1 so that we can keep track that we aren't viewing a playlist anymore and aren't playing from one
-          if (state.currentPlaylist === state.currentPlaylistViewing) {
+        // if the deletedPlaylistsPath exists delete it since it isn't needed anymore
+        if (fs.existsSync(deletedPlaylistPath)) {
+          await fs.promises
+            .unlink(deletedPlaylistPath)
+            .then(e => console.log(e))
+            .catch(e => console.log(e));
+        }
+
+        // wait for the playlist to be deleted then go back to the library home page and refresh the playlists
+        await fs.promises
+          .unlink(playlistPath)
+          .then(() => {
+            state.alerts.push({
+              text: `Playlist '${playlist.name}' has been successfully deleted.`,
+              type: "alert"
+            });
+            // set the currentPlaylist variables back to -1 so that we can keep track that we aren't viewing a playlist anymore and aren't playing from one
+            if (state.currentPlaylist === state.currentPlaylistViewing) {
+              this.$store.dispatch("setPlaylistsProp", {
+                prop: "currentPlaylist",
+                data: -1
+              });
+            }
             this.$store.dispatch("setPlaylistsProp", {
-              prop: "currentPlaylist",
+              prop: "currentPlaylistViewing",
               data: -1
             });
-          }
-          this.$store.dispatch("setPlaylistsProp", {
-            prop: "currentPlaylistViewing",
-            data: -1
-          });
-          this.$refs.dataTable.back();
-          this.getPlaylists();
-        })
-        .catch(err =>
-          state.alerts.push({
-            text: `Playlist '${playlist.name}' could not be deleted. Error: ${err}`,
-            type: "warning"
+            this.$refs.dataTable.back();
+            this.getPlaylists();
           })
-        );
+          .catch(err =>
+            state.alerts.push({
+              text: `Playlist '${playlist.name}' could not be deleted. Error: ${err}`,
+              type: "warning"
+            })
+          );
+      }
     },
     changeTitles(refresh) {
       setTimeout(() => {
