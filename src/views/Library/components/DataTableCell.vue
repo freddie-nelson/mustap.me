@@ -1,5 +1,5 @@
 <template>
-  <div class="cell created" :id="id" @click="clicked">
+  <div v-if="show" class="cell created" :id="id" @click="clicked">
     <span class="cell__index">{{ index }}</span>
     <div class="cell__left-text">
       <p class="cell__left-text-top">{{ data.leftTop }}</p>
@@ -11,7 +11,7 @@
         {{
           this.$store.state.currentPlaying.index === index - 1 &&
           !this.forPlaylists &&
-          this.$store.state.currentPlaylist === this.$store.state.playlists.currentPlaylistViewing
+          this.$store.state.playlists.currentPlaylist === this.$store.state.playlists.currentPlaylistViewing
             ? this.$store.state.currentPlaying.currentTime
             : false || data.rightTop
         }}
@@ -43,13 +43,24 @@ export default {
   data() {
     return {
       id: uuidv4(),
-      deleteClicked: false
+      deleteClicked: false,
+      show: false
     };
   },
   props: {
     data: Object,
-    index: Number,
-    forPlaylists: Boolean
+    forPlaylists: Boolean,
+    index: Number
+  },
+  watch: {
+    show: function() {
+      if (
+        this.$store.state.playlists.currentPlaylistViewing >= 0 &&
+        this.index >= this.$store.getters.currentPlaylistViewing.data.length
+      ) {
+        this.$emit("loaded-cells");
+      }
+    }
   },
   methods: {
     clicked() {
@@ -67,34 +78,18 @@ export default {
     }
   },
   mounted() {
-    if (this.index >= 0) {
-      document.getElementById(this.id).classList.remove("created");
-    } else {
+    if (this.index >= 50) {
       setTimeout(() => {
-        if (!document.getElementById(this.id)) {
-          return;
-        } else {
-          document.getElementById(this.id).classList.remove("created");
-        }
-      }, 50 + this.index * 30);
-    }
-
-    if (
-      this.$store.state.playlists.currentPlaylistViewing >= 0 &&
-      this.index >= this.$store.getters.currentPlaylistViewing.data.length
-    ) {
-      this.$emit("loaded-cells");
+        this.show = true;
+      }, 100);
+    } else {
+      this.show = true;
     }
   }
 };
 </script>
 
 <style lang="scss">
-.created {
-  transform: translateX(30px) !important;
-  opacity: 0;
-}
-
 .cell {
   max-width: 100%;
   height: 64px;

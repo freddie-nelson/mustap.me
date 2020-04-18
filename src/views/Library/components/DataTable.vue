@@ -4,7 +4,7 @@
       v-for="(data, index) in array"
       :data="data"
       :key="index"
-      @clicked="formatDataSongs"
+      @clicked="forPlaylistsBool ? formatDataSongs($event) : formatDataSong($event)"
       @deleteSong="deleteSong"
       @loaded-cells="addClasses"
       :index="index + 1"
@@ -246,16 +246,84 @@ export default {
 
       this.array = array;
     },
+    formatDataSong(e) {
+      /* Get the song that the user clicked on */
+      const index = e - 1;
+      const song = this.playlist[index];
+      const currentPlaying = this.$store.state.currentPlaying;
+
+      this.$store.dispatch("setCurrentPlaylistDetails");
+
+      /* setting all the properties of the song that is going to be played (the first song) */
+      this.$store.dispatch("setCurrentPlayingMultiple", {
+        thumbnail: song.thumbnailUrl.replace("hqdefault", "maxresdefault"),
+        title: song.title,
+        artist: song.artist,
+        duration: song.duration,
+        currentTime: "0:00",
+        lengthSeconds: song.duration.split(":")[0] * 60 + Number.parseInt(song.duration.split(":")[1]),
+        filename: song.filename,
+        playing: true,
+        index: index
+      });
+
+      this.currentPlayingChanged();
+
+      /* remove the clicked class from all elements in the table and apply the clicked class to the song thats playing */
+      const children = this.$refs.table.children;
+      const clickedEle = children[currentPlaying.index];
+
+      for (let i = 0; i < children.length; i++) {
+        const element = children[i];
+
+        if (element.classList.contains("clicked")) {
+          element.classList.remove("clicked");
+          break;
+        }
+      }
+
+      clickedEle.classList.add("clicked");
+    },
     formatDataSongs(e) {
-      if (!this.forPlaylistsBool) {
-        /* Get the song that the user clicked on */
-        const index = e - 1;
-        const song = this.playlist[index];
-        const currentPlaying = this.$store.state.currentPlaying;
+      /* open the playlist that was clicked on */
+      this.forPlaylistsBool = false;
+      this.$emit("for-playlists-changed", false);
+      this.$emit("clicked-playlist");
+      const index = e - 1;
 
-        this.$store.dispatch("setCurrentPlaylistDetails");
+      this.playlist = this.playlists[index];
 
-        /* setting all the properties of the song that is going to be played (the first song) */
+      this.array = [];
+
+      this.playlist.forEach(song => {
+        const obj = {};
+
+        obj.leftTop = song.title;
+        obj.leftBottom = song.artist;
+        obj.rightTop = song.duration;
+
+        this.array = [...this.array, obj];
+      });
+
+      /* set the playlist that was clicked as the one we are viewing in vuex */
+      this.$store.dispatch("setPlaylistsProp", {
+        prop: "currentPlaylistViewing",
+        data: index
+      });
+
+      if (this.$store.state.currentPlaying.title == "N / A" && this.$store.state.playlists.currentPlaylist === -1) {
+        this.$store.dispatch("setCurrentPlaylistDetails"); // if we aren't playing from any other playlist then set the currentPlaylist to the one we are viewing
+        const index = 0;
+        let song = this.playlist[index];
+
+        /* check if the song we are trying to play is missing and if it is then loop until we find a song */
+        if (song.missing) {
+          do {
+            song = this.playlist[index + 1];
+          } while (song.missing);
+        }
+
+        /* setting all the properties of the song that is going to be played */
         this.$store.dispatch("setCurrentPlayingMultiple", {
           thumbnail: song.thumbnailUrl.replace("hqdefault", "maxresdefault"),
           title: song.title,
@@ -269,77 +337,6 @@ export default {
         });
 
         this.currentPlayingChanged();
-
-        /* remove the clicked class from all elements in the table and apply the clicked class to the song thats playing */
-        const children = this.$refs.table.children;
-        const clickedEle = children[currentPlaying.index];
-
-        for (let i = 0; i < children.length; i++) {
-          const element = children[i];
-
-          if (element.classList.contains("clicked")) {
-            element.classList.remove("clicked");
-            break;
-          }
-        }
-
-        clickedEle.classList.add("clicked");
-      } else {
-        /* open the playlist that was clicked on */
-        this.forPlaylistsBool = false;
-        this.$emit("for-playlists-changed", false);
-        this.$emit("clicked-playlist");
-        const index = e - 1;
-
-        this.playlist = this.playlists[index];
-
-        let array = [];
-        let obj = {};
-
-        this.playlist.forEach(song => {
-          obj.leftTop = song.title;
-          obj.leftBottom = song.artist;
-          obj.rightTop = song.duration;
-
-          array.push(obj);
-          obj = {};
-        });
-
-        /* set the playlist that was clicked as the one we are viewing in vuex */
-        this.$store.dispatch("setPlaylistsProp", {
-          prop: "currentPlaylistViewing",
-          data: index
-        });
-
-        if (this.$store.state.currentPlaying.title == "N / A" && this.$store.state.playlists.currentPlaylist === -1) {
-          this.$store.dispatch("setCurrentPlaylistDetails"); // if we aren't playing from any other playlist then set the currentPlaylist to the one we are viewing
-          const index = 0;
-          let song = this.playlist[index];
-
-          /* check if the song we are trying to play is missing and if it is then loop until we find a song */
-          if (song.missing) {
-            do {
-              song = this.playlist[index + 1];
-            } while (song.missing);
-          }
-
-          /* setting all the properties of the song that is going to be played */
-          this.$store.dispatch("setCurrentPlayingMultiple", {
-            thumbnail: song.thumbnailUrl.replace("hqdefault", "maxresdefault"),
-            title: song.title,
-            artist: song.artist,
-            duration: song.duration,
-            currentTime: "0:00",
-            lengthSeconds: song.duration.split(":")[0] * 60 + Number.parseInt(song.duration.split(":")[1]),
-            filename: song.filename,
-            playing: true,
-            index: index
-          });
-
-          this.currentPlayingChanged();
-        }
-
-        this.array = array;
       }
     },
     addClasses(delay = 50) {
