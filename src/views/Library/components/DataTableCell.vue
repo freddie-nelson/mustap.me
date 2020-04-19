@@ -78,7 +78,7 @@ export default {
     }
   },
   mounted() {
-    if (this.index >= 50) {
+    if (this.index >= 30) {
       setTimeout(() => {
         this.show = true;
       }, 100);

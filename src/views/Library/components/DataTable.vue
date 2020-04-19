@@ -228,23 +228,17 @@ export default {
       setTimeout(() => this.$store.state.currentPlaying.sound.play(), 500);
     },
     formatDataPlaylists() {
-      let array = [];
-      let obj = {};
-
       this.playlists = this.$store.getters.playlistsData;
       this.playlistNames = this.$store.getters.playlistNames;
       this.datesAdded = this.$store.getters.playlistDatesAdded;
 
-      this.playlistNames.forEach((arr, index) => {
-        obj.leftTop = this.playlistNames[index];
-        obj.leftBottom = this.datesAdded[index];
-        obj.rightTop = this.playlists[index].length + " Songs";
-
-        array.push(obj);
-        obj = {};
+      this.array = this.playlists.map((playlist, index) => {
+        return {
+          leftTop: this.playlistNames[index],
+          leftBottom: this.datesAdded[index],
+          rightTop: this.playlists[index].length + " Songs"
+        };
       });
-
-      this.array = array;
     },
     formatDataSong(e) {
       /* Get the song that the user clicked on */
@@ -293,16 +287,12 @@ export default {
 
       this.playlist = this.playlists[index];
 
-      this.array = [];
-
-      this.playlist.forEach(song => {
-        const obj = {};
-
-        obj.leftTop = song.title;
-        obj.leftBottom = song.artist;
-        obj.rightTop = song.duration;
-
-        this.array = [...this.array, obj];
+      this.array = this.playlist.map(song => {
+        return {
+          leftTop: song.title,
+          leftBottom: song.artist,
+          rightTop: song.duration
+        };
       });
 
       /* set the playlist that was clicked as the one we are viewing in vuex */
