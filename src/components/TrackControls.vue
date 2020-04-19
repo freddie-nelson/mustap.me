@@ -230,7 +230,7 @@ export default {
 
           console.log(currentPlaying.index);
 
-          if (state.playlists.currentPlaylist == state.playlists.currentPlaylistViewing) {
+          if (state.playlists.currentPlaylist === state.playlists.currentPlaylistViewing) {
             if (document.getElementById("table") && !document.getElementById("table").classList.contains("forPlaylists")) {
               if (document.getElementById("table").children[index]) {
                 const children = document.getElementById("table").children;

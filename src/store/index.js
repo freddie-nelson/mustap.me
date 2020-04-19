@@ -51,7 +51,7 @@ const currentPlaying = {
       commit("SET_CURRENT_PLAYING_PROP", payload);
     },
     async setCurrentPlayingSrc({ commit, state, rootState }, payload) {
-      if (payload) {
+      if (payload === "") {
         commit("SET_CURRENT_PLAYING_SRC", payload);
       } else {
         const dataurl = require("dataurl");

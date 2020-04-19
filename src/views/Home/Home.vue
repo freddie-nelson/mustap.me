@@ -97,11 +97,11 @@ export default {
       const removeArtist = (title, artist, symbol = "-", tries = 0) => {
         let name = title;
 
-        if (tries === 5) {
+        if (tries === 6) {
           return title;
         }
 
-        if (tries < 5) {
+        if (tries < 6) {
           name = title.split(symbol)[1];
 
           if (name && artist && name.toLowerCase() === artist.toLowerCase()) {
@@ -121,6 +121,8 @@ export default {
               removeArtist(title, artist, "--", tries + 1);
             } else if (tries === 4) {
               removeArtist(title, artist, "—", tries + 1);
+            } else if (tries === 5) {
+              removeArtist(title, artist, ":", tries + 1);
             } else {
               name = title;
             }

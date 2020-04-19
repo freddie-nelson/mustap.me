@@ -5,30 +5,15 @@
         <p>Please choose what you would like to do with the songs below.</p>
         <div class="modal__list">
           <div>
-            <div
-              class="modal__list-cell"
-              v-for="({ song, index }, i) in $store.state.deletedSongs"
-              :key="i"
-            >
+            <div class="modal__list-cell" v-for="({ song, index }, i) in $store.state.deletedSongs" :key="i">
               <div class="modal__list-cell-left-text">
                 <div>{{ song.title }}</div>
                 <div>{{ song.artist }}</div>
               </div>
 
               <div class="modal__list-cell-right">
-                <Button
-                  @clicked="keepSong(i, index)"
-                  :filled="false"
-                  :text="'Keep'"
-                  :fontSize="15"
-                />
-                <Button
-                  style="margin-left: 20px;"
-                  @clicked="deleteSong(index)"
-                  :filled="false"
-                  :text="'🗑'"
-                  :fontSize="15"
-                />
+                <Button @clicked="keepSong(i, index)" :filled="false" :text="'Keep'" :fontSize="15" />
+                <Button style="margin-left: 20px;" @clicked="deleteSong(index)" :filled="false" :text="'🗑'" :fontSize="15" />
               </div>
             </div>
           </div>
@@ -74,20 +59,10 @@
         />
       </div>
     </header>
-    <section
-      class="library__main-container"
-      :style="{ height: `calc(100% - ${this.calcHeight()}px)` }"
-    >
-      <div class="container">
-        <DataTable
-          ref="dataTable"
-          @for-playlists-changed="forPlaylists = $event"
-          @back="changeTitles"
-          @delete-playlist="deletePlaylist"
-          @clicked-playlist="changeTitles"
-          @deleted-song="changeTitles($event)"
-        />
-      </div>
+    <section class="library__main-container" :style="{ height: `calc(100% - ${this.headerHeight}px)` }">
+      <vue-page-transition name="fade-in-right" class="container">
+        <router-view ref="dataTable"></router-view>
+      </vue-page-transition>
       <CurrentPlaying
         @update-playlist="updatePlaylist"
         @delete-playlist="deletePlaylist"
@@ -99,37 +74,48 @@
 </template>
 
 <script>
-import DataTable from "./components/DataTable";
 import CurrentPlaying from "./components/CurrentPlaying";
 import Button from "@/components/Button";
 
 export default {
   name: "Library",
   components: {
-    DataTable,
     CurrentPlaying,
     Button
   },
   data() {
     return {
-      mainTitle: "Your Library",
-      subTitle: "Select a playlist",
       forPlaylists: true,
-      deletedSongsModal: false
+      deletedSongsModal: false,
+      headerHeight: 172
     };
   },
-  methods: {
-    calcHeight() {
-      return this.$refs.libraryHeader
-        ? this.$refs.libraryHeader.clientHeight
-        : 200;
+  computed: {
+    mainTitle() {
+      return this.forPlaylists ? "Your Library" : `Currently Viewing`;
     },
+    subTitle() {
+      const playlist = this.$store.getters.currentPlaylistViewing;
+      return this.forPlaylists ? "Select a playlist" : `${playlist.name} - ${playlist.data.length} tracks`;
+    }
+  },
+  watch: {
+    $route(to) {
+      if (to.name === "LibraryPlaylist") {
+        this.forPlaylists = false;
+      } else {
+        this.forPlaylists = true;
+      }
+    },
+    libraryHeaderHeight() {
+      console.log("height changed");
+    }
+  },
+  methods: {
     keepSong(i, index) {
       this.$store.dispatch("setProp", {
         prop: "deletedSongs",
-        data: this.$store.state.deletedSongs.filter(
-          (song, index) => index !== i
-        )
+        data: this.$store.state.deletedSongs.filter((song, index) => index !== i)
       });
       this.$store.dispatch("decrement", "deletedSongsCount");
 
@@ -137,21 +123,12 @@ export default {
 
       const fs = require("fs");
       const playlist = this.$store.getters.currentPlaylistViewing;
-      const deletedPlaylistPath =
-        this.$store.state.documentsPath +
-        "/mustap/playlists/" +
-        playlist.name +
-        "__deleted__.json";
+      const deletedPlaylistPath = this.$store.state.documentsPath + "/mustap/playlists/" + playlist.name + "__deleted__.json";
 
-      document
-        .getElementById("table")
-        .children[index].classList.remove("deleted");
+      document.getElementById("table").children[index].classList.remove("deleted");
 
       if (this.$store.state.deletedSongs.length !== 0) {
-        fs.writeFileSync(
-          deletedPlaylistPath,
-          this.$store.state.deletedSongs || []
-        );
+        fs.writeFileSync(deletedPlaylistPath, this.$store.state.deletedSongs || []);
       } else {
         fs.unlinkSync(deletedPlaylistPath);
       }
@@ -163,8 +140,7 @@ export default {
       if (!this.forPlaylists) {
         if (this.$store.state.currentDownload.currentlyDownloading) {
           this.$store.dispatch("addAlert", {
-            text:
-              "You cannot update this playlist as another playlist is currently being updated or downloaded.",
+            text: "You cannot update this playlist as another playlist is currently being updated or downloaded.",
             type: "alert"
           });
         } else {
@@ -191,9 +167,7 @@ export default {
       const state = this.$store.state;
       const playlist = this.$store.getters.currentPlaylistViewing;
       const playlistData = playlist.data;
-      const playlists = state.playlists.playlists.filter(
-        obj => obj.name !== playlist.name
-      );
+      const playlists = state.playlists.playlists.filter(obj => obj.name !== playlist.name);
 
       const songsPath = state.documentsPath + "/mustap/songs/";
       const filenames = playlistData.map(obj => songsPath + obj.filename);
@@ -222,21 +196,15 @@ export default {
       });
 
       // get the path of the playlist we are deleting from and the __deleted__ version that contains the songs we have previously deleted
-      const playlistPath =
-        state.documentsPath + "/mustap/playlists/" + playlist.name + ".json";
-      const deletedPlaylistPath =
-        state.documentsPath +
-        "/mustap/playlists/" +
-        playlist.name +
-        "__deleted__.json";
+      const playlistPath = state.documentsPath + "/mustap/playlists/" + playlist.name + ".json";
+      const deletedPlaylistPath = state.documentsPath + "/mustap/playlists/" + playlist.name + "__deleted__.json";
 
       if (
         this.$store.state.currentDownload.currentlyDownloading &&
         this.$store.state.currentDownload.playlistPath === playlistPath
       ) {
         this.$store.dispatch("addAlert", {
-          text:
-            "You cannot delete this playlist as it is currently being updated or downloaded.",
+          text: "You cannot delete this playlist as it is currently being updated or downloaded.",
           type: "alert"
         });
       } else {
@@ -288,26 +256,13 @@ export default {
           );
       }
     },
-    changeTitles(refresh) {
-      setTimeout(() => {
-        if (this.mainTitle == "Your Library" || refresh) {
-          this.mainTitle = "Currently Viewing";
-          const currentPlaylist = this.$store.getters.currentPlaylistViewing;
-          this.subTitle = `${currentPlaylist.name} - ${currentPlaylist.data.length} tracks`;
-        } else {
-          this.mainTitle = "Your Library";
-          this.subTitle = "Select a playlist";
-        }
-      }, 100);
-    },
     async getPlaylists() {
       // set deleteClickedIndex back to -1 so that the cell we clicked can be clicked again
       this.$store.dispatch("resetDeleteClickedIndex");
 
       const fs = require("fs");
 
-      const playlistsLocation =
-        this.$store.state.documentsPath + "/mustap/playlists";
+      const playlistsLocation = this.$store.state.documentsPath + "/mustap/playlists";
       let playlists = [];
       let deletedPlaylists = [];
 
@@ -332,9 +287,7 @@ export default {
               .readFile(playlistsLocation + "/" + file)
               .then(data => {
                 // get the date the file was created
-                const date = new Date(
-                  fs.statSync(playlistsLocation + "/" + file).mtimeMs
-                );
+                const date = new Date(fs.statSync(playlistsLocation + "/" + file).mtimeMs);
                 const day = ("0" + date.getDate()).slice(-2);
                 const month = ("0" + (date.getMonth() + 1)).slice(-2);
                 const year = date.getFullYear();
@@ -364,10 +317,7 @@ export default {
 
       // store the playlists in vuex
       this.$store.dispatch("changePlaylists", playlists);
-      this.$store.dispatch("setPlaylistsProp", {
-        prop: "deletedPlaylists",
-        data: deletedPlaylists
-      });
+      this.$store.dispatch("setPlaylistsProp", { prop: "deletedPlaylists", data: deletedPlaylists });
 
       if (this.$store.state.currentPlaylist !== -1 && playlists) {
         this.$store.getters.playlistNames.forEach((name, i) => {
@@ -379,13 +329,16 @@ export default {
             : null;
         });
       }
-
-      // 100ms delay used so that there is no chance that the dataTable takes in a playlist array that has nothing in it
-      setTimeout(() => this.$refs.dataTable.formatDataPlaylists(), 100);
     }
   },
   mounted() {
     this.getPlaylists();
+
+    const observer = new ResizeObserver(entries => {
+      this.headerHeight = entries[0].contentRect.height;
+    });
+
+    observer.observe(this.$refs.libraryHeader);
   }
 };
 </script>

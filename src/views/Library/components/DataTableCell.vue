@@ -74,7 +74,7 @@ export default {
         ) {
           this.$emit("clicked", this.index);
         }
-      }, 100);
+      }, 50);
     }
   },
   mounted() {
@@ -124,6 +124,10 @@ export default {
     .cell__right-text-bottom {
       opacity: 1 !important;
     }
+  }
+
+  &:first-of-type {
+    margin-top: 0px !important;
   }
 
   &__index {
