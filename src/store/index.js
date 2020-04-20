@@ -78,6 +78,8 @@ const currentPlaying = {
         const dataURL = await convertSong(path);
 
         commit("SET_CURRENT_PLAYING_SRC", dataURL);
+
+        state.sound.play();
       }
     },
     setCurrentPlayingCurrentTime({ commit, state }) {

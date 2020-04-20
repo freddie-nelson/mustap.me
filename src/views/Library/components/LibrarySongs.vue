@@ -4,7 +4,7 @@
     :forPlaylists="false"
     @loaded-cells="addClasses"
     @drag-end="dragEnd($event)"
-    @clicked-cell="playSong($event)"
+    @clicked-cell="setCurrentPlaying($event, false, true)"
     @delete-playlist="$emit('delete-playlist', $event)"
     @delete-song="deleteSong($event)"
   />
@@ -12,12 +12,15 @@
 
 <script>
 import DataTable from "./DataTable";
+import addClasses from "@/mixins/addClasses";
+import setCurrentPlaying from "@/mixins/setCurrentPlaying";
 
 export default {
   name: "LibrarySongs",
   components: {
     DataTable
   },
+  mixins: [addClasses, setCurrentPlaying],
   data() {
     return {
       playlist: [],
@@ -154,24 +157,7 @@ export default {
 
       // if the song that was deleted is the one that's currently playing then reset all the currentPlaying properties
       if (originalIndex === i) {
-        const currentPlaying = this.$store.state.currentPlaying;
-
-        currentPlaying.sound.pause();
-
-        this.$store.dispatch("setCurrentPlayingMultiple", {
-          thumbnail: "N / A",
-          title: "N / A",
-          artist: "N / A",
-          duration: "0:00",
-          currentTime: "0:00",
-          currentTimeSeconds: 0,
-          lengthSeconds: 0,
-          filename: "",
-          playing: false,
-          index: -1
-        });
-
-        this.$store.dispatch("setCurrentPlayingSrc", "");
+        this.setCurrentPlaying(i + 1, "");
       }
 
       if (playlist.data.length !== 0) {
@@ -182,33 +168,6 @@ export default {
         // if the playlist has 0 songs left in it delete it altogther
         this.$emit("delete-playlist");
       }
-    },
-    currentPlayingChanged() {
-      this.$store.dispatch("setCurrentPlayingSrc");
-
-      setTimeout(() => this.$store.state.currentPlaying.sound.play(), 500);
-    },
-    playSong(e) {
-      /* Get the song that the user clicked on */
-      const index = e - 1;
-      const song = this.$store.getters.currentPlaylistViewing.data[index];
-
-      this.$store.dispatch("setCurrentPlaylistDetails");
-
-      /* setting all the properties of the song that is going to be played (the first song) */
-      this.$store.dispatch("setCurrentPlayingMultiple", {
-        thumbnail: song.thumbnailUrl.replace("hqdefault", "maxresdefault"),
-        title: song.title,
-        artist: song.artist,
-        duration: song.duration,
-        currentTime: "0:00",
-        lengthSeconds: song.duration.split(":")[0] * 60 + Number.parseInt(song.duration.split(":")[1]),
-        filename: song.filename,
-        playing: true,
-        index: index
-      });
-
-      this.currentPlayingChanged();
     },
     formatDataSongs(e) {
       /* open the playlist that was clicked on */
@@ -244,100 +203,8 @@ export default {
           } while (song.missing);
         }
 
-        /* setting all the properties of the song that is going to be played */
-        this.$store.dispatch("setCurrentPlayingMultiple", {
-          thumbnail: song.thumbnailUrl.replace("hqdefault", "maxresdefault"),
-          title: song.title,
-          artist: song.artist,
-          duration: song.duration,
-          currentTime: "0:00",
-          lengthSeconds: song.duration.split(":")[0] * 60 + Number.parseInt(song.duration.split(":")[1]),
-          filename: song.filename,
-          playing: true,
-          index: index
-        });
-
-        this.currentPlayingChanged();
+        this.setCurrentPlaying(index + 1, false, true);
       }
-    },
-    addClasses(delay = 250) {
-      /* check for missing songs once the table has loaded, also apply the clicked class to a song if it is playing and then scroll it into view as well */
-      setTimeout(() => {
-        const fs = require("fs");
-
-        const table = document.getElementById("table");
-        const children = table.children;
-        const songsPath = this.$store.state.documentsPath + "/mustap/songs/";
-        const state = this.$store.state;
-
-        const deletedPlaylist = state.playlists.deletedPlaylists.filter(
-          playlist => playlist.name === this.$store.getters.currentPlaylistViewing.name + "__deleted__"
-        );
-
-        this.$store.dispatch("setProp", { prop: "missingSongsCount", data: 0 });
-        this.$store.dispatch("setProp", { prop: "deletedSongsCount", data: 0 });
-        this.$store.dispatch("setProp", { prop: "deletedSongs", data: [] });
-
-        /* apply classes to cells */
-        for (let i = 0; i < children.length; i++) {
-          const song = this.$store.getters.currentPlaylistViewing.data[i];
-
-          const filename = songsPath + song.filename;
-
-          if (!fs.existsSync(filename)) {
-            this.$store.dispatch("increment", "missingSongsCount");
-            song.missing = true;
-          }
-
-          /* if this is the currentplaylist that we are playing from check for the playing song and apply the clicked class to it */
-          if (state.playlists.currentPlaylist === state.playlists.currentPlaylistViewing) {
-            const currentPlaying = state.currentPlaying;
-
-            if (currentPlaying.title !== "N / A") {
-              const tableContainer = document.getElementById("tableContainer");
-
-              if (
-                state.playlists.currentPlaylist === state.playlists.currentPlaylistViewing &&
-                table &&
-                !this.forPlaylists &&
-                state.currentPlaying.index === i
-              ) {
-                const children = table.children;
-                const clickedEle = children[i];
-
-                const distanceToBottom =
-                  clickedEle.getBoundingClientRect().bottom - tableContainer.clientHeight - tableContainer.offsetTop;
-                const distanceToTop = clickedEle.getBoundingClientRect().top - tableContainer.offsetTop;
-
-                console.log("top: " + distanceToTop, "bottom: " + distanceToBottom);
-
-                if (distanceToTop < 0 || distanceToBottom > 0) {
-                  table.scrollTo({
-                    top: clickedEle.offsetTop - tableContainer.offsetTop,
-                    behavior: "smooth"
-                  });
-                }
-              }
-            }
-          }
-
-          if (deletedPlaylist[0]) {
-            const deletedPlaylistData = deletedPlaylist[0].data;
-
-            for (let j = 0; j < deletedPlaylistData.length; j++) {
-              if (song.title === deletedPlaylistData[j].title) {
-                this.$store.dispatch("increment", "deletedSongsCount");
-                this.$store.dispatch("pushDeletedSong", {
-                  song: deletedPlaylistData[j],
-                  index: i
-                });
-
-                children[i].classList.add("deleted");
-              }
-            }
-          }
-        }
-      }, delay);
     }
   },
   destroyed() {
@@ -364,7 +231,6 @@ export default {
   },
   mounted() {
     this.playlistIndex = this.$store.state.playlists.currentPlaylistViewing;
-    console.log(this.playlistIndex);
     this.playlist = this.$store.getters.currentPlaylistViewing.data;
     this.formatDataSongs(this.playlistIndex);
   }

@@ -136,11 +136,6 @@ export default {
     };
   },
   methods: {
-    currentPlayingChanged() {
-      this.$store.dispatch("setCurrentPlayingSrc");
-
-      setTimeout(() => this.$store.state.currentPlaying.sound.play(), 500);
-    },
     changeView(e) {
       const parent = e.srcElement.parentNode;
 

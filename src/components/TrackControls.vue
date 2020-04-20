@@ -98,8 +98,12 @@
 </template>
 
 <script>
+import addClasses from "@/mixins/addClasses";
+import setCurrentPlaying from "@/mixins/setCurrentPlaying";
+
 export default {
   name: "TrackControls",
+  mixins: [addClasses, setCurrentPlaying],
   data() {
     return {
       showVolumeControls: false,
@@ -122,11 +126,6 @@ export default {
       } else {
         this.volumeControlsBtn = 3;
       }
-    },
-    async currentPlayingChanged() {
-      this.$store.dispatch("setCurrentPlayingSrc");
-
-      setTimeout(() => this.$store.state.currentPlaying.sound.play(), 500);
     },
     playPause() {
       if (this.$store.state.currentPlaying.title != "N / A") {
@@ -214,46 +213,8 @@ export default {
             return;
           }
 
-          currentPlaying.sound.pause();
-
-          this.$store.dispatch("setCurrentPlayingMultiple", {
-            thumbnail: song.thumbnailUrl,
-            title: song.title,
-            artist: song.artist,
-            duration: song.duration,
-            currentTime: "0:00",
-            lengthSeconds: song.duration.split(":")[0] * 60 + Number.parseInt(song.duration.split(":")[1]),
-            filename: song.filename,
-            playing: true,
-            index: index
-          });
-
-          const table = document.getElementById("table");
-          const tableContainer = document.getElementById("tableContainer");
-
-          if (state.playlists.currentPlaylist === state.playlists.currentPlaylistViewing) {
-            if (table && !table.classList.contains("forPlaylists")) {
-              if (table.children[index]) {
-                const children = table.children;
-                const clickedEle = children[index];
-
-                const distanceToBottom =
-                  clickedEle.getBoundingClientRect().bottom - tableContainer.clientHeight - tableContainer.offsetTop;
-                const distanceToTop = clickedEle.getBoundingClientRect().top - tableContainer.offsetTop;
-
-                console.log("top: " + distanceToTop, "bottom: " + distanceToBottom);
-
-                if (distanceToTop < 0 || distanceToBottom > 0) {
-                  table.scrollTo({
-                    top: clickedEle.offsetTop - tableContainer.offsetTop,
-                    behavior: "smooth"
-                  });
-                }
-              }
-            }
-          }
-
-          this.currentPlayingChanged();
+          this.setCurrentPlaying(index + 1);
+          this.addClasses(0);
         }
       }
     }

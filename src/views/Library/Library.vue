@@ -106,9 +106,6 @@ export default {
       } else {
         this.forPlaylists = true;
       }
-    },
-    libraryHeaderHeight() {
-      console.log("height changed");
     }
   },
   methods: {
@@ -337,6 +334,17 @@ export default {
       // store the playlists in vuex
       this.$store.dispatch("changePlaylists", playlists);
       this.$store.dispatch("setPlaylistsProp", { prop: "deletedPlaylists", data: deletedPlaylists });
+
+      if (this.$store.state.playlists.currentPlaylist !== -1 && this.$store.state.playlists.playlists !== []) {
+        this.$store.getters.playlistNames.forEach((name, i) => {
+          name === this.$store.state.playlists.currentPlaylistName
+            ? this.$store.dispatch("setProp", {
+                prop: "currentPlaylist",
+                payload: i
+              })
+            : null;
+        });
+      }
     }
   },
   mounted() {
