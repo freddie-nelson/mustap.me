@@ -1,5 +1,5 @@
 <template>
-  <div v-if="show" class="cell created" :id="id" @click="clicked">
+  <div v-if="show" class="cell created" :class="computedClasses" :id="id" @click="clicked">
     <span class="cell__index">{{ index }}</span>
     <div class="cell__left-text">
       <p class="cell__left-text-top">{{ data.leftTop }}</p>
@@ -52,6 +52,28 @@ export default {
     forPlaylists: Boolean,
     index: Number
   },
+  computed: {
+    computedClasses() {
+      try {
+        if (
+          !this.forPlaylists &&
+          this.$store.state.playlists.currentPlaylistViewing === this.$store.state.playlists.currentPlaylist
+        ) {
+          const song = this.$store.getters.currentPlaylistViewing.data[this.index - 1];
+          const currentPlayingIndex = this.$store.state.currentPlaying.index;
+
+          return {
+            clicked: currentPlayingIndex === this.index - 1,
+            missing: song.missing
+          };
+        } else {
+          return {};
+        }
+      } catch {
+        return {};
+      }
+    }
+  },
   watch: {
     show: function() {
       if (
@@ -78,7 +100,7 @@ export default {
     }
   },
   mounted() {
-    if (this.index >= 30) {
+    if (this.index === -1) {
       setTimeout(() => {
         this.show = true;
       }, 100);

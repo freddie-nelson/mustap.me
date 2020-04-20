@@ -156,6 +156,8 @@ const playlists = {
   state: {
     playlists: [],
     deletedPlaylists: [],
+    formattedPlaylist: [],
+    orderChanged: false,
     currentPlaylist: -1,
     currentPlaylistViewing: -1,
     currentPlaylistName: "",
@@ -179,12 +181,22 @@ const playlists = {
     SET_PLAYLISTS_PROP(state, payload) {
       Vue.set(state, payload.prop, payload.data);
     },
+    SET_PLAYLISTS_MULTIPLE(state, payload) {
+      Object.keys(payload).forEach(prop => {
+        Vue.set(state, prop, payload[prop]);
+      });
+    },
     SET_CURRENT_PLAYLIST_DETAILS(state) {
       Vue.set(state, "currentPlaylist", state.currentPlaylistViewing);
       Vue.set(state, "currentPlaylistName", state.playlists[state.currentPlaylistViewing].name);
     },
     SET_DELETED_PLAYLIST_DATA(state, { array, index }) {
       Vue.set(state.deletedPlaylists, index, array);
+    },
+    DRAG_FINISHED(state, payload) {
+      const arr = state.playlists[state.currentPlaylistViewing];
+      Vue.set(arr, "data", payload);
+      Vue.set(state, "orderChanged", true);
     }
   },
   actions: {
@@ -196,6 +208,9 @@ const playlists = {
     },
     setPlaylistsProp({ commit }, payload) {
       commit("SET_PLAYLISTS_PROP", payload);
+    },
+    setPlaylistsMultiple({ commit }, payload) {
+      commit("SET_PLAYLISTS_MULTIPLE", payload);
     },
     setCurrentPlaylistDetails({ commit }) {
       commit("SET_CURRENT_PLAYLIST_DETAILS");
@@ -210,6 +225,24 @@ const playlists = {
       });
 
       commit("SET_DELETED_PLAYLIST_DATA", { array: rootState.deletedSongs, index: deletedPlaylistIndex });
+    },
+    dragFinished({ commit, getters, rootState }, [oldIndex, newIndex]) {
+      let array = [...getters.currentPlaylistViewing.data];
+      array.splice(newIndex, 0, array.splice(oldIndex, 1)[0]);
+
+      const currentIndex = rootState.currentPlaying.index;
+
+      if (oldIndex === currentIndex) {
+        commit("SET_CURRENT_PLAYING_PROP", { prop: "index", data: newIndex }, { root: true });
+      }
+
+      if (currentIndex !== -1 && newIndex < currentIndex && oldIndex > currentIndex) {
+        commit("SET_CURRENT_PLAYING_PROP", { prop: "index", data: currentIndex + 1 }, { root: true });
+      } else if (currentIndex !== -1 && newIndex > currentIndex && oldIndex < currentIndex) {
+        commit("SET_CURRENT_PLAYING_PROP", { prop: "index", data: currentIndex - 1 }, { root: true });
+      }
+
+      commit("DRAG_FINISHED", array);
     }
   },
   getters: {

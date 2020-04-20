@@ -22,7 +22,15 @@ export default {
   props: {
     warning: Boolean,
     alert: Boolean,
-    text: String
+    text: String,
+    autoClose: Boolean
+  },
+  mounted() {
+    if (this.autoClose) {
+      setTimeout(() => {
+        this.$emit("close");
+      }, 5000);
+    }
   }
 };
 </script>

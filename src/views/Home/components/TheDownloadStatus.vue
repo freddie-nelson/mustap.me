@@ -82,6 +82,13 @@ export default {
     font-size: 24px;
     width: 100%;
 
+    p {
+      max-width: 100%;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
     #current-process {
       color: var(--primary-text);
     }

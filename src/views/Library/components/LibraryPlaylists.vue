@@ -1,5 +1,5 @@
 <template>
-  <DataTable ref="dataTable" :array="array" :forPlaylists="true" @clicked-cell="clickedCell($event)" />
+  <DataTable ref="dataTable" :formattedArray="array" :forPlaylists="true" @clicked-cell="clickedCell($event)" />
 </template>
 
 <script>
@@ -42,6 +42,18 @@ export default {
   },
   mounted() {
     setTimeout(this.formatDataPlaylists, 100);
+    setTimeout(() => {
+      if (this.$store.state.playlists.currentPlaylist !== -1 && this.$store.state.playlists.playlists !== []) {
+        this.$store.getters.playlistNames.forEach((name, i) => {
+          name === this.$store.state.playlists.currentPlaylistName
+            ? this.$store.dispatch("setPlaylistsProp", {
+                prop: "currentPlaylist",
+                data: i
+              })
+            : null;
+        });
+      }
+    }, 100);
   }
 };
 </script>

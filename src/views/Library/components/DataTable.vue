@@ -1,6 +1,19 @@
 <template>
-  <div class="table" id="table" ref="table" :class="{ forPlaylists: forPlaylists }">
+  <div :id="tableId" ref="table" :class="{ forPlaylists: forPlaylists, table: forPlaylists }" style="height: 100%">
+    <draggable v-if="!forPlaylists" :id="draggableTableId" class="table" v-model="playlist" @change="$emit('drag-end', $event)">
+      <DataTableCell
+        v-for="(data, index) in $store.state.playlists.formattedPlaylist"
+        :data="data"
+        :key="index"
+        @clicked="$emit('clicked-cell', $event)"
+        @deleteSong="$emit('delete-song', $event)"
+        @loaded-cells="$emit('loaded-cells')"
+        :index="index + 1"
+        :forPlaylists="forPlaylists"
+      />
+    </draggable>
     <DataTableCell
+      v-else
       v-for="(data, index) in array"
       :data="data"
       :key="index"
@@ -10,35 +23,53 @@
       :index="index + 1"
       :forPlaylists="forPlaylists"
     />
-    <backBtn style="left: 16px" v-if="!this.forPlaylists" @back="back" />
+    <BackBtn style="left: 16px" v-if="!this.forPlaylists" @back="back" />
   </div>
 </template>
 
 <script>
 import DataTableCell from "./DataTableCell";
 import BackBtn from "../../../components/BackBtn";
+import draggable from "vuedraggable";
 
 export default {
   name: "DataTable",
   components: {
     DataTableCell,
-    BackBtn
+    BackBtn,
+    draggable
+  },
+  data() {
+    return {
+      array: [],
+      tableId: this.forPlaylists ? "table" : false,
+      draggableTableId: !this.forPlaylists ? "table" : false
+    };
+  },
+  computed: {
+    playlist: {
+      get() {
+        return this.$store.state.playlists.formattedPlaylist;
+      },
+      set(value) {
+        this.$store.dispatch("setPlaylistsProp", { prop: "formattedPlaylist", data: value });
+      }
+    }
   },
   props: {
-    array: Array,
+    formattedArray: Array,
     forPlaylists: Boolean
+  },
+  watch: {
+    formattedArray() {
+      this.array = [...this.formattedArray];
+    }
   },
   methods: {
     back() {
       if (this.forPlaylists) {
         return;
       } else {
-        // set the currentPlaylistViewing back to -1 so that other components know that we don't have a playlist open anymore
-        this.$store.dispatch("setPlaylistsProp", {
-          prop: "currentPlaylistViewing",
-          data: -1
-        });
-
         // get all the dataTableCell elements
         const children = this.$refs.table.children;
 

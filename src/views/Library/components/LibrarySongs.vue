@@ -1,9 +1,9 @@
 <template>
   <DataTable
     ref="dataTable"
-    :array="array"
     :forPlaylists="false"
     @loaded-cells="addClasses"
+    @drag-end="dragEnd($event)"
     @clicked-cell="playSong($event)"
     @delete-playlist="$emit('delete-playlist', $event)"
     @delete-song="deleteSong($event)"
@@ -26,6 +26,13 @@ export default {
     };
   },
   methods: {
+    dragEnd(e) {
+      const { oldIndex, newIndex } = e.moved;
+
+      console.log(oldIndex, newIndex);
+
+      this.$store.dispatch("dragFinished", [oldIndex, newIndex]);
+    },
     back() {
       this.$refs.dataTable.back();
     },
@@ -40,8 +47,6 @@ export default {
       // initialise all needed variables
       const playlist = this.$store.getters.currentPlaylistViewing;
       const playlists = this.$store.state.playlists.playlists.filter(obj => obj.name !== playlist.name);
-
-      console.log(playlists);
 
       // get path of the playlists and its deleted songs counterpart
       const playlistPath = this.$store.state.documentsPath + "/mustap/playlists/" + playlist.name + ".json";
@@ -106,6 +111,18 @@ export default {
           rightTop: song.duration
         };
       });
+
+      const originalIndex = this.$store.state.currentPlaying.index;
+
+      if (
+        this.$store.state.currentPlaying.index > -1 &&
+        this.$store.state.currentPlaying.index < index &&
+        this.$store.state.playlists.currentPlaylistViewing === this.$store.state.playlists.currentPlaylist
+      ) {
+        this.$store.dispatch("setCurrentPlayingProp", { prop: "index", data: this.$store.state.currentPlaying.index - 1 });
+      }
+
+      this.$store.dispatch("setPlaylistsProp", { prop: "formattedPlaylist", data: this.array });
       // --- end of refreshing the data in the table
 
       if (!file) {
@@ -136,8 +153,7 @@ export default {
       }
 
       // if the song that was deleted is the one that's currently playing then reset all the currentPlaying properties
-      if (this.$store.state.currentPlaying.index === i) {
-        document.getElementById("table").children[i].classList.remove("clicked");
+      if (originalIndex === i) {
         const currentPlaying = this.$store.state.currentPlaying;
 
         currentPlaying.sound.pause();
@@ -154,9 +170,9 @@ export default {
           playing: false,
           index: -1
         });
-      }
 
-      this.$store.dispatch("setCurrentPlayingSrc", "");
+        this.$store.dispatch("setCurrentPlayingSrc", "");
+      }
 
       if (playlist.data.length !== 0) {
         fs.promises.writeFile(playlistPath, JSON.stringify(playlist.data));
@@ -175,8 +191,7 @@ export default {
     playSong(e) {
       /* Get the song that the user clicked on */
       const index = e - 1;
-      const song = this.playlist[index];
-      const currentPlaying = this.$store.state.currentPlaying;
+      const song = this.$store.getters.currentPlaylistViewing.data[index];
 
       this.$store.dispatch("setCurrentPlaylistDetails");
 
@@ -194,21 +209,6 @@ export default {
       });
 
       this.currentPlayingChanged();
-
-      /* remove the clicked class from all elements in the table and apply the clicked class to the song thats playing */
-      const children = document.getElementById("table").children;
-      const clickedEle = children[currentPlaying.index];
-
-      for (let i = 0; i < children.length; i++) {
-        const element = children[i];
-
-        if (element.classList.contains("clicked")) {
-          element.classList.remove("clicked");
-          break;
-        }
-      }
-
-      clickedEle.classList.add("clicked");
     },
     formatDataSongs(e) {
       /* open the playlist that was clicked on */
@@ -223,6 +223,8 @@ export default {
           rightTop: song.duration
         };
       });
+
+      this.$store.dispatch("setPlaylistsProp", { prop: "formattedPlaylist", data: this.array });
 
       /* set the playlist that was clicked as the one we are viewing in vuex */
       this.$store.dispatch("setPlaylistsProp", {
@@ -258,90 +260,69 @@ export default {
         this.currentPlayingChanged();
       }
     },
-    addClasses(delay = 50) {
+    addClasses(delay = 250) {
       /* check for missing songs once the table has loaded, also apply the clicked class to a song if it is playing and then scroll it into view as well */
       setTimeout(() => {
         const fs = require("fs");
 
-        const children = document.getElementById("table").children;
+        const table = document.getElementById("table");
+        const children = table.children;
         const songsPath = this.$store.state.documentsPath + "/mustap/songs/";
+        const state = this.$store.state;
+
+        const deletedPlaylist = state.playlists.deletedPlaylists.filter(
+          playlist => playlist.name === this.$store.getters.currentPlaylistViewing.name + "__deleted__"
+        );
 
         this.$store.dispatch("setProp", { prop: "missingSongsCount", data: 0 });
+        this.$store.dispatch("setProp", { prop: "deletedSongsCount", data: 0 });
+        this.$store.dispatch("setProp", { prop: "deletedSongs", data: [] });
 
-        /* check for missing songs and apply the missing class to the ones found */
-        for (let i = 0; i < children.length - 1; i++) {
-          const element = children[i];
-
+        /* apply classes to cells */
+        for (let i = 0; i < children.length; i++) {
           const song = this.$store.getters.currentPlaylistViewing.data[i];
 
           const filename = songsPath + song.filename;
 
-          element.classList.remove("missing");
-          element.classList.remove("clicked");
-
           if (!fs.existsSync(filename)) {
-            element.classList.add("missing");
             this.$store.dispatch("increment", "missingSongsCount");
-            this.$store.getters.currentPlaylistViewing.data[i].missing = true;
+            song.missing = true;
           }
-        }
 
-        /* if this is the currentplaylist that we are playing from check for the playing song and apply the clicked class to it */
-        if (this.$store.state.playlists.currentPlaylist == this.$store.state.playlists.currentPlaylistViewing) {
-          const currentPlaying = this.$store.state.currentPlaying;
+          /* if this is the currentplaylist that we are playing from check for the playing song and apply the clicked class to it */
+          if (state.playlists.currentPlaylist === state.playlists.currentPlaylistViewing) {
+            const currentPlaying = state.currentPlaying;
 
-          if (currentPlaying.title !== "N / A") {
-            const elements = document.querySelectorAll("p.cell__left-text-top");
-            for (let i = 0; i < elements.length; i++) {
-              const ele = elements[i];
+            if (currentPlaying.title !== "N / A") {
+              const tableContainer = document.getElementById("tableContainer");
 
-              let title = currentPlaying.title;
-
-              if (title[0] == " ") {
-                title = title.slice(1, title.length);
-              }
-
-              if (i === 0) {
-                console.log(ele.innerText, title);
-              }
-
-              if (currentPlaying.index == i) {
+              if (
+                state.playlists.currentPlaylist === state.playlists.currentPlaylistViewing &&
+                table &&
+                !this.forPlaylists &&
+                state.currentPlaying.index === i
+              ) {
+                const children = table.children;
                 const clickedEle = children[i];
-                if (!clickedEle.classList.contains("missing")) {
-                  clickedEle.classList.add("clicked");
-                  const distanceToBottom =
-                    clickedEle.getBoundingClientRect().bottom -
-                    document.getElementById("table").clientHeight -
-                    document.getElementById("table").offsetTop;
-                  const distanceToTop = clickedEle.getBoundingClientRect().top - document.getElementById("table").offsetTop;
 
-                  // console.log("top: " + distanceToTop, "bottom: " + distanceToBottom);
+                const distanceToBottom =
+                  clickedEle.getBoundingClientRect().bottom - tableContainer.clientHeight - tableContainer.offsetTop;
+                const distanceToTop = clickedEle.getBoundingClientRect().top - tableContainer.offsetTop;
 
-                  if (distanceToTop < 0 || distanceToBottom > 0) {
-                    document.getElementById("table").scrollTo({
-                      top: clickedEle.offsetTop - clickedEle.parentElement.offsetTop,
-                      behavior: "smooth"
-                    });
-                  }
+                console.log("top: " + distanceToTop, "bottom: " + distanceToBottom);
+
+                if (distanceToTop < 0 || distanceToBottom > 0) {
+                  table.scrollTo({
+                    top: clickedEle.offsetTop - tableContainer.offsetTop,
+                    behavior: "smooth"
+                  });
                 }
-                break;
               }
             }
           }
-        }
 
-        this.$store.dispatch("setProp", { prop: "deletedSongsCount", data: 0 });
-        this.$store.dispatch("setProp", { prop: "deletedSongs", data: [] });
-
-        const deletedPlaylist = this.$store.state.playlists.deletedPlaylists.filter(
-          playlist => playlist.name === this.$store.getters.currentPlaylistViewing.name + "__deleted__"
-        );
-
-        if (deletedPlaylist[0]) {
-          const deletedPlaylistData = deletedPlaylist[0].data;
-
-          for (let i = 0; i < this.playlist.length; i++) {
-            const song = this.playlist[i];
+          if (deletedPlaylist[0]) {
+            const deletedPlaylistData = deletedPlaylist[0].data;
 
             for (let j = 0; j < deletedPlaylistData.length; j++) {
               if (song.title === deletedPlaylistData[j].title) {
@@ -358,6 +339,28 @@ export default {
         }
       }, delay);
     }
+  },
+  destroyed() {
+    if (this.$store.state.playlists.orderChanged) {
+      const fs = require("fs");
+      const currentPlaylistViewing = this.$store.getters.currentPlaylistViewing;
+      const playlistPath = this.$store.state.documentsPath + "/mustap/playlists/" + currentPlaylistViewing.name + ".json";
+
+      fs.promises
+        .writeFile(playlistPath, JSON.stringify(currentPlaylistViewing.data))
+        .then(() => {
+          this.$store.dispatch("addAlert", { text: "Your new order has been saved.", type: "alert" });
+        })
+        .catch(err => {
+          this.$store.dispatch("addAlert", { text: `Your new order could not be saved. Error: ${err}`, type: "warning" });
+        });
+    }
+
+    // set the currentPlaylistViewing back to -1 so that other components know that we don't have a playlist open anymore
+    this.$store.dispatch("setPlaylistsMultiple", {
+      currentPlaylistViewing: -1,
+      orderChanged: false
+    });
   },
   mounted() {
     this.playlistIndex = this.$store.state.playlists.currentPlaylistViewing;

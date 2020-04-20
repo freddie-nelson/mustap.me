@@ -12,6 +12,7 @@
         :alert="alert.type === 'alert' ? true : false"
         :warning="alert.type === 'warning' ? true : false"
         :text="alert.text"
+        :autoClose="alert.autoClose ? alert.autoClose : false"
       />
     </div>
   </div>

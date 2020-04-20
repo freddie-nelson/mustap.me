@@ -60,7 +60,7 @@
       </div>
     </header>
     <section class="library__main-container" :style="{ height: `calc(100% - ${this.headerHeight}px)` }">
-      <vue-page-transition name="fade-in-right" class="container">
+      <vue-page-transition name="fade-in-right" id="tableContainer" class="container">
         <router-view ref="dataTable"></router-view>
       </vue-page-transition>
       <CurrentPlaying
@@ -235,11 +235,30 @@ export default {
               type: "alert"
             });
             // set the currentPlaylist variables back to -1 so that we can keep track that we aren't viewing a playlist anymore and aren't playing from one
-            if (state.currentPlaylist === state.currentPlaylistViewing) {
+            if (state.playlists.currentPlaylist === state.playlists.currentPlaylistViewing) {
               this.$store.dispatch("setPlaylistsProp", {
                 prop: "currentPlaylist",
                 data: -1
               });
+
+              const currentPlaying = this.$store.state.currentPlaying;
+
+              currentPlaying.sound.pause();
+
+              this.$store.dispatch("setCurrentPlayingMultiple", {
+                thumbnail: "N / A",
+                title: "N / A",
+                artist: "N / A",
+                duration: "0:00",
+                currentTime: "0:00",
+                currentTimeSeconds: 0,
+                lengthSeconds: 0,
+                filename: "",
+                playing: false,
+                index: -1
+              });
+
+              this.$store.dispatch("setCurrentPlayingSrc", "");
             }
             this.$store.dispatch("setPlaylistsProp", {
               prop: "currentPlaylistViewing",
@@ -318,17 +337,6 @@ export default {
       // store the playlists in vuex
       this.$store.dispatch("changePlaylists", playlists);
       this.$store.dispatch("setPlaylistsProp", { prop: "deletedPlaylists", data: deletedPlaylists });
-
-      if (this.$store.state.currentPlaylist !== -1 && playlists) {
-        this.$store.getters.playlistNames.forEach((name, i) => {
-          name === this.$store.state.currentPlaylistName
-            ? this.$store.dispatch("setProp", {
-                prop: "currentPlaylist",
-                payload: i
-              })
-            : null;
-        });
-      }
     }
   },
   mounted() {

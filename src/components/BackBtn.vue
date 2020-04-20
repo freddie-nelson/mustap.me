@@ -19,7 +19,7 @@ export default {
     };
   },
   mounted() {
-    setTimeout(() => (this.backBtnHide = false), 600);
+    setTimeout(() => (this.backBtnHide = false), 1000);
   }
 };
 </script>

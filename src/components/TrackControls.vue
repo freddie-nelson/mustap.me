@@ -228,36 +228,24 @@ export default {
             index: index
           });
 
-          console.log(currentPlaying.index);
+          const table = document.getElementById("table");
+          const tableContainer = document.getElementById("tableContainer");
 
           if (state.playlists.currentPlaylist === state.playlists.currentPlaylistViewing) {
-            if (document.getElementById("table") && !document.getElementById("table").classList.contains("forPlaylists")) {
-              if (document.getElementById("table").children[index]) {
-                const children = document.getElementById("table").children;
+            if (table && !table.classList.contains("forPlaylists")) {
+              if (table.children[index]) {
+                const children = table.children;
                 const clickedEle = children[index];
 
-                for (let i = 0; i < children.length; i++) {
-                  const element = children[i];
-
-                  if (element.classList.contains("clicked")) {
-                    element.classList.remove("clicked");
-                    break;
-                  }
-                }
-
-                clickedEle.classList.add("clicked");
-
                 const distanceToBottom =
-                  clickedEle.getBoundingClientRect().bottom -
-                  document.getElementById("table").clientHeight -
-                  document.getElementById("table").offsetTop;
-                const distanceToTop = clickedEle.getBoundingClientRect().top - document.getElementById("table").offsetTop;
+                  clickedEle.getBoundingClientRect().bottom - tableContainer.clientHeight - tableContainer.offsetTop;
+                const distanceToTop = clickedEle.getBoundingClientRect().top - tableContainer.offsetTop;
 
-                // console.log("top: " + distanceToTop, "bottom: " + distanceToBottom);
+                console.log("top: " + distanceToTop, "bottom: " + distanceToBottom);
 
                 if (distanceToTop < 0 || distanceToBottom > 0) {
-                  document.getElementById("table").scrollTo({
-                    top: clickedEle.offsetTop - clickedEle.parentElement.offsetTop,
+                  table.scrollTo({
+                    top: clickedEle.offsetTop - tableContainer.offsetTop,
                     behavior: "smooth"
                   });
                 }
