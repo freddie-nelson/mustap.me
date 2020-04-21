@@ -173,7 +173,7 @@ export default {
                   song.title.replace(/ *\([^)]*\) */g, "").replace(/\[.*?\]/g, "") || song.title,
                   song.author.name
                 ),
-                filename: song.title.replace(/[/\\?%*:|"<>]/g, "") + ".mp3",
+                filename: song.id + ".mp3",
                 artist: song.author.name,
                 thumbnailUrl: song.thumbnail.replace("hqdefault", "0"),
                 duration: song.duration,
@@ -196,6 +196,27 @@ export default {
           this.$store.dispatch("setCurrentDownloadProp", {
             prop: "currentProcess",
             data: "Saving metadata..."
+          });
+
+          playlist.forEach(song => {
+            let matches = 0;
+            let indexes = [];
+
+            playlist.forEach((innerSong, i) => {
+              if (song.videoId === innerSong.videoId) {
+                matches++;
+              }
+
+              if (matches > 1) {
+                indexes.push(i);
+              }
+            });
+
+            if (indexes.length > 0) {
+              indexes.forEach(i => {
+                playlist.splice(i, 1);
+              });
+            }
           });
 
           /* saving playlist to documents as json file */

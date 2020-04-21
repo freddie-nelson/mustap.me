@@ -19,15 +19,12 @@ export default {
 
         this.$store.dispatch("setCurrentPlayingSrc", src);
       } else {
-        /* Get the song that the user clicked on */
-        const index = e - 1;
-        const song = this.$store.getters.currentPlaylistViewing
-          ? this.$store.getters.currentPlaylistViewing.data[index]
-          : this.$store.getters.currentPlaylist.data[index];
-
         if (setCurrentPlaylistDetails) {
           this.$store.dispatch("setCurrentPlaylistDetails");
         }
+        /* Get the song that the user clicked on */
+        const index = e - 1;
+        const song = this.$store.getters.currentPlaylist.data[index];
 
         /* setting all the properties of the song that is going to be played (the first song) */
         this.$store.dispatch("setCurrentPlayingMultiple", {

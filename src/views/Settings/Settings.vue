@@ -42,8 +42,8 @@ export default {
           }
         },
         Other: {
-          "auto sign in": {
-            description: "Controls wether you are automatically signed in on app launch",
+          "auto Sign In": {
+            description: "Controls wether you are automatically signed in.",
             options: true
           }
         }

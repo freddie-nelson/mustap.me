@@ -57,7 +57,7 @@
     <div class="matches-list">
       <div v-if="!this.forPlaylists">
         <div class="matches-list__match" v-for="(match, i) in matches" :key="i" @click="searchResultClicked(match.index)">
-          <span>{{ match.title }} by {{ match.artist }}</span>
+          <span>{{ match.text }}</span>
         </div>
       </div>
     </div>
@@ -67,9 +67,11 @@
 <script>
 import TrackControls from "@/components/TrackControls";
 import Button from "@/components/Button";
+import setCurrentPlaying from "@/mixins/setCurrentPlaying";
 
 export default {
   name: "CurrentPlaying",
+  mixins: [setCurrentPlaying],
   components: {
     TrackControls,
     Button
@@ -85,44 +87,26 @@ export default {
   },
   methods: {
     search() {
-      if (this.forPlaylists) {
+      if (this.forPlaylists || this.filter === "") {
         this.matches = [];
         return;
       }
 
-      const titleElements = Array.from(document.querySelectorAll("p.cell__left-text-top"));
-      const artistElements = Array.from(document.querySelectorAll("p.cell__left-text-bottom"));
+      const songs = this.$store.getters.currentPlaylistViewing.data;
 
       this.matches = [];
 
-      const titles = titleElements.map(ele => {
-        let title = ele.textContent || ele.innerText;
+      for (let i = 0; i < songs.length; i++) {
+        const artist = songs[i].artist[0] === " " ? songs[i].artist.slice(1, songs[i].artist.length) : songs[i].artist;
+        const title = songs[i].title[0] === " " ? songs[i].title.slice(1, songs[i].title.length) : songs[i].title;
 
-        if (title[0] == " ") {
-          title = title.slice(1, title.length);
-        }
-
-        return title;
-      });
-
-      const artists = artistElements.map(ele => {
-        let artist = ele.textContent || ele.innerText;
-
-        if (artist[0] == " ") {
-          artist = artist.slice(1, artist.length);
-        }
-
-        return artist;
-      });
-
-      for (let i = 0; i < titleElements.length; i++) {
-        const title = titles[i];
-        if (title.toUpperCase().indexOf(this.filter.toUpperCase()) > -1) {
-          this.matches.push({ title: titles[i], artist: artists[i], index: i });
+        const matchString = artist + " - " + title;
+        if (matchString.toUpperCase().indexOf(this.filter.toUpperCase()) > -1 && !songs[i].missing) {
+          this.matches.push({ text: matchString, index: i });
         }
       }
 
-      this.matches = this.matches.slice(0, 16);
+      this.matches = this.matches.slice(0, 25);
     },
     searchResultClicked(index) {
       if (this.forPlaylists) {
@@ -130,7 +114,7 @@ export default {
         return;
       }
       this.$store.dispatch("setCurrentPlaylistDetails");
-      this.$refs.trackControls.nextBack(index, "CurrentPlaying");
+      this.setCurrentPlaying(index);
     }
   }
 };

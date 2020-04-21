@@ -1,6 +1,6 @@
 export default {
   methods: {
-    addClasses(delay = 400) {
+    addClasses(delay) {
       if (this.$store.state.playlists.currentPlaylistViewing === this.$store.state.playlists.currentPlaylist) {
         /* check for missing songs once the table has loaded, also apply the clicked class to a song if it is playing and then scroll it into view as well */
         setTimeout(() => {
@@ -14,8 +14,6 @@ export default {
           const deletedPlaylist = state.playlists.deletedPlaylists.filter(
             playlist => playlist.name === this.$store.getters.currentPlaylistViewing.name + "__deleted__"
           );
-
-          console.log(deletedPlaylist);
 
           this.$store.dispatch("setProp", { prop: "missingSongsCount", data: 0 });
           this.$store.dispatch("setProp", { prop: "deletedSongsCount", data: 0 });
@@ -56,10 +54,9 @@ export default {
 
             if (deletedPlaylist[0]) {
               const deletedPlaylistData = deletedPlaylist[0].data;
-              console.log(deletedPlaylistData);
 
               for (let j = 0; j < deletedPlaylistData.length; j++) {
-                if (song.title === deletedPlaylistData[j].title) {
+                if (song.videoId === deletedPlaylistData[j].videoId) {
                   this.$store.dispatch("increment", "deletedSongsCount");
                   this.$store.dispatch("pushDeletedSong", {
                     song: deletedPlaylistData[j],

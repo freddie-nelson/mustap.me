@@ -23,7 +23,7 @@
             @clicked="
               () => {
                 deletedSongsModal = false;
-                $refs.dataTable.addClasses();
+                $refs.dataTable.addClasses(0);
               }
             "
             class="button"
@@ -61,9 +61,10 @@
     </header>
     <section class="library__main-container" :style="{ height: `calc(100% - ${this.headerHeight}px)` }">
       <vue-page-transition name="fade-in-right" id="tableContainer" class="container">
-        <router-view ref="dataTable"></router-view>
+        <router-view ref="dataTable" @delete-song="$refs.currentPlaying.search()" />
       </vue-page-transition>
       <CurrentPlaying
+        ref="currentPlaying"
         @update-playlist="updatePlaylist"
         @delete-playlist="deletePlaylist"
         class="library__current-playing"
@@ -76,6 +77,7 @@
 <script>
 import CurrentPlaying from "./components/CurrentPlaying";
 import Button from "@/components/Button";
+import setCurrentPlaying from "@/mixins/setCurrentPlaying";
 
 export default {
   name: "Library",
@@ -83,6 +85,7 @@ export default {
     CurrentPlaying,
     Button
   },
+  mixins: [setCurrentPlaying],
   data() {
     return {
       forPlaylists: true,
@@ -130,9 +133,6 @@ export default {
         fs.unlinkSync(deletedPlaylistPath);
       }
     },
-    deleteSong(i) {
-      this.$refs.dataTable.deleteSong(i + 1, true);
-    },
     updatePlaylist() {
       if (!this.forPlaylists) {
         if (this.$store.state.currentDownload.currentlyDownloading) {
@@ -141,21 +141,28 @@ export default {
             type: "alert"
           });
         } else {
-          const currentPlaylist = this.$store.getters.currentPlaylistViewing;
-
-          this.$store.dispatch("setUpdatingPlaylist", {
-            updatePlaylist: true,
-            name: currentPlaylist.name,
-            link: currentPlaylist.data[0].playlistLink
-          });
-          this.$store.dispatch("setCurrentDownloadProp", {
-            prop: "currentlyDownloading",
-            data: true
-          });
-
+          this.setUpdatePlaylistStoreValues();
           this.$router.push({ name: "Home" });
         }
       }
+    },
+    setUpdatePlaylistStoreValues() {
+      const currentPlaylist = this.$store.getters.currentPlaylistViewing;
+
+      this.$store.dispatch("setUpdatingPlaylist", {
+        updatePlaylist: true,
+        name: currentPlaylist.name,
+        link: currentPlaylist.data[0].playlistLink
+      });
+
+      this.$store.dispatch("setPlaylistsMultiple", { currentPlaylist: -1, currentPlaylistViewing: -1 });
+
+      this.$store.dispatch("setCurrentDownloadProp", {
+        prop: "currentlyDownloading",
+        data: true
+      });
+
+      this.setCurrentPlaying(false, "");
     },
     async deletePlaylist() {
       const fs = require("fs");
@@ -273,9 +280,6 @@ export default {
       }
     },
     async getPlaylists() {
-      // set deleteClickedIndex back to -1 so that the cell we clicked can be clicked again
-      this.$store.dispatch("resetDeleteClickedIndex");
-
       const fs = require("fs");
 
       const playlistsLocation = this.$store.state.documentsPath + "/mustap/playlists";

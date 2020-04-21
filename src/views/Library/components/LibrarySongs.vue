@@ -2,7 +2,6 @@
   <DataTable
     ref="dataTable"
     :forPlaylists="false"
-    @loaded-cells="addClasses"
     @drag-end="dragEnd($event)"
     @clicked-cell="setCurrentPlaying($event, false, true)"
     @delete-playlist="$emit('delete-playlist', $event)"
@@ -39,10 +38,8 @@ export default {
     back() {
       this.$refs.dataTable.back();
     },
+    fixCurrentPlayingIndex() {},
     deleteSong(index, noWriteJSON = false) {
-      // set deleteClickedIndex back to -1 so that the cell we clicked on can be clicked again
-      this.$store.dispatch("resetDeleteClickedIndex");
-
       // correct off by one error on index
       const i = index - 1;
       const fs = require("fs");
@@ -118,11 +115,12 @@ export default {
       const originalIndex = this.$store.state.currentPlaying.index;
 
       if (
-        this.$store.state.currentPlaying.index > -1 &&
-        this.$store.state.currentPlaying.index < index &&
-        this.$store.state.playlists.currentPlaylistViewing === this.$store.state.playlists.currentPlaylist
+        this.$store.state.playlists.currentPlaylistViewing === this.$store.state.playlists.currentPlaylist &&
+        this.$store.state.currentPlaying.index > -1
       ) {
-        this.$store.dispatch("setCurrentPlayingProp", { prop: "index", data: this.$store.state.currentPlaying.index - 1 });
+        if (this.$store.state.currentPlaying.index > index) {
+          this.$store.dispatch("setCurrentPlayingProp", { prop: "index", data: this.$store.state.currentPlaying.index - 1 });
+        }
       }
 
       this.$store.dispatch("setPlaylistsProp", { prop: "formattedPlaylist", data: this.array });
@@ -143,7 +141,7 @@ export default {
             })
             .catch(err => {
               this.$store.dispatch("addAlert", {
-                text: `'${songTitle}' has been could not be delete from playlist '${playlist.name}'. Error: ${err}`,
+                text: `'${songTitle}' could not be delete from playlist '${playlist.name}'. Error: ${err}`,
                 type: "warning"
               });
             });
@@ -162,8 +160,8 @@ export default {
 
       if (playlist.data.length !== 0) {
         fs.promises.writeFile(playlistPath, JSON.stringify(playlist.data));
-        this.addClasses();
-        this.$emit("deleted-song", true);
+        this.addClasses(0);
+        this.$emit("delete-song");
       } else {
         // if the playlist has 0 songs left in it delete it altogther
         this.$emit("delete-playlist");
@@ -233,6 +231,7 @@ export default {
     this.playlistIndex = this.$store.state.playlists.currentPlaylistViewing;
     this.playlist = this.$store.getters.currentPlaylistViewing.data;
     this.formatDataSongs(this.playlistIndex);
+    this.addClasses(400);
   }
 };
 </script>

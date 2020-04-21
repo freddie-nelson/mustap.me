@@ -51,7 +51,7 @@ const currentPlaying = {
     setCurrentPlayingProp({ commit }, payload) {
       commit("SET_CURRENT_PLAYING_PROP", payload);
     },
-    async setCurrentPlayingSrc({ commit, state, rootState }, payload) {
+    setCurrentPlayingSrc({ commit, state, rootState }, payload) {
       if (payload === "") {
         commit("SET_CURRENT_PLAYING_SRC", payload);
       } else {
@@ -76,11 +76,14 @@ const currentPlaying = {
         };
 
         const path = rootState.documentsPath + "/mustap/songs/" + state.filename;
-        const dataURL = await convertSong(path);
-
-        commit("SET_CURRENT_PLAYING_SRC", dataURL);
-
-        state.sound.play();
+        convertSong(path)
+          .then(dataURL => {
+            commit("SET_CURRENT_PLAYING_SRC", dataURL);
+            state.sound.play().catch(err => console.log("Song could not be played. Error: " + err));
+          })
+          .catch(err => {
+            commit("ADD_ALERT", { text: `Sorry that song could be played. Error: ${err}`, type: "warning" });
+          });
       }
     },
     setCurrentPlayingCurrentTime({ commit, state }) {
@@ -170,7 +173,7 @@ const playlists = {
     currentPlaylist: -1,
     currentPlaylistViewing: -1,
     currentPlaylistName: "",
-    repeatPlaylist: true,
+    repeatSong: false,
     shufflePlaylist: false,
     updatingPlaylist: {
       updatePlaylist: false,
@@ -245,9 +248,9 @@ const playlists = {
         commit("SET_CURRENT_PLAYING_PROP", { prop: "index", data: newIndex }, { root: true });
       }
 
-      if (currentIndex !== -1 && newIndex < currentIndex && oldIndex > currentIndex) {
+      if (currentIndex !== -1 && oldIndex > currentIndex) {
         commit("SET_CURRENT_PLAYING_PROP", { prop: "index", data: currentIndex + 1 }, { root: true });
-      } else if (currentIndex !== -1 && newIndex > currentIndex && oldIndex < currentIndex) {
+      } else if (currentIndex !== -1 && oldIndex < currentIndex) {
         commit("SET_CURRENT_PLAYING_PROP", { prop: "index", data: currentIndex - 1 }, { root: true });
       }
 
@@ -288,8 +291,7 @@ export default new Vuex.Store({
     deletedSongsCount: 0,
     deletedSongs: [],
     documentsPath: "",
-    alerts: [],
-    deleteClickedIndex: -1
+    alerts: []
   },
   mutations: {
     ADD_ALERT(state, payload) {
@@ -309,9 +311,6 @@ export default new Vuex.Store({
     },
     INCREMENT(state, prop) {
       state[prop]++;
-    },
-    RESET_DELETE_CLICKED_INDEX(state) {
-      state.deleteClickedIndex = -1;
     },
     PUSH_DELETED_SONG(state, payload) {
       if (!state.deletedSongs) {
@@ -339,9 +338,6 @@ export default new Vuex.Store({
     },
     increment({ commit }, prop) {
       commit("INCREMENT", prop);
-    },
-    resetDeleteClickedIndex({ commit }) {
-      commit("RESET_DELETE_CLICKED_INDEX");
     },
     pushDeletedSong({ commit }, payload) {
       commit("PUSH_DELETED_SONG", payload);

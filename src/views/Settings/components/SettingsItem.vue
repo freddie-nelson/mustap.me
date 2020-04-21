@@ -21,7 +21,7 @@
         :selected="data.selected"
         @clicked-option="$emit('clicked-option', $event)"
       />
-      <Checkbox v-else @checked="$emit('checked', $event)" />
+      <Checkbox v-else @checked="$emit('checked', $event)" :checked="data.options" />
     </div>
   </div>
 </template>
@@ -52,7 +52,6 @@ export default {
   padding: 0 !important;
   margin: 0;
   cursor: pointer;
-  width: 70% !important;
   min-width: 280px;
 }
 </style>

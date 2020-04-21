@@ -1,38 +1,39 @@
 <template>
-  <div v-if="show" class="cell created" :class="computedClasses" :id="id" @click="clicked">
-    <span class="cell__index">{{ index }}</span>
-    <div class="cell__left-text">
-      <p class="cell__left-text-top">{{ data.leftTop }}</p>
-      <p class="cell__left-text-bottom">{{ data.leftBottom }}</p>
+  <div class="cell-container">
+    <div v-if="show" class="cell created" :class="computedClasses" @click="clicked">
+      <span class="cell__index">{{ index }}</span>
+      <div class="cell__left-text">
+        <p class="cell__left-text-top">{{ data.leftTop }}</p>
+        <p class="cell__left-text-bottom">{{ data.leftBottom }}</p>
+      </div>
+
+      <div class="cell__right-text">
+        <p class="cell__right-text-top">
+          {{
+            this.$store.state.currentPlaying.index === index - 1 &&
+            !this.forPlaylists &&
+            this.$store.state.playlists.currentPlaylist === this.$store.state.playlists.currentPlaylistViewing
+              ? this.$store.state.currentPlaying.currentTime
+              : false || data.rightTop
+          }}
+        </p>
+      </div>
     </div>
 
-    <div class="cell__right-text">
-      <p class="cell__right-text-top">
-        {{
-          this.$store.state.currentPlaying.index === index - 1 &&
-          !this.forPlaylists &&
-          this.$store.state.playlists.currentPlaylist === this.$store.state.playlists.currentPlaylistViewing
-            ? this.$store.state.currentPlaying.currentTime
-            : false || data.rightTop
-        }}
-      </p>
-      <Button
-        @clicked="
-          () => {
-            $emit('deleteSong', index);
-            this.$store.state.deleteClickedIndex = index;
-          }
-        "
-        class="cell__right-text-bottom"
-        :text="'🗑'"
-        v-if="!this.forPlaylists"
-      />
-    </div>
+    <Button
+      @clicked="
+        () => {
+          $emit('deleteSong', index);
+        }
+      "
+      class="cell__right-text-bottom"
+      :text="'🗑'"
+      v-if="!this.forPlaylists"
+    />
   </div>
 </template>
 
 <script>
-import { v4 as uuidv4 } from "uuid";
 import Button from "@/components/Button";
 
 export default {
@@ -42,9 +43,8 @@ export default {
   },
   data() {
     return {
-      id: uuidv4(),
       deleteClicked: false,
-      show: false
+      show: true
     };
   },
   props: {
@@ -74,44 +74,34 @@ export default {
       }
     }
   },
-  watch: {
-    show: function() {
-      if (
-        this.$store.state.playlists.currentPlaylistViewing >= 0 &&
-        this.index >= this.$store.getters.currentPlaylistViewing.data.length
-      ) {
-        this.$emit("loaded-cells");
-      }
-    }
-  },
   methods: {
     clicked() {
-      setTimeout(() => {
-        if (this.$store.state.deleteClickedIndex === this.index) {
-          return;
-        }
-        if (
-          (this.forPlaylists ? true : this.$store.state.currentPlaylistViewing !== -1) &&
-          (this.forPlaylists || !this.$store.getters.currentPlaylistViewing.data[this.index - 1].missing)
-        ) {
-          this.$emit("clicked", this.index);
-        }
-      }, 50);
-    }
-  },
-  mounted() {
-    if (this.index === -1) {
-      setTimeout(() => {
-        this.show = true;
-      }, 100);
-    } else {
-      this.show = true;
+      if (
+        (this.forPlaylists ? true : this.$store.state.currentPlaylistViewing !== -1) &&
+        (this.forPlaylists || !this.$store.getters.currentPlaylistViewing.data[this.index - 1].missing)
+      ) {
+        this.$emit("clicked", this.index);
+      }
     }
   }
 };
 </script>
 
 <style lang="scss">
+.cell-container {
+  position: relative;
+
+  &:hover {
+    .cell {
+      background-color: var(--lighter-bg);
+    }
+
+    .cell__right-text-bottom {
+      opacity: 1 !important;
+    }
+  }
+}
+
 .cell {
   max-width: 100%;
   height: 64px;
@@ -120,7 +110,7 @@ export default {
   border-radius: 10px;
   display: flex;
   cursor: pointer;
-  transition: background-color 0.3s ease-in, color 0.2s ease-in, transform 0.4s ease-out, opacity 0.4s ease-out;
+  transition: background-color 0.3s ease-in, color 0.3s ease-in, transform 0.4s ease-out, opacity 0.4s ease-out;
   transform: translateX(0);
   opacity: 1;
 
@@ -138,14 +128,6 @@ export default {
 
   &.deleted {
     background-color: #dcd1352a !important;
-  }
-
-  &:hover {
-    background-color: var(--lighter-bg);
-
-    .cell__right-text-bottom {
-      opacity: 1 !important;
-    }
   }
 
   &:first-of-type {
@@ -189,11 +171,15 @@ export default {
     &-top {
       font-size: 16px;
       color: var(--secondary-text);
+      transition: color 0.3s ease-in;
     }
 
     &-bottom {
-      opacity: 0 !important;
+      opacity: 0;
       transition: opacity 0.3s ease-in;
+      position: absolute;
+      bottom: 8px;
+      right: 12px;
     }
   }
 }

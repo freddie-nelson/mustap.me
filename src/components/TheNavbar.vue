@@ -151,7 +151,6 @@ export default {
 
     this.$store.state.currentPlaying.sound.onended = debounce(
       () => {
-        console.log("song ended");
         if (currentPlaying.title === "N / A" || !currentPlaying.playing) {
           return;
         } else {

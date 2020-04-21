@@ -91,9 +91,6 @@ export default {
         }
 
         this.$router.push({ name: "Library" });
-
-        // set deleteClickedIndex back to -1 so that the cell we clicked on can be clicked again
-        this.$store.dispatch("resetDeleteClickedIndex");
       }
     }
   }
