@@ -27,7 +27,6 @@ export default {
   },
   methods: {
     clickedOption(i) {
-      console.log("hey");
       this.selectedNum = i;
       this.dropdown = false;
       this.$emit("clicked-option", i);
@@ -53,7 +52,7 @@ export default {
     justify-content: space-between;
     align-items: center;
     cursor: pointer;
-    z-index: 2;
+    z-index: 1;
 
     img {
       height: 7px;
@@ -69,14 +68,15 @@ export default {
   &__options {
     position: absolute;
     padding: 5px;
-    padding-top: 12px;
-    margin-top: -7px;
-    border-radius: 5px;
+    padding-top: 10px;
+    margin-top: -5px;
+    border-radius: 0px 0px 5px 5px;
     width: 250px;
     background-color: var(--lighter-bg);
     transition: transform 0.2s ease-out;
     transform-origin: top center;
     transform: scaleY(0);
+    z-index: 2;
 
     &.show {
       transform: scaleY(1);

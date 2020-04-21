@@ -1,6 +1,6 @@
 export default {
   methods: {
-    addClasses(delay = 250) {
+    addClasses(delay = 400) {
       if (this.$store.state.playlists.currentPlaylistViewing === this.$store.state.playlists.currentPlaylist) {
         /* check for missing songs once the table has loaded, also apply the clicked class to a song if it is playing and then scroll it into view as well */
         setTimeout(() => {

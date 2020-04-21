@@ -40,6 +40,7 @@ const currentPlaying = {
       Vue.set(state.sound, "currentTime", payload);
     },
     CHANGE_VOLUME(state, payload) {
+      Vue.set(state, "volume", payload);
       Vue.set(state.sound, "volume", payload);
     }
   },
@@ -113,11 +114,17 @@ const currentPlaying = {
       }
 
       commit("CHANGE_VOLUME", newVolume);
+    },
+    changeVolumeSlider({ commit }, volume) {
+      commit("CHANGE_VOLUME", volume);
     }
   },
   getters: {
     soundCurrentTime: state => {
       return Math.ceil(state.sound.currentTime);
+    },
+    soundVolume: state => {
+      return state.volume;
     }
   }
 };

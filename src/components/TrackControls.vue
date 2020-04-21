@@ -12,8 +12,8 @@
       >
         <vue-range-slider
           ref="volume-slider"
-          @slide-end="calcVolumeControlsSrc"
-          v-model="$store.state.currentPlaying.sound.volume"
+          @slide-end="changeVolume"
+          :value="volume"
           :max="1"
           :min="0"
           :step="0.01"
@@ -115,10 +115,22 @@ export default {
     padding: Number,
     bgColor: String
   },
+  computed: {
+    volume() {
+      return this.$store.getters.soundVolume;
+    }
+  },
+  watch: {
+    volume() {
+      this.calcVolumeControlsSrc(this.$store.getters.soundVolume);
+    }
+  },
   methods: {
-    calcVolumeControlsSrc() {
-      const volume = this.$store.state.currentPlaying.sound.volume;
-
+    changeVolume(e) {
+      this.$store.dispatch("changeVolumeSlider", e);
+      this.calcVolumeControlsSrc(e);
+    },
+    calcVolumeControlsSrc(volume) {
       if (volume === 0) {
         this.volumeControlsBtn = 1;
       } else if (volume <= 0.5) {

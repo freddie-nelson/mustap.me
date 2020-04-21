@@ -2,35 +2,63 @@
   <main class="settings">
     <h1>Settings</h1>
     <section class="settings__main">
-      <div class="settings__category">
-        <h2>Appearance</h2>
-
-        <div class="category__setting">
-          <h3>Default font</h3>
-          <p>Controls the default font family</p>
-          <Dropdown :options="settings.fonts" :selected="settings.currentFont" />
-        </div>
-      </div>
+      <SettingCategory
+        v-for="(category, index) in Object.keys(settings)"
+        :key="index"
+        :title="category"
+        :data="settings[category]"
+        class="settings__category"
+        @clicked-option="clickedOption({ category: category, ...$event })"
+        @checked="checked({ category: category, ...$event })"
+      />
     </section>
   </main>
 </template>
 
 <script>
-import Dropdown from "@/components/Dropdown";
+import SettingCategory from "./components/SettingCategory";
 
 export default {
   name: "Settings",
   components: {
-    Dropdown
+    SettingCategory
   },
   data() {
     return {
       settings: {
-        volume: 0.5,
-        fonts: ["Poppins", "Arial", "sans-serif"],
-        currentFont: 0
+        Volume: {
+          volume: 0.5
+        },
+        Appearance: {
+          fonts: {
+            description: "Controls the default font family.",
+            selected: 0,
+            options: ["Poppins", "Arial", "sans-serif"]
+          },
+          themes: {
+            description: "Controls the default application theme.",
+            selected: 0,
+            options: ["Default"]
+          }
+        },
+        Other: {
+          "auto sign in": {
+            description: "Controls wether you are automatically signed in on app launch",
+            options: true
+          }
+        }
       }
     };
+  },
+  methods: {
+    clickedOption(e) {
+      const { category, setting, index } = e;
+      this.settings[category][setting].selected = index;
+    },
+    checked(e) {
+      const { category, setting, value } = e;
+      this.settings[category][setting].options = value;
+    }
   }
 };
 </script>
@@ -51,13 +79,14 @@ export default {
     display: flex;
     width: 100%;
     padding: 10px 60px 40px 60px;
+    flex-direction: column;
   }
 
   &__category {
     margin-left: 20px;
 
     &:not(:first-of-type) {
-      margin-top: 30px;
+      margin-top: 20px;
     }
 
     h2 {
