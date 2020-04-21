@@ -10,11 +10,11 @@
       <div class="cell__right-text">
         <p class="cell__right-text-top">
           {{
-            this.$store.state.currentPlaying.index === index - 1 &&
-            !this.forPlaylists &&
-            this.$store.state.playlists.currentPlaylist === this.$store.state.playlists.currentPlaylistViewing
-              ? this.$store.state.currentPlaying.currentTime
-              : false || data.rightTop
+          this.$store.state.currentPlaying.index === index - 1 &&
+          !this.forPlaylists &&
+          this.$store.state.playlists.currentPlaylist === this.$store.state.playlists.currentPlaylistViewing
+          ? this.$store.state.currentPlaying.currentTime
+          : false || data.rightTop
           }}
         </p>
       </div>
@@ -57,9 +57,12 @@ export default {
       try {
         if (
           !this.forPlaylists &&
-          this.$store.state.playlists.currentPlaylistViewing === this.$store.state.playlists.currentPlaylist
+          this.$store.state.playlists.currentPlaylistViewing ===
+            this.$store.state.playlists.currentPlaylist
         ) {
-          const song = this.$store.getters.currentPlaylistViewing.data[this.index - 1];
+          const song = this.$store.getters.currentPlaylistViewing.data[
+            this.index - 1
+          ];
           const currentPlayingIndex = this.$store.state.currentPlaying.index;
 
           return {
@@ -77,8 +80,12 @@ export default {
   methods: {
     clicked() {
       if (
-        (this.forPlaylists ? true : this.$store.state.currentPlaylistViewing !== -1) &&
-        (this.forPlaylists || !this.$store.getters.currentPlaylistViewing.data[this.index - 1].missing)
+        (this.forPlaylists
+          ? true
+          : this.$store.state.currentPlaylistViewing !== -1) &&
+        (this.forPlaylists ||
+          !this.$store.getters.currentPlaylistViewing.data[this.index - 1]
+            .missing)
       ) {
         this.$emit("clicked", this.index);
       }
@@ -110,7 +117,8 @@ export default {
   border-radius: 10px;
   display: flex;
   cursor: pointer;
-  transition: background-color 0.3s ease-in, color 0.3s ease-in, transform 0.4s ease-out, opacity 0.4s ease-out;
+  transition: background-color 0.3s ease-in, color 0.3s ease-in,
+    transform 0.4s ease-out, opacity 0.4s ease-out;
   transform: translateX(0);
   opacity: 1;
 
@@ -178,7 +186,7 @@ export default {
       opacity: 0;
       transition: opacity 0.3s ease-in;
       position: absolute;
-      bottom: 8px;
+      bottom: 6px;
       right: 12px;
     }
   }
