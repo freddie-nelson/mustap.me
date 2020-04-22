@@ -45,6 +45,11 @@ export default {
           "auto Sign In": {
             description: "Controls wether you are automatically signed in.",
             options: true
+          },
+          "page Displayed On Launch": {
+            description: "Controls what page is displayed when the app is opened.",
+            selected: 0,
+            options: ["Home", "Library"]
           }
         }
       }

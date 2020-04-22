@@ -137,12 +137,19 @@ export default {
   },
   methods: {
     changeView(e) {
-      const parent = e.srcElement.parentNode;
+      const nodeName = e.target.nodeName;
+      let id;
 
-      if (this.$route.name === parent.id) {
+      if (nodeName === "H2" || nodeName === "svg" || nodeName === "path") {
+        id = e.srcElement.parentElement.id;
+      } else {
+        id = e.target.id;
+      }
+
+      if (this.$route.name === id) {
         return;
       } else {
-        this.$router.push({ name: parent.id });
+        this.$router.push({ name: id });
       }
     }
   },

@@ -214,7 +214,7 @@ export default {
       fs.promises
         .writeFile(playlistPath, JSON.stringify(currentPlaylistViewing.data))
         .then(() => {
-          this.$store.dispatch("addAlert", { text: "Your new order has been saved.", type: "alert" });
+          this.$store.dispatch("addAlert", { text: "Your new order has been saved.", type: "alert", autoClose: true });
         })
         .catch(err => {
           this.$store.dispatch("addAlert", { text: `Your new order could not be saved. Error: ${err}`, type: "warning" });

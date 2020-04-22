@@ -244,14 +244,18 @@ const playlists = {
 
       const currentIndex = rootState.currentPlaying.index;
 
-      if (oldIndex === currentIndex) {
-        commit("SET_CURRENT_PLAYING_PROP", { prop: "index", data: newIndex }, { root: true });
-      }
-
-      if (currentIndex !== -1 && oldIndex > currentIndex) {
-        commit("SET_CURRENT_PLAYING_PROP", { prop: "index", data: currentIndex + 1 }, { root: true });
-      } else if (currentIndex !== -1 && oldIndex < currentIndex) {
-        commit("SET_CURRENT_PLAYING_PROP", { prop: "index", data: currentIndex - 1 }, { root: true });
+      if (currentIndex > -1) {
+        if (oldIndex > currentIndex && newIndex < currentIndex) {
+          commit("SET_CURRENT_PLAYING_PROP", { prop: "index", data: currentIndex + 1 }, { root: true });
+        } else if (oldIndex < currentIndex && newIndex > currentIndex) {
+          commit("SET_CURRENT_PLAYING_PROP", { prop: "index", data: currentIndex - 1 }, { root: true });
+        } else if (newIndex === currentIndex && oldIndex < currentIndex) {
+          commit("SET_CURRENT_PLAYING_PROP", { prop: "index", data: currentIndex - 1 }, { root: true });
+        } else if (newIndex === currentIndex && oldIndex > currentIndex) {
+          commit("SET_CURRENT_PLAYING_PROP", { prop: "index", data: currentIndex + 1 }, { root: true });
+        } else if (oldIndex === currentIndex) {
+          commit("SET_CURRENT_PLAYING_PROP", { prop: "index", data: newIndex }, { root: true });
+        }
       }
 
       commit("DRAG_FINISHED", array);
