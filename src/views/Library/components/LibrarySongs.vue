@@ -1,7 +1,7 @@
 <template>
   <DataTable
     ref="dataTable"
-    :forPlaylists="false"
+    :for-playlists="false"
     @drag-end="dragEnd($event)"
     @clicked-cell="setCurrentPlaying($event, false, true)"
     @delete-playlist="$emit('delete-playlist', $event)"
@@ -181,7 +181,10 @@ export default {
         };
       });
 
-      this.$store.dispatch("setPlaylistsProp", { prop: "formattedPlaylist", data: this.array });
+      this.$store.dispatch("setPlaylistsMultiple", {
+        formattedPlaylist: this.array,
+        formattedPlaylistIndex: this.playlistIndex
+      });
 
       /* set the playlist that was clicked as the one we are viewing in vuex */
       this.$store.dispatch("setPlaylistsProp", {
@@ -228,10 +231,17 @@ export default {
     });
   },
   mounted() {
+    if (this.$store.state.playlists.currentPlaylistViewing === -1) {
+      this.$store.dispatch("setPlaylistsProp", {
+        prop: "currentPlaylistViewing",
+        data: this.$store.state.playlists.formattedPlaylistIndex
+      });
+    }
+
     this.playlistIndex = this.$store.state.playlists.currentPlaylistViewing;
     this.playlist = this.$store.getters.currentPlaylistViewing.data;
     this.formatDataSongs(this.playlistIndex);
-    this.addClasses(400);
+    this.addClasses(400)
   }
 };
 </script>

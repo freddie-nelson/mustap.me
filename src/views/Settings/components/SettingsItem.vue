@@ -41,8 +41,7 @@ export default {
     capatilizedTitle() {
       return this.title.charAt(0).toUpperCase() + this.title.slice(1, this.title.length);
     }
-  },
-  methods: {}
+  }
 };
 </script>
 

@@ -1,5 +1,10 @@
 <template>
-  <DataTable ref="dataTable" :formattedArray="array" :forPlaylists="true" @clicked-cell="clickedCell($event)" />
+  <DataTable
+    ref="dataTable"
+    :formatted-array="array"
+    :for-playlists="true"
+    @clicked-cell="clickedCell($event)"
+  />
 </template>
 
 <script>

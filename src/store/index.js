@@ -169,6 +169,7 @@ const playlists = {
     playlists: [],
     deletedPlaylists: [],
     formattedPlaylist: [],
+    formattedPlaylistIndex: -1,
     orderChanged: false,
     currentPlaylist: -1,
     currentPlaylistViewing: -1,

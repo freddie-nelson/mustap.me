@@ -1,20 +1,29 @@
 <template>
   <div class="cell-container">
-    <div v-if="show" class="cell created" :class="computedClasses" @click="clicked">
+    <div
+      v-if="show"
+      class="cell created"
+      :class="computedClasses"
+      @click="clicked"
+    >
       <span class="cell__index">{{ index }}</span>
       <div class="cell__left-text">
-        <p class="cell__left-text-top">{{ data.leftTop }}</p>
-        <p class="cell__left-text-bottom">{{ data.leftBottom }}</p>
+        <p class="cell__left-text-top">
+          {{ data.leftTop }}
+        </p>
+        <p class="cell__left-text-bottom">
+          {{ data.leftBottom }}
+        </p>
       </div>
 
       <div class="cell__right-text">
         <p class="cell__right-text-top">
           {{
-          this.$store.state.currentPlaying.index === index - 1 &&
-          !this.forPlaylists &&
-          this.$store.state.playlists.currentPlaylist === this.$store.state.playlists.currentPlaylistViewing
-          ? this.$store.state.currentPlaying.currentTime
-          : false || data.rightTop
+            this.$store.state.currentPlaying.index === index - 1 &&
+              !this.forPlaylists &&
+              this.$store.state.playlists.currentPlaylist === this.$store.state.playlists.currentPlaylistViewing
+              ? this.$store.state.currentPlaying.currentTime
+              : false || data.rightTop
           }}
         </p>
       </div>

@@ -1,6 +1,12 @@
 <template>
-  <div class="controls" :style="{ padding: `0 ${padding}px` }">
-    <div class="controls__volume-buttons" :style="{ padding: `0 ${padding}px 0 0` }">
+  <div
+    class="controls"
+    :style="{ padding: `0 ${padding}px` }"
+  >
+    <div
+      class="controls__volume-buttons"
+      :style="{ padding: `0 ${padding}px 0 0` }"
+    >
       <div
         class="volume-buttons__audio-controller"
         v-if="showVolumeControls"
@@ -23,7 +29,7 @@
           :height="130"
           :width="8"
           style="display: block; margin: auto;"
-        ></vue-range-slider>
+        />
       </div>
 
       <img
@@ -32,7 +38,7 @@
         src="../assets/svg/volume/volume-none.svg"
         @click="showVolumeControls = !showVolumeControls"
         class="volume-buttons__controls-volume-none volume-buttons__button"
-      />
+      >
 
       <img
         v-else-if="volumeControlsBtn === 2"
@@ -40,7 +46,7 @@
         src="../assets/svg/volume/volume-one.svg"
         @click="showVolumeControls = !showVolumeControls"
         class="volume-buttons__controls-volume-one volume-buttons__button"
-      />
+      >
 
       <img
         v-else
@@ -48,7 +54,7 @@
         src="../assets/svg/volume/volume-full.svg"
         @click="showVolumeControls = !showVolumeControls"
         class="volume-buttons__controls-volume-full volume-buttons__button"
-      />
+      >
     </div>
 
     <vue-range-slider
@@ -62,7 +68,7 @@
       :dot-size="16"
       :height="10"
       style="display: block; padding: 0; margin: 0; cursor: pointer;"
-    ></vue-range-slider>
+    />
     <div class="controls__buttons">
       <img
         src="../assets/svg/controls/repeat.svg"
@@ -70,9 +76,14 @@
         alt
         @click="$store.dispatch('setPlaylistsProp', { prop: 'repeatSong', data: !$store.state.playlists.repeatSong })"
         class="controls__buttons-repeat"
-      />
+      >
 
-      <img src="../assets/svg/controls/next.svg" alt @click="nextBack(-1, true)" class="controls__buttons-button back-btn" />
+      <img
+        src="../assets/svg/controls/next.svg"
+        alt
+        @click="nextBack(-1, true)"
+        class="controls__buttons-button back-btn"
+      >
 
       <img
         v-if="!this.$store.state.currentPlaying.playing"
@@ -80,11 +91,22 @@
         alt
         @click="playPause"
         class="controls__buttons-button-play"
-      />
+      >
 
-      <img v-else src="../assets/svg/controls/pause.svg" alt @click="playPause" class="controls__buttons-button-pause" />
+      <img
+        v-else
+        src="../assets/svg/controls/pause.svg"
+        alt
+        @click="playPause"
+        class="controls__buttons-button-pause"
+      >
 
-      <img src="../assets/svg/controls/next.svg" alt @click="nextBack(1, true)" class="controls__buttons-button skip-btn" />
+      <img
+        src="../assets/svg/controls/next.svg"
+        alt
+        @click="nextBack(1, true)"
+        class="controls__buttons-button skip-btn"
+      >
 
       <img
         src="../assets/svg/controls/shuffle.svg"
@@ -92,7 +114,7 @@
         alt
         @click="$store.dispatch('setPlaylistsProp', { prop: 'shufflePlaylist', data: !$store.state.playlists.shufflePlaylist })"
         class="controls__buttons-shuffle"
-      />
+      >
     </div>
   </div>
 </template>

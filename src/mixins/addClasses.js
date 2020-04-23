@@ -21,7 +21,13 @@ export default {
 
           /* apply classes to cells */
           for (let i = 0; i < children.length; i++) {
-            const song = this.$store.getters.currentPlaylistViewing.data[i];
+            let song;
+
+            if (!this.$store.getters.currentPlaylistViewing) {
+              continue
+            } else {
+              song = this.$store.getters.currentPlaylistViewing.data[i];
+            }
 
             const filename = songsPath + song.filename;
 
