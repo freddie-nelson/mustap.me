@@ -7,27 +7,29 @@
     >
       {{ text }}
     </button>
-    <div v-if="modalShow" class="modal-container">
-      <div class="modal">
-        <p>{{ modalText }}</p>
-        <input v-if="modalInputBox || false" type="text" name="playlist-name" v-model="playlistName" />
-        <div class="modal__button-container">
-          <Button @clicked="modalShow = false" class="button" :filled="false" :text="'Cancel'" :fontSize="14" />
-          <Button
-            @clicked="
-              () => {
-                $emit('clicked');
-                modalShow = false;
-              }
-            "
-            class="button"
-            :filled="true"
-            :text="modalButtonText"
-            :fontSize="14"
-          />
+    <transition name="fade">
+      <div v-if="modalShow" class="modal-container">
+        <div class="modal">
+          <p><span v-html="modalTextFormatted"></span></p>
+          <input v-if="modalInputBox || false" type="text" name="playlist-name" v-model="playlistName" />
+          <div class="modal__button-container">
+            <Button @clicked="modalShow = false" class="button" :filled="false" :text="'Cancel'" :fontSize="14" />
+            <Button
+              @clicked="
+                () => {
+                  $emit('clicked');
+                  modalShow = false;
+                }
+              "
+              class="button"
+              :filled="true"
+              :text="modalButtonText"
+              :fontSize="14"
+            />
+          </div>
         </div>
       </div>
-    </div>
+    </transition>
   </div>
 </template>
 
@@ -36,7 +38,8 @@ export default {
   name: "Button",
   data() {
     return {
-      modalShow: false
+      modalShow: false,
+      modalTextFormatted: this.modalText ? this.modalText.replace(/\n/g, "<br>") : null
     };
   },
   props: {
@@ -101,14 +104,13 @@ button {
   display: flex;
   align-items: center;
   justify-content: center;
-  animation: searchbox-options-anim 1s ease-in;
-  animation-fill-mode: forwards;
 }
 
 .modal {
   background-color: var(--main-bg);
   padding: 20px;
   border-radius: 10px;
+  max-width: 600px;
 
   p {
     margin-bottom: 5px;
@@ -138,5 +140,14 @@ button {
       margin-right: 15px;
     }
   }
+}
+
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.3s;
+}
+.fade-enter,
+.fade-leave-to {
+  opacity: 0;
 }
 </style>

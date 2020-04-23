@@ -36,6 +36,11 @@
       :text="'Update Playlist'"
       :filled="false"
       :fontSize="15"
+      :modalPopup="true"
+      :modalText="
+        'Updating this playlist will reset it\'s order. If you wish to keep the current order you can add new songs manually.'
+      "
+      :modalButtonText="'Update Playlist'"
     />
     <Button
       @clicked="$emit('delete-playlist')"
