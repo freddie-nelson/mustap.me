@@ -10,7 +10,7 @@
           backgroundImage: `url(${this.$store.state.currentPlaying.thumbnail})`
         }"
         alt="Album Cover / Song Art"
-      ></div>
+      />
       <div class="current-playing-details__text">
         <p class="current-playing-details__title">
           {{ this.$store.state.currentPlaying.title }}
@@ -25,9 +25,9 @@
 
     <TrackControls
       ref="trackControls"
-      :currentTime="$store.state.currentPlaying.sound.currentTime"
+      :current-time="$store.state.currentPlaying.sound.currentTime"
       :padding="0"
-      :bgColor="'--lighter-bg'"
+      :bg-color="'--lighter-bg'"
     />
     <Button
       style="margin-right: 30px;"
@@ -35,22 +35,22 @@
       :disabled="this.forPlaylists"
       :text="'Update Playlist'"
       :filled="false"
-      :fontSize="15"
-      :modalPopup="true"
-      :modalText="
+      :font-size="15"
+      :modal-popup="true"
+      :modal-text="
         'Updating this playlist will reset it\'s order. If you wish to keep the current order you can add new songs manually.'
       "
-      :modalButtonText="'Update Playlist'"
+      :modal-button-text="'Update Playlist'"
     />
     <Button
       @clicked="$emit('delete-playlist')"
       :disabled="this.forPlaylists"
       :text="'Delete Playlist'"
       :filled="true"
-      :fontSize="15"
-      :modalPopup="true"
-      :modalText="'Are you sure you want to delete this playlist?'"
-      :modalButtonText="'Yes, I\'m sure.'"
+      :font-size="15"
+      :modal-popup="true"
+      :modal-text="'Are you sure you want to delete this playlist?'"
+      :modal-button-text="'Yes, I\'m sure.'"
     />
     <input
       @keyup="search"
@@ -58,10 +58,15 @@
       class="current-playing-details-container__searchbox"
       type="text"
       placeholder="Search..."
-    />
+    >
     <div class="matches-list">
       <div v-if="!this.forPlaylists">
-        <div class="matches-list__match" v-for="(match, i) in matches" :key="i" @click="searchResultClicked(match.index)">
+        <div
+          class="matches-list__match"
+          v-for="(match, i) in matches"
+          :key="i"
+          @click="searchResultClicked(match.index)"
+        >
           <span>{{ match.text }}</span>
         </div>
       </div>
@@ -73,10 +78,11 @@
 import TrackControls from "@/components/TrackControls";
 import Button from "@/components/Button";
 import setCurrentPlaying from "@/mixins/setCurrentPlaying";
+import addClasses from "@/mixins/addClasses";
 
 export default {
   name: "CurrentPlaying",
-  mixins: [setCurrentPlaying],
+  mixins: [setCurrentPlaying, addClasses],
   components: {
     TrackControls,
     Button
@@ -102,11 +108,20 @@ export default {
       this.matches = [];
 
       for (let i = 0; i < songs.length; i++) {
-        const artist = songs[i].artist[0] === " " ? songs[i].artist.slice(1, songs[i].artist.length) : songs[i].artist;
-        const title = songs[i].title[0] === " " ? songs[i].title.slice(1, songs[i].title.length) : songs[i].title;
+        const artist =
+          songs[i].artist[0] === " "
+            ? songs[i].artist.slice(1, songs[i].artist.length)
+            : songs[i].artist;
+        const title =
+          songs[i].title[0] === " "
+            ? songs[i].title.slice(1, songs[i].title.length)
+            : songs[i].title;
 
         const matchString = artist + " - " + title;
-        if (matchString.toUpperCase().indexOf(this.filter.toUpperCase()) > -1 && !songs[i].missing) {
+        if (
+          matchString.toUpperCase().indexOf(this.filter.toUpperCase()) > -1 &&
+          !songs[i].missing
+        ) {
           this.matches.push({ text: matchString, index: i });
         }
       }
@@ -119,7 +134,8 @@ export default {
         return;
       }
       this.$store.dispatch("setCurrentPlaylistDetails");
-      this.setCurrentPlaying(index);
+      this.setCurrentPlaying(index + 1);
+      this.addClasses();
     }
   }
 };

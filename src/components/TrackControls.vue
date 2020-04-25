@@ -36,6 +36,7 @@
         v-if="volumeControlsBtn === 1"
         alt
         src="../assets/svg/volume/volume-none.svg"
+        :style="{ filter: filter }"
         @click="showVolumeControls = !showVolumeControls"
         class="volume-buttons__controls-volume-none volume-buttons__button"
       >
@@ -44,6 +45,7 @@
         v-else-if="volumeControlsBtn === 2"
         alt
         src="../assets/svg/volume/volume-one.svg"
+        :style="{ filter: filter }"
         @click="showVolumeControls = !showVolumeControls"
         class="volume-buttons__controls-volume-one volume-buttons__button"
       >
@@ -52,6 +54,7 @@
         v-else
         alt
         src="../assets/svg/volume/volume-full.svg"
+        :style="{ filter: filter }"
         @click="showVolumeControls = !showVolumeControls"
         class="volume-buttons__controls-volume-full volume-buttons__button"
       >
@@ -59,7 +62,11 @@
 
     <vue-range-slider
       @slide-end="$store.dispatch('setCurrentPlayingSoundCurrentTime', $event)"
-      :value="currentTime > $store.state.currentPlaying.lengthSeconds ? 0 : currentTime"
+      :value="
+        currentTime > $store.state.currentPlaying.lengthSeconds
+          ? 0
+          : currentTime
+      "
       :max="$store.state.currentPlaying.lengthSeconds || 0"
       :min="0"
       :step="1"
@@ -72,14 +79,23 @@
     <div class="controls__buttons">
       <img
         src="../assets/svg/controls/repeat.svg"
-        :style="{ opacity: $store.state.playlists.repeatSong ? '1' : '.7' }"
+        :style="{
+          opacity: $store.state.playlists.repeatSong ? '1' : '.7',
+          filter: filter
+        }"
         alt
-        @click="$store.dispatch('setPlaylistsProp', { prop: 'repeatSong', data: !$store.state.playlists.repeatSong })"
+        @click="
+          $store.dispatch('setPlaylistsProp', {
+            prop: 'repeatSong',
+            data: !$store.state.playlists.repeatSong
+          })
+        "
         class="controls__buttons-repeat"
       >
 
       <img
         src="../assets/svg/controls/next.svg"
+        :style="{ filter: filter }"
         alt
         @click="nextBack(-1, true)"
         class="controls__buttons-button back-btn"
@@ -88,6 +104,7 @@
       <img
         v-if="!this.$store.state.currentPlaying.playing"
         src="../assets/svg/controls/play.svg"
+        :style="{ filter: filter }"
         alt
         @click="playPause"
         class="controls__buttons-button-play"
@@ -96,6 +113,7 @@
       <img
         v-else
         src="../assets/svg/controls/pause.svg"
+        :style="{ filter: filter }"
         alt
         @click="playPause"
         class="controls__buttons-button-pause"
@@ -103,6 +121,7 @@
 
       <img
         src="../assets/svg/controls/next.svg"
+        :style="{ filter: filter }"
         alt
         @click="nextBack(1, true)"
         class="controls__buttons-button skip-btn"
@@ -110,9 +129,17 @@
 
       <img
         src="../assets/svg/controls/shuffle.svg"
-        :style="{ opacity: $store.state.playlists.shufflePlaylist ? '1' : '.7' }"
+        :style="{
+          opacity: $store.state.playlists.shufflePlaylist ? '1' : '.7',
+          filter: filter
+        }"
         alt
-        @click="$store.dispatch('setPlaylistsProp', { prop: 'shufflePlaylist', data: !$store.state.playlists.shufflePlaylist })"
+        @click="
+          $store.dispatch('setPlaylistsProp', {
+            prop: 'shufflePlaylist',
+            data: !$store.state.playlists.shufflePlaylist
+          })
+        "
         class="controls__buttons-shuffle"
       >
     </div>
@@ -140,6 +167,14 @@ export default {
   computed: {
     volume() {
       return this.$store.getters.soundVolume;
+    },
+    filter() {
+      if (this.$store.getters.imageFilter) {
+        const filter = this.$store.getters.imageFilter.split(":")[1];
+        return filter.slice(0, filter.length - 1)
+      } else {
+        return ""
+      }
     }
   },
   watch: {
@@ -195,7 +230,10 @@ export default {
       if (state.playlists.repeatSong && !clicked) {
         index = currentPlaying.index;
       } else if (state.playlists.repeatSong && clicked) {
-        this.$store.dispatch("setPlaylistsProp", { prop: "repeatSong", data: false });
+        this.$store.dispatch("setPlaylistsProp", {
+          prop: "repeatSong",
+          data: false
+        });
       }
 
       if (index >= currentPlaylist.length || index < 0) {
@@ -211,7 +249,9 @@ export default {
       if (song.missing) {
         while (song.missing) {
           index = num === 1 ? index + 1 : index - 1;
-          index === currentPlaylist.length ? (song = currentPlaylist[index]) : null;
+          index === currentPlaylist.length
+            ? (song = currentPlaylist[index])
+            : null;
         }
       }
 

@@ -1,6 +1,17 @@
 <template>
-  <div :id="tableId" ref="table" :class="{ forPlaylists: forPlaylists, table: forPlaylists }" style="height: 100%">
-    <draggable v-if="!forPlaylists" :id="draggableTableId" class="table" v-model="playlist" @change="$emit('drag-end', $event)">
+  <div
+    :id="tableId"
+    ref="table"
+    :class="{ forPlaylists: forPlaylists, table: forPlaylists }"
+    style="height: 100%;"
+  >
+    <draggable
+      v-if="!forPlaylists"
+      :id="draggableTableId"
+      class="table"
+      v-model="playlist"
+      @change="$emit('drag-end', $event)"
+    >
       <DataTableCell
         v-for="(data, index) in $store.state.playlists.formattedPlaylist"
         :data="data"
@@ -9,7 +20,7 @@
         @deleteSong="$emit('delete-song', $event)"
         @loaded-cells="$emit('loaded-cells')"
         :index="index + 1"
-        :forPlaylists="forPlaylists"
+        :for-playlists="forPlaylists"
       />
     </draggable>
     <DataTableCell
@@ -21,9 +32,13 @@
       @deleteSong="$emit('delete-song', $event)"
       @loaded-cells="$emit('loaded-cells')"
       :index="index + 1"
-      :forPlaylists="forPlaylists"
+      :for-playlists="forPlaylists"
     />
-    <BackBtn style="left: 16px" v-if="!this.forPlaylists" @back="back" />
+    <BackBtn
+      style="left: 16px"
+      v-if="!this.forPlaylists"
+      @back="back"
+    />
   </div>
 </template>
 
@@ -92,6 +107,11 @@ export default {
 
         this.$router.push({ name: "Library" });
       }
+    }
+  },
+  mounted() {
+    if (this.formattedArray) {
+      this.array = [...this.formattedArray];
     }
   }
 };

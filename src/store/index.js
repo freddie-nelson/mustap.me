@@ -75,14 +75,22 @@ const currentPlaying = {
           return songPromise;
         };
 
-        const path = rootState.documentsPath + "/mustap/songs/" + state.filename;
+        const path =
+          rootState.documentsPath + "/mustap/songs/" + state.filename;
         convertSong(path)
           .then(dataURL => {
             commit("SET_CURRENT_PLAYING_SRC", dataURL);
-            state.sound.play().catch(err => console.log("Song could not be played. Error: " + err));
+            state.sound
+              .play()
+              .catch(err =>
+                console.log("Song could not be played. Error: " + err)
+              );
           })
           .catch(err => {
-            commit("ADD_ALERT", { text: `Sorry that song could be played. Error: ${err}`, type: "warning" });
+            commit("ADD_ALERT", {
+              text: `Sorry that song could be played. Error: ${err}`,
+              type: "warning"
+            });
           });
       }
     },
@@ -90,11 +98,20 @@ const currentPlaying = {
       if (state.currentTimeSeconds === Math.ceil(state.sound.currentTime)) {
         return;
       } else {
-        commit("SET_CURRENT_PLAYING_PROP", { prop: "currentTimeSeconds", data: Math.ceil(state.sound.currentTime) });
+        commit("SET_CURRENT_PLAYING_PROP", {
+          prop: "currentTimeSeconds",
+          data: Math.ceil(state.sound.currentTime)
+        });
 
-        const num = state.currentTimeSeconds % 60 < 10 ? "0" + (state.currentTimeSeconds % 60) : state.currentTimeSeconds % 60;
-        const currentTime = Math.floor(state.currentTimeSeconds / 60) + ":" + num;
-        const progress = ((state.currentTimeSeconds / state.lengthSeconds) * 100).toFixed(2) + "%";
+        const num =
+          state.currentTimeSeconds % 60 < 10
+            ? "0" + (state.currentTimeSeconds % 60)
+            : state.currentTimeSeconds % 60;
+        const currentTime =
+          Math.floor(state.currentTimeSeconds / 60) + ":" + num;
+        const progress =
+          ((state.currentTimeSeconds / state.lengthSeconds) * 100).toFixed(2) +
+          "%";
 
         commit("SET_CURRENT_PLAYING_CURRENT_TIME", {
           currentTime: currentTime,
@@ -106,7 +123,9 @@ const currentPlaying = {
       commit("SET_CURRENT_PLAYING_SOUND_CURRENT_TIME", val);
     },
     changeVolume({ commit, state }, { num, minus }) {
-      let newVolume = minus ? state.sound.volume - num : state.sound.volume + num;
+      let newVolume = minus
+        ? state.sound.volume - num
+        : state.sound.volume + num;
 
       Math.round((newVolume + Number.EPSILON) * 100) / 100;
 
@@ -201,7 +220,11 @@ const playlists = {
     },
     SET_CURRENT_PLAYLIST_DETAILS(state) {
       Vue.set(state, "currentPlaylist", state.currentPlaylistViewing);
-      Vue.set(state, "currentPlaylistName", state.playlists[state.currentPlaylistViewing].name);
+      Vue.set(
+        state,
+        "currentPlaylistName",
+        state.playlists[state.currentPlaylistViewing].name
+      );
     },
     SET_DELETED_PLAYLIST_DATA(state, { array, index }) {
       Vue.set(state.deletedPlaylists, index, array);
@@ -232,12 +255,18 @@ const playlists = {
       let deletedPlaylistIndex;
 
       state.deletedPlaylists.forEach((playlist, i) => {
-        if (playlist.name === getters.currentPlaylistViewing.name + "__deleted__") {
+        if (
+          playlist.name ===
+          getters.currentPlaylistViewing.name + "__deleted__"
+        ) {
           deletedPlaylistIndex = i;
         }
       });
 
-      commit("SET_DELETED_PLAYLIST_DATA", { array: rootState.deletedSongs, index: deletedPlaylistIndex });
+      commit("SET_DELETED_PLAYLIST_DATA", {
+        array: rootState.deletedSongs,
+        index: deletedPlaylistIndex
+      });
     },
     dragFinished({ commit, getters, rootState }, [oldIndex, newIndex]) {
       let array = [...getters.currentPlaylistViewing.data];
@@ -247,15 +276,35 @@ const playlists = {
 
       if (currentIndex > -1) {
         if (oldIndex > currentIndex && newIndex < currentIndex) {
-          commit("SET_CURRENT_PLAYING_PROP", { prop: "index", data: currentIndex + 1 }, { root: true });
+          commit(
+            "SET_CURRENT_PLAYING_PROP",
+            { prop: "index", data: currentIndex + 1 },
+            { root: true }
+          );
         } else if (oldIndex < currentIndex && newIndex > currentIndex) {
-          commit("SET_CURRENT_PLAYING_PROP", { prop: "index", data: currentIndex - 1 }, { root: true });
+          commit(
+            "SET_CURRENT_PLAYING_PROP",
+            { prop: "index", data: currentIndex - 1 },
+            { root: true }
+          );
         } else if (newIndex === currentIndex && oldIndex < currentIndex) {
-          commit("SET_CURRENT_PLAYING_PROP", { prop: "index", data: currentIndex - 1 }, { root: true });
+          commit(
+            "SET_CURRENT_PLAYING_PROP",
+            { prop: "index", data: currentIndex - 1 },
+            { root: true }
+          );
         } else if (newIndex === currentIndex && oldIndex > currentIndex) {
-          commit("SET_CURRENT_PLAYING_PROP", { prop: "index", data: currentIndex + 1 }, { root: true });
+          commit(
+            "SET_CURRENT_PLAYING_PROP",
+            { prop: "index", data: currentIndex + 1 },
+            { root: true }
+          );
         } else if (oldIndex === currentIndex) {
-          commit("SET_CURRENT_PLAYING_PROP", { prop: "index", data: newIndex }, { root: true });
+          commit(
+            "SET_CURRENT_PLAYING_PROP",
+            { prop: "index", data: newIndex },
+            { root: true }
+          );
         }
       }
 
@@ -296,7 +345,8 @@ export default new Vuex.Store({
     deletedSongsCount: 0,
     deletedSongs: [],
     documentsPath: "",
-    alerts: []
+    alerts: [],
+    imageFilter: ""
   },
   mutations: {
     ADD_ALERT(state, payload) {
@@ -353,5 +403,9 @@ export default new Vuex.Store({
     currentDownload: currentDownload,
     playlists: playlists
   },
-  getters: {}
+  getters: {
+    imageFilter: state => {
+      return state.imageFilter;
+    }
+  }
 });

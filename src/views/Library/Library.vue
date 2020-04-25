@@ -1,9 +1,7 @@
 <template>
   <main class="library">
-    <div
-      v-if="deletedSongsModal"
-      class="deleted-songs-modal"
-    >
+    <div v-if="deletedSongsModal"
+class="deleted-songs-modal">
       <div class="modal">
         <p>Please choose what you would like to do with the songs below.</p>
         <div class="modal__list">
@@ -140,7 +138,7 @@ export default {
       }
     },
     forPlaylists() {
-      return this.$store.getters.currentPlaylistViewing ? true : false;
+      return !this.$store.getters.currentPlaylistViewing ? true : false;
     }
   },
   methods: {
