@@ -74,8 +74,6 @@ export default {
   --accent-color-secondary: #e91e63;
   --navbar-logo-bg: #fff;
   --alert-hover-color: #353535;
-  --filter: invert(82%) sepia(0%) saturate(2767%) hue-rotate(314deg)
-    brightness(116%) contrast(103%);
 }
 
 * {

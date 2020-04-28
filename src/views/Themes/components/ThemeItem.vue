@@ -140,7 +140,13 @@ export default {
     },
     name: String,
     creator: String,
-    preview: Boolean
+    preview: Boolean,
+    refresh: Boolean
+  },
+  watch: {
+    refresh() {
+      this.applyColors();
+    }
   },
   methods: {
     clickedCell(e) {
@@ -197,56 +203,60 @@ export default {
       fs.promises.writeFile(themesPath + fileName, JSON.stringify(theme))
         .then(() => this.loadTheme())
         .catch(err => console.log(err));
+    },
+    applyColors() {
+      const el = this.$refs.themeItem.style;
+
+      const propNames = [
+        "--dark-bg",
+        "--main-bg",
+        "--lighter-bg",
+        "--primary-text",
+        "--secondary-text",
+        "--accent-color",
+        "--accent-color-secondary",
+        "--navbar-logo-bg",
+        "--alert-hover-color",
+        "--filter"
+      ];
+
+      const colorsPropNames = [
+        "darkBg",
+        "mainBg",
+        "lighterBg",
+        "primaryText",
+        "secondaryText",
+        "accentColor",
+        "accentColorSecondary",
+        "navbarLogoBg",
+        "alertHoverColor",
+        "filter"
+      ];
+
+      propNames.forEach((val, index) =>
+        el.setProperty(val, this.colors[colorsPropNames[index]])
+      );
+
+      const images = document.querySelectorAll(".item__controls-buttons>img");
+      images.forEach(element => {
+        element.style.cssText += this.colors[colorsPropNames[9]];
+      });
+
+      setTimeout(() => this.addClasses(0), 100)
     }
   },
   mounted() {
-    const el = this.$refs.themeItem.style;
-
-    const propNames = [
-      "--dark-bg",
-      "--main-bg",
-      "--lighter-bg",
-      "--primary-text",
-      "--secondary-text",
-      "--accent-color",
-      "--accent-color-secondary",
-      "--navbar-logo-bg",
-      "--alert-hover-color",
-      "--filter"
-    ];
-
-    const colorsPropNames = [
-      "darkBg",
-      "mainBg",
-      "lighterBg",
-      "primaryText",
-      "secondaryText",
-      "accentColor",
-      "accentColorSecondary",
-      "navbarLogoBg",
-      "alertHoverColor",
-      "filter"
-    ];
-
-    propNames.forEach((val, index) =>
-      el.setProperty(val, this.colors[colorsPropNames[index]])
-    );
-
-    const images = document.querySelectorAll(".item__controls-buttons>img");
-    images.forEach(element => {
-      element.style.cssText += this.colors[colorsPropNames[9]];
-    });
-
-    setTimeout(() => this.addClasses(0), 100)
+    if (!this.colors) return
+    this.applyColors()
   }
 };
 </script>
 
 <style lang="scss">
 .theme__item {
-  --dark-bg: rgb(19, 20, 26);
-  --main-bg: #21222C;
-  --lighter-bg: #282A36;
+  --dark-bg: rgb(16, 17, 22);
+  --main-bg: rgb(25, 26, 34);
+  --lighter-bg: #242631;
   --primary-text: rgb(255, 255, 255);
   --secondary-text: rgba(145, 145, 145, 0.7);
   --accent-color: #F775C1;

@@ -46,8 +46,6 @@ export default {
           root.setProperty(val, colors[currentColorsPropNames[index]]);
         });
 
-        console.log(colors);
-
         this.$store.dispatch("setProp", {
           prop: "imageFilter",
           data: colors.filter

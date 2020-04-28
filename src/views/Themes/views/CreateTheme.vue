@@ -1,26 +1,35 @@
 <template>
   <div class="createTheme">
-    <ThemeItem
-      class="createTheme__preview"
-      :key="key"
-      :colors="colors"
-      :preview="true"
+    <div class="createTheme__preview">
+      <ThemeItem
+        :colors="colors"
+        :preview="true"
+        :refresh="refresh"
+      />
+    </div>
+    <color-picker
+      class="createTheme__color-picker"
+      id="colorPicker"
+      v-model="color"
     />
   </div>
 </template>
 
 <script>
 import ThemeItem from "../components/ThemeItem";
+import { Chrome } from "vue-color";
 
 export default {
     name: "CreateTheme",
     components: {
-      ThemeItem
+      ThemeItem,
+      "color-picker": Chrome
     },
     data() {
       return {
         colors: {},
-        key: 0
+        color: "#FFF",
+        refresh: false
       }
     },
     mounted() {
@@ -30,7 +39,7 @@ export default {
       fs.promises.readFile(path)
         .then(data => {
           this.colors = JSON.parse(data).colors;
-          this.key = 1;
+          this.refresh = true;
         })
         .catch(err => console.log(err));
     }
@@ -43,9 +52,65 @@ export default {
     padding: 60px;
 
     &__preview {
-      margin-top: 40px;
-      margin-left: 60px;
-      transform: scale(1.4);
+      position: relative;
+      width: 420px;
+      height: 357px;
+      margin-right: 40px;
+
+      > div {
+        transform-origin: top left;
+        transform: scale(1.4);
+      }
+    }
+
+    &__color-picker#colorPicker {
+      border-radius: 10px;
+      background-color: var(--lighter-bg);
+      box-shadow: none;
+      height: 260px;
+
+      .vc-chrome-saturation-wrap {
+        border-radius: 10px 10px 0 0;
+      }
+
+      .vc-chrome-body {
+        background-color: var(--lighter-bg);
+
+        .vc-chrome-color-wrap .vc-checkerboard {
+          border: 1px solid var(--lighter-bg);
+          border-radius: 15px;
+        }
+
+        .vc-hue, .vc-alpha-checkboard-wrap, .vc-alpha-gradient, .vc-alpha-container, .vc-alpha, .vc-checkerboard {
+          border-radius: 7px;
+        }
+
+        input {
+          background-color: var(--main-bg);
+          box-shadow: none;
+          border-radius: 7px;
+          color: var(--secondary-text);
+        }
+
+        .vc-chrome-toggle-icon {
+          path {
+            fill: var(--primary-text);
+            opacity: 0.2;
+            transition: opacity 0.3s ease-out;
+          }
+
+          &:hover {
+            path {
+              opacity: 0.6;
+            }
+          }
+        }
+
+        .vc-chrome-toggle-icon-highlight {
+          background: none;
+          display: none;
+        }
+      }
     }
   }
 </style>

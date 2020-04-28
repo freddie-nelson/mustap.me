@@ -257,7 +257,7 @@ export default {
   &__logo {
     width: 100%;
     position: relative;
-
+    
     svg {
       z-index: 0;
       display: block;
