@@ -1,71 +1,100 @@
 <template>
-  <div
-    class="theme__item"
-    ref="themeItem"
-  >
-    <Button
-      class="item__button"
-      text="View Theme"
-      :filled="true"
-      :font-size="12"
-    />
-    <DataTable
-      :for-playlists="true"
-      :formatted-array="array"
-      @clicked-cell="clickedCell"
-      ref="table"
-    />
-    <div class="item__controls">
-      <vue-range-slider
-        :tooltip="false"
-        :height="8"
-        :value="35"
+  <transition name="fade">
+    <div
+      class="theme__item"
+      ref="themeItem"
+    >
+      <transition name="fade">
+        <div
+          class="item__overlay"
+          v-if="showOverlay"
+        >
+          <p class="name">
+            {{ this.name }}
+          </p>
+          <p>by {{ this.creator }}</p>
+          <Button
+            text="Download Theme"
+            v-if="!downloaded"
+            :filled="false"
+            @clicked="enableOrDownloadTheme"
+          />
+          <Button
+            text="Enable Theme"
+            v-else
+            :filled="false"
+            :font-size="16"
+            @clicked="enableOrDownloadTheme(true)"
+          />
+        </div>
+      </transition>
+      <Button
+        class="item__button"
+        text="View Theme"
+        :filled="true"
+        :font-size="12"
+        @clicked="showOverlay = true"
+        v-if="!preview"
       />
+      <DataTable
+        :for-playlists="true"
+        :formatted-array="array"
+        @clicked-cell="clickedCell"
+        ref="table"
+      />
+      <div class="item__controls">
+        <vue-range-slider
+          :tooltip="false"
+          :height="8"
+          :value="35"
+        />
 
-      <div class="item__controls-buttons">
-        <img
-          :style="{ opacity: repeat ? 1 : 0.7 }"
-          @click="repeat = !repeat"
-          src="@/assets/svg/controls/repeat.svg"
-          alt=""
-        >
-        <img
-          @click="nextBack(-1)"
-          src="@/assets/svg/controls/next.svg"
-          alt=""
-        >
-        <img
-          v-if="play"
-          @click="play = !play"
-          src="@/assets/svg/controls/play.svg"
-          alt=""
-        >
-        <img
-          v-else
-          @click="play = !play"
-          src="@/assets/svg/controls/pause.svg"
-          alt=""
-        >
-        <img
-          @click="nextBack(1)"
-          style="transform: rotate(180deg) scale(0.9)"
-          src="@/assets/svg/controls/next.svg"
-          alt=""
-        >
-        <img
-          :style="{ opacity: shuffle ? 1 : 0.7 }"
-          @click="shuffle = !shuffle"
-          src="@/assets/svg/controls/shuffle.svg"
-          alt=""
-        >
+        <div class="item__controls-buttons">
+          <img
+            :style="{ opacity: repeat ? 1 : 0.7 }"
+            @click="repeat = !repeat"
+            src="@/assets/svg/controls/repeat.svg"
+            alt=""
+          >
+          <img
+            @click="nextBack(-1)"
+            src="@/assets/svg/controls/next.svg"
+            alt=""
+          >
+          <img
+            v-if="play"
+            @click="play = !play"
+            src="@/assets/svg/controls/play.svg"
+            alt=""
+          >
+          <img
+            v-else
+            @click="play = !play"
+            src="@/assets/svg/controls/pause.svg"
+            alt=""
+          >
+          <img
+            @click="nextBack(1)"
+            style="transform: rotate(180deg) scale(0.9)"
+            src="@/assets/svg/controls/next.svg"
+            alt=""
+          >
+          <img
+            :style="{ opacity: shuffle ? 1 : 0.7 }"
+            @click="shuffle = !shuffle"
+            src="@/assets/svg/controls/shuffle.svg"
+            alt=""
+          >
+        </div>
       </div>
     </div>
-  </div>
+  </transition>
 </template>
 
 <script>
 import DataTable from "@/views/Library/components/DataTable";
 import Button from "@/components/Button";
+import loadTheme from "@/mixins/loadTheme";
 
 export default {
   name: "ThemeItem",
@@ -73,6 +102,7 @@ export default {
     DataTable,
     Button
   },
+  mixins: [ loadTheme ],
   data() {
     return {
       array: [
@@ -98,11 +128,19 @@ export default {
       play: true,
       shuffle: true,
       repeat: true,
-      index: 0
+      index: 0,
+      showOverlay: false
     };
   },
   props: {
-    colors: Object
+    colors: Object,
+    downloaded: {
+      type: Boolean,
+      default: false
+    },
+    name: String,
+    creator: String,
+    preview: Boolean
   },
   methods: {
     clickedCell(e) {
@@ -111,18 +149,22 @@ export default {
       this.addClasses(index);
     },
     addClasses(index) {
-      const children = this.$refs.table.$el.children;
-      const cell = children[index].children[0];
+      try {
+        const children = this.$refs.table.$el.children;
+        const cell = children[index].children[0];
 
-      children.forEach(container => {
-        const element = container.children[0];
+        children.forEach(container => {
+          const element = container.children[0];
 
-        if (element.classList.contains("clicked")) {
-          element.classList.remove("clicked");
-        }
-      });
+          if (element.classList.contains("clicked")) {
+            element.classList.remove("clicked");
+          }
+        });
 
-      cell.classList.add("clicked");
+        cell.classList.add("clicked");
+      } catch (e) {
+        console.log(e);
+      }
     },
     nextBack(num) {
       const newIndex = this.index + num;
@@ -136,6 +178,25 @@ export default {
       }
 
       this.addClasses(this.index);
+    },
+    enableOrDownloadTheme(enable) {
+      const fs = require("fs");
+      const themesPath = this.$store.state.documentsPath + "/mustap/themes/";
+
+      const fileName = enable ? "currentTheme.json" : this.name + ".json";
+
+      this.showOverlay = false;
+
+      const theme = {
+        colors: this.colors,
+        name: this.name,
+        creator: this.creator
+      }
+
+      
+      fs.promises.writeFile(themesPath + fileName, JSON.stringify(theme))
+        .then(() => this.loadTheme())
+        .catch(err => console.log(err));
     }
   },
   mounted() {
@@ -175,6 +236,8 @@ export default {
     images.forEach(element => {
       element.style.cssText += this.colors[colorsPropNames[9]];
     });
+
+    setTimeout(() => this.addClasses(0), 100)
   }
 };
 </script>
@@ -202,6 +265,32 @@ export default {
   &:hover {
     .item__button {
       opacity: 1;
+    }
+  }
+
+  .item__overlay {
+    position: absolute;
+    z-index: 6;
+    width: calc(100% + 6px);
+    height: calc(100% + 6px);
+    margin: -3px 0 0 -3px;
+    background-color: var(--lighter-bg);
+    border-radius: 15px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+
+    p {
+      font-size: 18px;
+      color: var(--secondary-text);
+      margin-bottom: 5px;
+
+      &.name {
+        font-weight: 500;
+        color: var(--primary-text);
+        margin-bottom: 0;
+      }
     }
   }
 

@@ -2,7 +2,13 @@
   <nav class="nav">
     <div class="nav__logo">
       <h1>Mustap</h1>
-      <svg width="300" height="137" viewBox="0 0 300 137" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <svg
+        width="300"
+        height="137"
+        viewBox="0 0 300 137"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+      >
         <path
           d="M206 132.238C234 142.751 262 134.341 290 121.724L296.5 118L303 112.5L300 0H-2.09808e-05C-22.1827 56.6857 -49.3869 105.157 38 98.5946C66 96.4919 94 79.6703 122 85.9784C150 92.2865 178 121.724 206 132.238Z"
         />
@@ -12,15 +18,36 @@
     <div class="nav__links-container">
       <svg id="svg-defs">
         <defs>
-          <linearGradient id="selectedGradient" x2="0%" y2="100%">
-            <stop offset="0%" stop-color="#E91E63" />
-            <stop offset="100%" stop-color="#E91EA4" />
+          <linearGradient
+            id="selectedGradient"
+            x2="0%"
+            y2="100%"
+          >
+            <stop
+              offset="0%"
+              stop-color="#E91E63"
+            />
+            <stop
+              offset="100%"
+              stop-color="#E91EA4"
+            />
           </linearGradient>
         </defs>
       </svg>
 
-      <div class="nav__links-link" :class="{ selected: this.$route.name === 'Home' }" id="Home" @click="changeView($event)">
-        <svg width="41" height="39" viewBox="0 0 41 39" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <div
+        class="nav__links-link"
+        :class="{ selected: this.$route.name === 'Home' }"
+        id="Home"
+        @click="changeView($event)"
+      >
+        <svg
+          width="41"
+          height="39"
+          viewBox="0 0 41 39"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
+        >
           <path
             d="M39.5942 19.1924L22.6138 2.22072L21.4756 1.08254C21.2162 0.824916 20.8655 0.680328 20.5 0.680328C20.1345 0.680328 19.7837 0.824916 19.5244 1.08254L1.40576 19.1924C1.14003 19.4571 0.930015 19.7723 0.788119 20.1195C0.646222 20.4667 0.575317 20.8388 0.579589 21.2139C0.597167 22.7608 1.88476 23.9956 3.43164 23.9956H5.29932V38.3086H35.7007V23.9956H37.6079C38.3594 23.9956 39.0669 23.7012 39.5986 23.1695C39.8605 22.9085 40.0679 22.5981 40.209 22.2564C40.35 21.9147 40.4219 21.5484 40.4204 21.1787C40.4204 20.4317 40.126 19.7241 39.5942 19.1924ZM22.9609 35.1445H18.0391V26.1797H22.9609V35.1445ZM32.5366 20.8316V35.1445H25.7734V25.125C25.7734 24.1538 24.9868 23.3672 24.0156 23.3672H16.9844C16.0132 23.3672 15.2266 24.1538 15.2266 25.125V35.1445H8.46338V20.8316H4.24463L20.5044 4.58498L21.5195 5.60012L36.7598 20.8316H32.5366Z"
           />
@@ -34,7 +61,13 @@
         id="Library"
         @click="changeView($event)"
       >
-        <svg width="39" height="39" viewBox="0 0 39 39" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <svg
+          width="39"
+          height="39"
+          viewBox="0 0 39 39"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
+        >
           <path
             d="M4.5 8.25H0.75V34.5C0.75 35.4946 1.14509 36.4484 1.84835 37.1517C2.55161 37.8549 3.50544 38.25 4.5 38.25H30.75V34.5H4.5V8.25ZM30.75 10.125H25.125V20.4375C25.125 21.6807 24.6311 22.873 23.7521 23.7521C22.873 24.6311 21.6807 25.125 20.4375 25.125C19.1943 25.125 18.002 24.6311 17.1229 23.7521C16.2439 22.873 15.75 21.6807 15.75 20.4375C15.75 19.1943 16.2439 18.002 17.1229 17.1229C18.002 16.2439 19.1943 15.75 20.4375 15.75C21.5063 15.75 22.4625 16.1063 23.25 16.6875V6.375H30.75V10.125ZM34.5 0.75H12C11.0054 0.75 10.0516 1.14509 9.34835 1.84835C8.64509 2.55161 8.25 3.50544 8.25 4.5V27C8.25 27.9946 8.64509 28.9484 9.34835 29.6517C10.0516 30.3549 11.0054 30.75 12 30.75H34.5C35.4946 30.75 36.4484 30.3549 37.1517 29.6517C37.8549 28.9484 38.25 27.9946 38.25 27V4.5C38.25 3.50544 37.8549 2.55161 37.1517 1.84835C36.4484 1.14509 35.4946 0.75 34.5 0.75Z"
           />
@@ -42,8 +75,19 @@
         <h2>Library</h2>
       </div>
 
-      <div class="nav__links-link" :class="{ selected: this.$route.name === 'Themes' }" id="Themes" @click="changeView($event)">
-        <svg width="39" height="39" viewBox="0 0 39 39" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <div
+        class="nav__links-link"
+        :class="{ selected: this.$route.name === 'Themes' || this.$route.name === 'AllThemes' || this.$route.name === 'CreateTheme' }"
+        id="Themes"
+        @click="changeView($event)"
+      >
+        <svg
+          width="39"
+          height="39"
+          viewBox="0 0 39 39"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
+        >
           <path
             d="M4.5 8.25C3.50544 8.25 2.55161 8.64509 1.84835 9.34835C1.14509 10.0516 0.75 11.0054 0.75 12V34.5C0.75 36.5625 2.4375 38.25 4.5 38.25H27C27.9946 38.25 28.9484 37.8549 29.6517 37.1517C30.3549 36.4484 30.75 35.4946 30.75 34.5H4.5V8.25ZM34.5 0.75H12C11.0054 0.75 10.0516 1.14509 9.34835 1.84835C8.64509 2.55161 8.25 3.50544 8.25 4.5V27C8.25 27.9946 8.64509 28.9484 9.34835 29.6517C10.0516 30.3549 11.0054 30.75 12 30.75H34.5C35.4946 30.75 36.4484 30.3549 37.1517 29.6517C37.8549 28.9484 38.25 27.9946 38.25 27V4.5C38.25 3.50544 37.8549 2.55161 37.1517 1.84835C36.4484 1.14509 35.4946 0.75 34.5 0.75ZM25.125 27H12V13.875H25.125V27ZM34.5 27H28.875V13.875H34.5V27ZM34.5 10.125H12V4.5H34.5V10.125Z"
           />
@@ -51,8 +95,19 @@
         <h2>Themes</h2>
       </div>
 
-      <div class="nav__links-link" :class="{ selected: this.$route.name === 'Profile' }" id="Profile" @click="changeView($event)">
-        <svg width="39" height="39" viewBox="0 0 39 39" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <div
+        class="nav__links-link"
+        :class="{ selected: this.$route.name === 'Profile' }"
+        id="Profile"
+        @click="changeView($event)"
+      >
+        <svg
+          width="39"
+          height="39"
+          viewBox="0 0 39 39"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
+        >
           <path
             d="M19.5 0.75C9.15 0.75 0.75 9.15 0.75 19.5C0.75 29.85 9.15 38.25 19.5 38.25C29.85 38.25 38.25 29.85 38.25 19.5C38.25 9.15 29.85 0.75 19.5 0.75ZM19.5 6.375C22.6125 6.375 25.125 8.8875 25.125 12C25.125 15.1125 22.6125 17.625 19.5 17.625C16.3875 17.625 13.875 15.1125 13.875 12C13.875 8.8875 16.3875 6.375 19.5 6.375ZM19.5 33C17.2722 33 15.0791 32.4487 13.1161 31.3953C11.1532 30.3418 9.48146 28.819 8.25 26.9625C8.30625 23.2313 15.75 21.1875 19.5 21.1875C23.2313 21.1875 30.6938 23.2313 30.75 26.9625C29.5185 28.819 27.8468 30.3418 25.8839 31.3953C23.9209 32.4487 21.7278 33 19.5 33Z"
           />
@@ -66,7 +121,13 @@
         id="Settings"
         @click="changeView($event)"
       >
-        <svg width="45" height="45" viewBox="0 0 45 45" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <svg
+          width="45"
+          height="45"
+          viewBox="0 0 45 45"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
+        >
           <path
             d="M22.5 28.125C25.6066 28.125 28.125 25.6066 28.125 22.5C28.125 19.3934 25.6066 16.875 22.5 16.875C19.3934 16.875 16.875 19.3934 16.875 22.5C16.875 25.6066 19.3934 28.125 22.5 28.125Z"
             stroke-width="3"
@@ -85,7 +146,13 @@
     </div>
 
     <div class="nav__music-controller">
-      <svg xmlns="http://www.w3.org/2000/svg" width="300" height="234" viewBox="0 0 300 234" fill="none">
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        width="300"
+        height="234"
+        viewBox="0 0 300 234"
+        fill="none"
+      >
         <path
           d="M0 234H300V90V36L288 39C275 42 250 48 225 47C200 45 175 36 150 27C125 18 100 9 75 5C50 0 25 0 13 0H0V90V234Z"
           fill="#242424"
@@ -99,7 +166,7 @@
             backgroundImage: `url(${this.$store.state.currentPlaying.thumbnail})`
           }"
           alt="Album Cover / Song Art"
-        ></div>
+        />
         <div>
           <p>{{ this.$store.state.currentPlaying.title }}</p>
           <p>{{ this.$store.state.currentPlaying.artist }}</p>
@@ -113,9 +180,9 @@
       <TrackControls
         ref="trackControls"
         class="nav__music-controller__controls"
-        :currentTime="$store.state.currentPlaying.currentTimeSeconds"
+        :current-time="$store.state.currentPlaying.currentTimeSeconds"
         :padding="20"
-        :bgColor="'--main-bg'"
+        :bg-color="'--main-bg'"
       />
     </div>
   </nav>

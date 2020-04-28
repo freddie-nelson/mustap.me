@@ -1,49 +1,48 @@
 <template>
   <main class="themes">
-    <h1>My Themes</h1>
-    <div class="theme-item-container">
-      <ThemeItem
-        class="theme-item"
-        v-for="(theme, index) in themes"
-        :key="index"
-        :colors="theme"
+    <div class="themes__links">
+      <router-link
+        class="router-link"
+        to="/Themes/"
+        :class="{ selected: $route.name === 'Themes' ? true : false }"
+      >
+        My Themes
+      </router-link>
+      <router-link
+        class="router-link"
+        to="/Themes/AllThemes"
+        :class="{ selected: $route.name === 'AllThemes' ? true : false }"
+      >
+        All Themes
+      </router-link>
+      <Button
+        text="+ Create Theme"
+        :filled="true"
+        :font-size="15"
+        class="themes__button"
+        @clicked="changeToCreateThemeView"
       />
     </div>
+    <vue-page-transition name="fade-in-right">
+      <router-view />
+    </vue-page-transition>
   </main>
 </template>
 
 <script>
-import ThemeItem from "./components/ThemeItem";
-import firebase from "firebase";
+import Button from "@/components/Button"
 
 export default {
   name: "Themes",
   components: {
-    ThemeItem
-  },
-  data() {
-    return {
-      themes: []
-    };
+    Button
   },
   methods: {
-    getThemes() {
-      const db = firebase.database();
-      db.ref("/themes").once("value")
-        .then(snapshot => {
-          const result = snapshot.val()
-  
-          Object.keys(result).forEach(theme => {
-            this.themes.push(result[theme])
-          })
+    changeToCreateThemeView() {
+      if (this.$route.name === "CreateTheme") return
 
-          console.log(result)
-        })
-        .catch(err => console.log(err))
+      this.$router.push({ name: "CreateTheme" })
     }
-  },
-  mounted() {
-    this.getThemes()
   }
 };
 </script>
@@ -54,19 +53,42 @@ export default {
   height: 100%;
   color: var(--primary-text);
 
-  h1 {
+  .router-link {
+    text-decoration: none;
+    color: var(--secondary-text);
+    transition: color .3s ease-out;
+    margin-right: 40px;
+
+    &.selected {
+      color: var(--primary-text);
+    }
+
+    &:hover {
+      color: var(--primary-text);
+    }
+  }
+
+  &__links {
     font-size: 36px;
-    margin: 60px 0 5px 60px;
+    margin: 60px 60px 5px 60px;
     font-weight: 600;
+    display: flex;
+  }
+
+  &__button {
+    margin-left: auto;
+    display: flex !important;
+    height: 39px;
+    align-self: center;
   }
 
   .theme-item-container {
-    margin: 30px 60px 0 60px;
-    display: grid;
-    grid-template-columns: 1fr 1fr 1fr;
+    margin: 10px 60px 0 60px;
+    display: flex;
+    flex-wrap: wrap;
 
     .theme-item {
-      margin: 0 20px;
+      margin: 20px;
     }
   }
 }
