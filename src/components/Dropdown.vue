@@ -1,11 +1,32 @@
 <template>
   <div class="dropdown">
-    <div class="dropdown__selected" @click="dropdown = !dropdown">
+    <label
+      class="dropdown__label"
+      for="dropdown"
+      v-if="label"
+    >{{ this.label }}</label>
+    <div
+      :style="{ marginTop: label ? 0 : '5px' }"
+      class="dropdown__selected"
+      @click="dropdown = !dropdown"
+    >
       {{ this.options[this.selectedNum] }}
-      <img src="../assets/svg/chevron-down.svg" alt="" :class="{ flip: dropdown }" />
+      <img
+        src="../assets/svg/chevron-down.svg"
+        alt=""
+        :class="{ flip: dropdown }"
+      >
     </div>
-    <div class="dropdown__options" :class="{ show: dropdown }">
-      <div class="dropdown__option" v-for="(option, i) in options" @click="clickedOption(i)" :key="i">
+    <div
+      class="dropdown__options"
+      :class="{ show: dropdown }"
+    >
+      <div
+        class="dropdown__option"
+        v-for="(option, i) in options"
+        @click="clickedOption(i)"
+        :key="i"
+      >
         {{ option }}
       </div>
     </div>
@@ -23,7 +44,8 @@ export default {
   },
   props: {
     options: Array,
-    selected: Number
+    selected: Number,
+    label: String
   },
   methods: {
     clickedOption(i) {
@@ -39,6 +61,12 @@ export default {
 .dropdown {
   width: 250px;
   color: var(--secondary-text);
+
+  &__label {
+    font-size: 13px;
+    color: var(--primary-text);
+    opacity: 0.6;
+    }
 
   &__selected {
     color: var(--primary-text);

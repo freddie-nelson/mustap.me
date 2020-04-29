@@ -57,7 +57,7 @@ export default {
     text-decoration: none;
     color: var(--secondary-text);
     transition: color .3s ease-out;
-    margin-right: 40px;
+    margin-right: 60px;
 
     &.selected {
       color: var(--primary-text);

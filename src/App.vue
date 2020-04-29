@@ -82,6 +82,10 @@ export default {
   box-sizing: border-box;
   font-family: "Poppins";
   user-select: none;
+  
+  &::selection {
+    background-color: var(--accent-color);
+  }
 }
 
 body {
