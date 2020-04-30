@@ -1,14 +1,25 @@
 <template>
   <main class="home">
-    <Searchbox @searched="searched" v-if="!searchboxDisplayNone" :class="{ home__searchbox: true, hidden: searchboxHidden }" />
-    <DownloadStatus v-if="!downloadDisplayNone" :class="{ home__downloadstatus: true, show: downloadShow }" />
-    <backBtn v-if="onDownloadView" @back="back" />
+    <Searchbox
+      @searched="searched"
+      v-if="!searchboxDisplayNone"
+      :class="{ home__searchbox: true, hidden: searchboxHidden }"
+    />
+    <DownloadStatus
+      v-if="!downloadDisplayNone"
+      :class="{ home__downloadstatus: true, show: downloadShow }"
+    />
+    <backBtn
+      v-if="onDownloadView"
+      @back="back"
+    />
   </main>
 </template>
 <script>
 import Searchbox from "./components/TheSearchbox";
 import DownloadStatus from "./components/TheDownloadStatus";
 import BackBtn from "../../components/BackBtn";
+import calcLengthSeconds from "@/mixins/calcLengthSeconds";
 import { Stream } from "stream";
 
 export default {
@@ -107,7 +118,7 @@ export default {
           if (name && artist && name.toLowerCase() === artist.toLowerCase()) {
             name = title.split(symbol)[0];
 
-            if (!name || name.length === 1 || name.length === 0) {
+            if (!name || name.length === 1 || name.length === 0 || name.length === 2) {
               name = title;
             }
           }
@@ -139,6 +150,10 @@ export default {
 
         if (name[0] === " ") {
           name = name.slice(1, name.length);
+        }
+
+        if (name.replace(" ", "") === "") {
+          return title.replace("-", "");
         }
 
         return name;
@@ -339,8 +354,7 @@ export default {
         path: songsPath + songInfo.filename
       });
 
-      const estimatedSize =
-        (Number.parseInt(songInfo.duration.split(":")[0] * 60) + Number.parseInt(songInfo.duration.split(":")[1])) * 144000;
+      const estimatedSize = calcLengthSeconds(songInfo.duration) * 144000;
 
       if (tries === 2) {
         console.log(

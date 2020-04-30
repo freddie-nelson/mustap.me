@@ -1,5 +1,5 @@
 <template>
-  <transition name="fade">
+  <transition name="fade-in-right">
     <div
       class="theme__item"
       ref="themeItem"
@@ -29,12 +29,19 @@
         </div>
       </transition>
       <Button
-        class="item__button"
-        text="View Theme"
+        class="item__button delete-btn"
+        v-if="deleteable"
+        text="Delete"
         :filled="true"
         :font-size="12"
-        @clicked="showOverlay = true"
-        v-if="!preview"
+        @clicked="deleteTheme"
+      />
+      <Button
+        class="item__button"
+        :text="preview ? 'Button' : 'View Theme'"
+        :filled="true"
+        :font-size="12"
+        @clicked="preview ? null : showOverlay = true"
       />
       <DataTable
         :for-playlists="true"
@@ -141,7 +148,11 @@ export default {
     name: String,
     creator: String,
     preview: Boolean,
-    refresh: Boolean
+    refresh: Boolean,
+    deleteable: {
+      type: Boolean,
+      default: false
+    }
   },
   watch: {
     refresh() {
@@ -201,8 +212,20 @@ export default {
 
       
       fs.promises.writeFile(themesPath + fileName, JSON.stringify(theme))
-        .then(() => this.loadTheme())
-        .catch(err => console.log(err));
+        .then(() => {
+          if (!enable) {
+            this.$store.dispatch("addAlert", { text: "The theme was successfully installed.", type: "alert" })
+          }
+
+          this.loadTheme()
+        })
+        .catch(err => {
+          if (!enable) {
+            this.$store.dispatch("addAlert", { text: "The theme failed to install. Error: " + err, type: "warning" })
+          } else {
+            this.$store.dispatch("addAlert", { text: "The theme could not be enabled. Error: " + err, type: "warning" })
+          }
+        });
     },
     applyColors() {
       const el = this.$refs.themeItem.style;
@@ -243,11 +266,45 @@ export default {
       });
 
       setTimeout(() => this.addClasses(0), 100)
+    },
+    deleteTheme() {
+      const fs = require("fs");
+      const themePath = this.$store.state.documentsPath + "/mustap/themes/" + this.name + ".json";
+
+      if (this.name === "Default Theme") {
+        this.$store.dispatch("addAlert", { text: "You cannot delete the default theme.", type: "alert", autoClose: true })
+        return
+      }
+      
+      fs.promises.unlink(themePath)
+        .then(() => {
+          this.$store.dispatch("addAlert", { text: "Theme successfully deleted.", type: "alert", autoClose: true })
+          this.$emit('deleted-theme');
+        })
+        .catch(err => {
+          this.$store.dispatch("addAlert", { text: "Theme failed to be deleted. Error: " + err, type: "warning" })
+        })
     }
   },
   mounted() {
     if (!this.colors) return
     this.applyColors()
+
+    if (!this.downloaded && !this.preview) {
+      const fs = require("fs");
+      const themesPath = this.$store.state.documentsPath + "/mustap/themes/";
+
+      fs.promises.readdir(themesPath)
+        .then(downloadedThemes => {
+          downloadedThemes.forEach(downloadedTheme => {
+            const downloadedThemeName = downloadedTheme.split(".")[0];
+
+            if (this.name === downloadedThemeName) {
+              this.$emit('change-downloaded', true)
+            }
+          })
+        })
+    }
   }
 };
 </script>
@@ -311,6 +368,10 @@ export default {
     z-index: 2;
     opacity: 0;
     transition: opacity 0.5s ease-in;
+
+    &.delete-btn {
+      right: 105px;
+    }
   }
 
   .table {

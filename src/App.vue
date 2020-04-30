@@ -8,15 +8,17 @@
       <router-view />
     </vue-page-transition>
     <div class="alerts-container">
-      <Alert
-        v-for="(alert, index) in this.$store.state.alerts"
-        @close="closeAlert(index)"
-        :key="index"
-        :alert="alert.type === 'alert' ? true : false"
-        :warning="alert.type === 'warning' ? true : false"
-        :text="alert.text"
-        :auto-close="alert.autoClose ? alert.autoClose : false"
-      />
+      <transition-group name="fade">
+        <Alert
+          v-for="(alert, index) in this.$store.state.alerts"
+          @close="closeAlert(index)"
+          :key="index"
+          :alert="alert.type === 'alert' ? true : false"
+          :warning="alert.type === 'warning' ? true : false"
+          :text="alert.text"
+          :auto-close="alert.autoClose ? alert.autoClose : false"
+        />
+      </transition-group>
     </div>
   </div>
 </template>
@@ -76,12 +78,18 @@ export default {
   --alert-hover-color: #353535;
 }
 
+.slider-dot-handle {
+  background-color: var(--primary-text) !important;
+  box-shadow: none !important;
+}
+
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
   font-family: "Poppins";
   user-select: none;
+  -webkit-user-drag: none;
   
   &::selection {
     background-color: var(--accent-color);
@@ -113,6 +121,7 @@ body {
   display: flex;
   flex-direction: column;
   width: 320px;
+  z-index: 10;
 }
 
 @keyframes fadeInRight {

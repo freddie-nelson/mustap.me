@@ -1,7 +1,9 @@
 <template>
   <main class="library">
-    <div v-if="deletedSongsModal"
-class="deleted-songs-modal">
+    <div
+v-if="deletedSongsModal"
+         class="deleted-songs-modal"
+>
       <div class="modal">
         <p>Please choose what you would like to do with the songs below.</p>
         <div class="modal__list">
@@ -436,7 +438,6 @@ export default {
   color: var(--primary-text);
   flex-direction: column;
   overflow-y: hidden;
-  width: calc(100vw - 300px);
   position: relative;
 
   h1 {

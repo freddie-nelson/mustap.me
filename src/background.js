@@ -21,7 +21,7 @@ let bgColor = '';
 
 if (fs.existsSync(currentThemePath)) {
   const obj = fs.readFileSync(currentThemePath);
-  bgColor = obj.mainColor;
+  bgColor = obj.mainBg;
 } else {
   bgColor = '#121212';
 }
@@ -49,6 +49,8 @@ function createWindow() {
   win = new BrowserWindow({
     title: 'Mustap',
     show: false,
+    minWidth: 1000,
+    minHeight: 750,
     x: mainWindowState.x,
     y: mainWindowState.y,
     width: mainWindowState.width,

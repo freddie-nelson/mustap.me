@@ -23,7 +23,10 @@
         @clicked="changeToCreateThemeView"
       />
     </div>
-    <vue-page-transition name="fade-in-right">
+    <vue-page-transition
+      class="themes__container"
+      name="fade-in-right"
+    >
       <router-view />
     </vue-page-transition>
   </main>
@@ -59,6 +62,11 @@ export default {
     transition: color .3s ease-out;
     margin-right: 60px;
 
+    @media screen and (max-width: 1081px) {
+      font-size: 32px;
+      margin-right: 40px;
+    }
+
     &.selected {
       color: var(--primary-text);
     }
@@ -82,13 +90,45 @@ export default {
     align-self: center;
   }
 
-  .theme-item-container {
-    margin: 10px 60px 0 60px;
-    display: flex;
-    flex-wrap: wrap;
+  &__container {
+    margin: 30px 60px 0 60px;
+    height: calc(100% - 140px);
+    position: relative;
+  }
 
-    .theme-item {
-      margin: 20px;
+  .theme-item-container {
+    display: grid;
+    grid-gap: 30px;
+    grid-template-columns: repeat(auto-fill, 300px);
+    grid-template-rows: repeat(auto-fill, 255px);
+    height: 100%;
+    padding-right: 20px;
+    overflow: scroll;
+
+    &::-webkit-scrollbar {
+      margin-left: 10px;
+    }
+
+    @media screen and (max-width: 1099px) {
+      grid-template-columns: repeat(auto-fill, 240px);
+      grid-template-rows: repeat(auto-fill, 212px);
+
+      .theme-item {
+        width: 240px;
+        height: 212px;
+
+        .item__controls {
+          transform: scale(.8);
+          bottom: 0 !important;
+        }
+        
+        & .table {
+          width: 110% !important;
+          transform: scale(.85);
+          margin-top: -10px !important;
+          margin-left: -6px !important;
+        }
+      }
     }
   }
 }

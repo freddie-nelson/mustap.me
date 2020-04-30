@@ -8,6 +8,8 @@
       :colors="theme.colors"
       :name="theme.name"
       :creator="theme.creator"
+      :deleteable="true"
+      @delete-theme="getMyThemes"
     />
   </div>
 </template>

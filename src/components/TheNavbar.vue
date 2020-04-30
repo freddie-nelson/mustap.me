@@ -1,5 +1,18 @@
 <template>
-  <nav class="nav">
+  <nav
+    class="nav"
+    :class="{ small: smallNavbar }"
+  >
+    <div
+      class="border"
+      @click="smallNavbar = !smallNavbar"
+    />
+    <div class="nav__resize-btn">
+      <img
+        src="@/assets/svg/chevron-down.svg"
+        alt="Resize Navbar"
+      >
+    </div>
     <div class="nav__logo">
       <h1>Mustap</h1>
       <svg
@@ -35,11 +48,10 @@
         </defs>
       </svg>
 
-      <div
+      <router-link
         class="nav__links-link"
         :class="{ selected: this.$route.name === 'Home' }"
-        id="Home"
-        @click="changeView($event)"
+        to="/"
       >
         <svg
           width="41"
@@ -53,13 +65,12 @@
           />
         </svg>
         <h2>Home</h2>
-      </div>
+      </router-link>
 
-      <div
+      <router-link
         class="nav__links-link"
         :class="{ selected: this.$route.name === 'Library' || this.$route.name === 'LibraryPlaylist' }"
-        id="Library"
-        @click="changeView($event)"
+        to="Library"
       >
         <svg
           width="39"
@@ -73,13 +84,12 @@
           />
         </svg>
         <h2>Library</h2>
-      </div>
+      </router-link>
 
-      <div
+      <router-link
         class="nav__links-link"
         :class="{ selected: this.$route.name === 'Themes' || this.$route.name === 'AllThemes' || this.$route.name === 'CreateTheme' }"
-        id="Themes"
-        @click="changeView($event)"
+        to="Themes"
       >
         <svg
           width="39"
@@ -93,13 +103,12 @@
           />
         </svg>
         <h2>Themes</h2>
-      </div>
+      </router-link>
 
-      <div
+      <router-link
         class="nav__links-link"
         :class="{ selected: this.$route.name === 'Profile' }"
-        id="Profile"
-        @click="changeView($event)"
+        to="Profile"
       >
         <svg
           width="39"
@@ -113,13 +122,13 @@
           />
         </svg>
         <h2>Profile</h2>
-      </div>
+      </router-link>
 
-      <div
+      <router-link
         class="nav__links-link"
         :class="{ selected: this.$route.name === 'Settings' }"
         id="Settings"
-        @click="changeView($event)"
+        to="Settings"
       >
         <svg
           width="45"
@@ -142,7 +151,7 @@
           />
         </svg>
         <h2>Settings</h2>
-      </div>
+      </router-link>
     </div>
 
     <div class="nav__music-controller">
@@ -199,16 +208,20 @@ export default {
   },
   data() {
     return {
-      showVolumeControls: false
+      showVolumeControls: false,
+      smallNavbar: false
     };
   },
   methods: {
     changeView(e) {
+      console.log(e);
       const nodeName = e.target.nodeName;
       let id;
 
-      if (nodeName === "H2" || nodeName === "svg" || nodeName === "path") {
+      if (nodeName === "H2" || nodeName === "svg") {
         id = e.srcElement.parentElement.id;
+      } else if (nodeName === "path") {
+        e.srcElement.parentElement.parentElement.id;
       } else {
         id = e.target.id;
       }
@@ -253,6 +266,97 @@ export default {
   max-width: 300px;
   height: 100vh;
   background-color: var(--dark-bg);
+  transition: max-width .2s ease, min-width .2s ease;
+
+  .border {
+    position: absolute;
+    height: 100%;
+    width: 10px;
+    left: 290px;
+    cursor: col-resize;
+  }
+
+  &__resize-btn {
+    display: none !important;
+    width: 26px;
+    height: 50px;
+    position: absolute;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: var(--alert-hover-color);
+    top: calc(50% - 25px);
+    right: -26px;
+    border-radius: 0 5px 5px 0;
+    cursor: pointer;
+    
+    img {
+      width: 60%;
+      margin-left: -2px;
+      transform-origin: center;
+      transform: rotate(90deg);
+    }
+  }
+
+  &.small {
+    min-width: 80px;
+    max-width: 80px;
+    position: relative;
+
+    &:hover {
+      &::after {
+        opacity: 1;
+      }
+
+      .nav__links-link {
+        opacity: 1 !important;
+      }
+    }
+
+    .border {
+      cursor: col-resize;
+      box-sizing: border-box;
+      width: 10px;
+      position: absolute;
+      height: 100%;
+      background-color: var(--accent-color);
+      opacity: 0.5;
+      transition: opacity .2s ease-in;
+      right: -1px;
+      left: auto;
+      border-left: var(--dark-bg) 9px solid;
+    }
+
+    .nav__music-controller {
+      display: none;
+    }
+
+    .nav__logo {
+      display: none;
+    }
+
+    h2 {
+      display: none;
+    }
+
+    svg {
+      margin-right: 0;
+    }
+
+    .nav__links-container {
+      padding: 22px;
+      margin: auto 0;
+      
+      .nav__links-link {
+        opacity: 0.4;
+        transition: opacity .2s ease-in;
+
+        &.selected {
+          opacity: 1;
+        }
+      }
+    }
+  }
 
   &__logo {
     width: 100%;
@@ -304,18 +408,19 @@ export default {
       align-items: center;
       margin-top: 30px;
       color: var(--primary-text);
+      text-decoration: none;
       cursor: pointer;
 
       svg {
         width: 40px;
         height: 40px;
         margin-right: 15px;
-        transition: all 0.2s ease-in;
+        transition: transform 0.2s ease-in;
       }
 
       svg > path {
         fill: var(--primary-text);
-        transition: all 0.2s ease-in;
+        transition: fill 0.2s ease-in, stroke 0.2s ease-in;
       }
 
       &#Settings svg > path {

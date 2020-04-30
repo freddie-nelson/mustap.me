@@ -88,7 +88,7 @@ const currentPlaying = {
           })
           .catch(err => {
             commit("ADD_ALERT", {
-              text: `Sorry that song could be played. Error: ${err}`,
+              text: `Sorry that song could not be played. Error: ${err}`,
               type: "warning"
             });
           });
@@ -102,16 +102,37 @@ const currentPlaying = {
           prop: "currentTimeSeconds",
           data: Math.ceil(state.sound.currentTime)
         });
+        
 
-        const num =
-          state.currentTimeSeconds % 60 < 10
-            ? "0" + (state.currentTimeSeconds % 60)
-            : state.currentTimeSeconds % 60;
-        const currentTime =
-          Math.floor(state.currentTimeSeconds / 60) + ":" + num;
-        const progress =
-          ((state.currentTimeSeconds / state.lengthSeconds) * 100).toFixed(2) +
-          "%";
+        const hours = Math.floor(state.currentTimeSeconds / 3600);
+        const secondsMod = state.currentTimeSeconds % 3600;
+        let minutes = Math.floor(state.currentTimeSeconds / 60);
+        let seconds = secondsMod % 60;
+
+        let currentTime;
+        
+        if (hours > 0) {
+          minutes -= 60;
+
+          if (minutes < 10) {
+            minutes = "0" + minutes;
+          }
+
+          if (seconds < 10) {
+            seconds = "0" + seconds;
+          }
+
+
+          currentTime = `${hours}:${minutes}:${seconds}`
+        } else {
+          if (seconds < 10) {
+            seconds = "0" + seconds;
+          }
+
+          currentTime = `${minutes}:${seconds}`;
+        }
+
+        const progress = ((state.currentTimeSeconds / state.lengthSeconds) * 100).toFixed(2) + "%";
 
         commit("SET_CURRENT_PLAYING_CURRENT_TIME", {
           currentTime: currentTime,

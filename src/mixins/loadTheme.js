@@ -8,7 +8,7 @@ export default {
 
       // Get all paths on the machine for needed themes
       const themesPath = this.$store.state.documentsPath + "/mustap/themes/";
-      const defaultColorsPath = themesPath + "default.json";
+      const defaultColorsPath = themesPath + "Default Theme.json";
       const currentColorsPath = themesPath + "currentTheme.json";
 
       // set colors of css variables based on the themes found

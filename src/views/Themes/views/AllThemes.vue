@@ -4,8 +4,11 @@
       class="theme-item"
       v-for="(theme, index) in themes"
       :key="index"
-      :colors="theme"
-      :downloaded="false"
+      :colors="theme.colors"
+      :name="theme.name"
+      :creator="theme.creator"
+      :downloaded="theme.downloaded"
+      @change-downloaded="changeDownloaded(index)"
     />
   </div>
 </template>
@@ -36,10 +39,16 @@ export default {
           })
         })
         .catch(err => console.log(err))
+    },
+    changeDownloaded(index) {
+      const themes = [...this.themes];
+      themes[index].downloaded = true;
+
+      this.themes = themes;
     }
   },
   mounted() {
-    // this.getThemes()
+    this.getThemes()
   }
 }
 </script>

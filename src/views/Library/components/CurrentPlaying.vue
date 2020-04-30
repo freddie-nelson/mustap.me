@@ -195,7 +195,7 @@ export default {
     flex-direction: column;
     justify-content: center;
     margin-left: 40px;
-    width: calc(40% - 30px);
+    width: calc(49% - 30px);
   }
 
   p {

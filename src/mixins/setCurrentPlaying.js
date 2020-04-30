@@ -1,3 +1,5 @@
+import calcLengthSeconds from "./calcLengthSeconds";
+
 export default {
   methods: {
     setCurrentPlaying(e, src, setCurrentPlaylistDetails = false) {
@@ -26,6 +28,8 @@ export default {
         const index = e - 1;
         const song = this.$store.getters.currentPlaylist.data[index];
 
+        const lengthSeconds = calcLengthSeconds(song.duration);
+
         /* setting all the properties of the song that is going to be played (the first song) */
         this.$store.dispatch("setCurrentPlayingMultiple", {
           thumbnail: song.thumbnailUrl.replace("hqdefault", "maxresdefault"),
@@ -33,7 +37,7 @@ export default {
           artist: song.artist,
           duration: song.duration,
           currentTime: "0:00",
-          lengthSeconds: song.duration.split(":")[0] * 60 + Number.parseInt(song.duration.split(":")[1]),
+          lengthSeconds: lengthSeconds,
           filename: song.filename,
           playing: true,
           index: index
