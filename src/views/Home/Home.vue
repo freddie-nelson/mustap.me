@@ -438,6 +438,7 @@ export default {
   display: flex;
   width: 100%;
   height: 100%;
+  position: relative;
 
   &__searchbox {
     margin: auto;
@@ -466,7 +467,7 @@ export default {
     font-size: 18px;
     font-weight: 500;
     top: 15px;
-    left: 316px;
+    left: 15px;
     cursor: pointer;
     opacity: 0.2;
     transition: opacity 0.4s ease-in;

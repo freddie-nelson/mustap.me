@@ -1,11 +1,11 @@
 <template>
   <div id="app">
-    <Navbar />
+    <Navbar ref="navbar" />
     <vue-page-transition
       name="fade-in-right"
       class="transition"
     >
-      <router-view />
+      <router-view ref="app" />
     </vue-page-transition>
     <div class="alerts-container">
       <transition-group name="fade">
@@ -36,6 +36,24 @@ export default {
     Alert
   },
   mixins: [convertColorToFilter, loadTheme],
+  data() {
+    return {
+      navbarWidth: 80
+    }
+  },
+  watch: {
+    navbarWidth(val, oldVal) {
+      if (val > oldVal) {
+        this.$refs.app.$el.classList.add("navbar-open")
+        this.$refs.navbar.$el.style.position = "absolute";
+      } else if (val > 80) {
+        this.$refs.navbar.$el.style.position = "absolute";
+      } else {
+        this.$refs.navbar.$el.style.position = "";
+        this.$refs.app.$el.classList.remove("navbar-open");
+      }
+    }
+  },
   methods: {
     closeAlert(index) {
       this.$store.dispatch("closeAlert", index);
@@ -51,6 +69,12 @@ export default {
     };
 
    this.loadTheme();
+
+   const observer = new ResizeObserver(entries => {
+      this.navbarWidth = entries[0].contentRect.width;
+    });
+
+    observer.observe(this.$refs.navbar.$el);
   }
 };
 </script>
@@ -89,11 +113,14 @@ export default {
   box-sizing: border-box;
   font-family: "Poppins";
   user-select: none;
-  -webkit-user-drag: none;
   
   &::selection {
     background-color: var(--accent-color);
   }
+}
+
+img, a {
+  -webkit-user-drag: none;
 }
 
 body {
@@ -108,6 +135,11 @@ body {
   width: 100vw;
   height: 100vh;
   flex-direction: row;
+}
+
+main.navbar-open {
+  width: calc(100% - 80px);
+  transform: translateX(80px);
 }
 
 .transition {

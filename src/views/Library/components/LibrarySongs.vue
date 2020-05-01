@@ -160,7 +160,7 @@ export default {
 
       if (playlist.data.length !== 0) {
         fs.promises.writeFile(playlistPath, JSON.stringify(playlist.data));
-        this.addClasses(0);
+        this.addClasses(0, 0, false);
         this.$emit("delete-song");
       } else {
         // if the playlist has 0 songs left in it delete it altogther
@@ -241,7 +241,7 @@ export default {
     this.playlistIndex = this.$store.state.playlists.currentPlaylistViewing;
     this.playlist = this.$store.getters.currentPlaylistViewing.data;
     this.formatDataSongs(this.playlistIndex);
-    this.addClasses(400)
+    this.addClasses(400);
   }
 };
 </script>

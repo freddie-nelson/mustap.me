@@ -1,49 +1,46 @@
 <template>
   <main class="library">
     <div
-v-if="deletedSongsModal"
-         class="deleted-songs-modal"
->
+      v-if="deletedSongsModal"
+      class="deleted-songs-modal"
+    >
       <div class="modal">
         <p>Please choose what you would like to do with the songs below.</p>
-        <div class="modal__list">
-          <div>
-            <div
-              class="modal__list-cell"
-              v-for="({ song, index }, i) in $store.state.deletedSongs"
-              :key="i"
-            >
-              <div class="modal__list-cell-left-text">
-                <div>{{ song.title }}</div>
-                <div>{{ song.artist }}</div>
-              </div>
+        <div class="modal__list-container">
+          <div class="modal__list">
+            <div>
+              <div
+                class="modal__list-cell"
+                v-for="({ song, index }, i) in $store.state.deletedSongs"
+                :key="i"
+              >
+                <div class="modal__list-cell-left-text">
+                  <div>{{ song.title }}</div>
+                  <div>{{ song.artist }}</div>
+                </div>
 
-              <div class="modal__list-cell-right">
-                <Button
-                  @clicked="keepSong(i, index)"
-                  :filled="false"
-                  :text="'Keep'"
-                  :font-size="15"
-                />
-                <Button
-                  style="margin-left: 20px;"
-                  @clicked="deleteSong(index)"
-                  :filled="false"
-                  :text="'🗑'"
-                  :font-size="15"
-                />
+                <div class="modal__list-cell-right">
+                  <Button
+                    @clicked="keepSong(i, index)"
+                    :filled="false"
+                    :text="'Keep'"
+                    :font-size="15"
+                  />
+                  <Button
+                    style="margin-left: 20px;"
+                    @clicked="deleteSong(i, index)"
+                    :filled="false"
+                    :text="'🗑'"
+                    :font-size="15"
+                  />
+                </div>
               </div>
             </div>
           </div>
         </div>
         <div class="modal__button-container">
           <Button
-            @clicked="
-              () => {
-                deletedSongsModal = false;
-                $refs.dataTable.addClasses(0);
-              }
-            "
+            @clicked="deletedSongsModal = false"
             class="button"
             :filled="true"
             :text="'Done'"
@@ -56,27 +53,31 @@ v-if="deletedSongsModal"
     <header ref="libraryHeader">
       <h1>{{ mainTitle }}</h1>
       <h2>{{ subTitle }}</h2>
-      <div style="margin: 10px 0 0 60px;">
-        <Button
-          v-if="this.$store.state.missingSongsCount > 0 && !this.forPlaylists"
-          style="margin-right: 20px;"
-          @clicked="updatePlaylist"
-          :text="
-            `🛈 ${this.$store.state.missingSongsCount} missing songs - Click to download`
-          "
-          :filled="false"
-          :font-size="16"
-        />
-        <Button
-          v-if="this.$store.state.deletedSongsCount > 0 && !this.forPlaylists"
-          style="text-align: left !important;"
-          @clicked="deletedSongsModal = true"
-          :text="
-            `🛈 ${this.$store.state.deletedSongsCount} songs have been found that have been previously deleted - Click to view`
-          "
-          :filled="false"
-          :font-size="16"
-        />
+      <div style="margin: 3px 0 0 60px; position: absolute;">
+        <transition-group name="fade">
+          <Button
+            v-if="this.$store.state.missingSongsCount > 0 && !this.forPlaylists"
+            style="margin-right: 20px;"
+            @clicked="updatePlaylist"
+            :text="
+              `🛈 ${this.$store.state.missingSongsCount} missing songs - Click to download`
+            "
+            :filled="false"
+            :font-size="16"
+            :key="0"
+          />
+          <Button
+            v-if="this.$store.state.deletedSongsCount > 0 && !this.forPlaylists"
+            style="text-align: left !important;"
+            @clicked="deletedSongsModal = true"
+            :text="
+              `🛈 ${this.$store.state.deletedSongsCount} songs have been found that have been previously deleted - Click to view`
+            "
+            :filled="false"
+            :font-size="16"
+            :key="1"
+          />
+        </transition-group>
       </div>
     </header>
     <section
@@ -108,6 +109,7 @@ v-if="deletedSongsModal"
 import CurrentPlaying from "./components/CurrentPlaying";
 import Button from "@/components/Button";
 import setCurrentPlaying from "@/mixins/setCurrentPlaying";
+import addClasses from "@/mixins/addClasses";
 
 export default {
   name: "Library",
@@ -115,7 +117,7 @@ export default {
     CurrentPlaying,
     Button
   },
-  mixins: [setCurrentPlaying],
+  mixins: [setCurrentPlaying, addClasses],
   data() {
     return {
       deletedSongsModal: false,
@@ -151,12 +153,20 @@ export default {
           (song, index) => index !== i
         )
       });
-      this.$store.dispatch("decrement", "deletedSongsCount");
 
+      this.$store.dispatch("decrement", "deletedSongsCount");
       this.$store.dispatch("setDeletedPlaylistData");
 
+      const playlist = {...this.$store.getters.currentPlaylistViewing};
+      const playlistData = [...playlist.data];
+
+      playlistData[index].deleted = false;
+      playlist.data = playlistData;
+
+      this.$store.dispatch("setSongProperty", playlist)
+      console.log(this.$store.getters.currentPlaylistViewing.data);
+
       const fs = require("fs");
-      const playlist = this.$store.getters.currentPlaylistViewing;
       const deletedPlaylistPath =
         this.$store.state.documentsPath +
         "/mustap/playlists/" +
@@ -175,6 +185,19 @@ export default {
       } else {
         fs.unlinkSync(deletedPlaylistPath);
       }
+
+      this.addClasses(0, 0, false);
+    },
+    deleteSong(i, index) {
+      this.$store.dispatch("setProp", {
+        prop: "deletedSongs",
+        data: this.$store.state.deletedSongs.filter(
+          (song, index) => index !== i
+        )
+      });
+
+      this.$store.dispatch("decrement", "deletedSongsCount");
+      this.$refs.dataTable.deleteSong(index + 1, true);
     },
     updatePlaylist() {
       if (!this.forPlaylists) {
@@ -199,17 +222,21 @@ export default {
         link: currentPlaylist.data[0].playlistLink
       });
 
-      this.$store.dispatch("setPlaylistsMultiple", {
-        currentPlaylist: -1,
-        currentPlaylistViewing: -1
-      });
-
       this.$store.dispatch("setCurrentDownloadProp", {
         prop: "currentlyDownloading",
         data: true
       });
 
-      this.setCurrentPlaying(false, "");
+      if (this.$store.state.playlists.currentPlaylistViewing === this.$store.state.playlists.currentPlaylist) {
+        this.$store.dispatch("setPlaylistsMultiple", {
+          currentPlaylist: -1,
+          currentPlaylistViewing: -1
+        });
+
+        this.setCurrentPlaying(false, "");
+      } else {
+        this.$store.dispatch("setPlaylistsProp", { prop: "currentPlaylistViewing", data: -1 })
+      }
     },
     async deletePlaylist() {
       const fs = require("fs");
@@ -223,16 +250,20 @@ export default {
       );
 
       const songsPath = state.documentsPath + "/mustap/songs/";
-      const filenames = playlistData.map(obj => songsPath + obj.filename);
+      const filenames = playlistData.map(obj => obj.filename);
 
       // filter filenames so it only contains the songs that aren't in any other playlist
+      // const timer = console.time();
+
       const filenamesFiltered = filenames.filter(file => {
+        let foundMatch;
+
         for (let i = 0; i < playlists.length; i++) {
           let otherFilenames = playlists[i].data;
 
-          otherFilenames = otherFilenames.map(obj => songsPath + obj.filename);
+          otherFilenames = otherFilenames.map(obj => obj.filename);
 
-          let foundMatch = false;
+          foundMatch = false;
 
           for (let j = 0; j < otherFilenames.length; j++) {
             const otherFile = otherFilenames[j];
@@ -242,11 +273,20 @@ export default {
             }
           }
 
-          if (!foundMatch) {
-            return file;
+          if (foundMatch) {
+            break;
           }
+
+          // console.log(foundMatch, file)
         }
+
+        if (!foundMatch) {
+            return songsPath + file;
+          }
       });
+
+      // console.timeEnd(timer);
+      // console.log(filenamesFiltered);
 
       // get the path of the playlist we are deleting from and the __deleted__ version that contains the songs we have previously deleted
       const playlistPath =
@@ -269,11 +309,12 @@ export default {
       } else {
         // delete all the songs that we don't need in any other playlist
         filenamesFiltered.forEach(async file => {
+          if (!fs.existsSync(file)) {
+            return;
+          }
+
           fs.promises
             .unlink(file)
-            .then(e => {
-              console.log(e);
-            })
             .catch(e => console.log(e));
         });
 
@@ -465,9 +506,6 @@ export default {
     overflow: hidden;
   }
 
-  .current-playing-details-container {
-    width: calc(50% - 50px);
-  }
 }
 
 .deleted-songs-modal {
@@ -491,13 +529,22 @@ export default {
       color: var(--primary-text);
     }
 
+    &__list-container {
+      padding: 8px 4px;
+      background: var(--lighter-bg);
+      border-radius: 8px;
+      margin: 15px 0;
+    }
+
     &__list {
       width: 100%;
-      background: var(--lighter-bg);
-      border-radius: 6px;
-      margin: 15px 0;
-      padding: 10px;
-      max-height: 350px;
+      padding: 5px 6px;
+      max-height: 300px;
+      overflow-y: scroll;
+
+      &::-webkit-scrollbar-thumb {
+        background-color: var(--dark-bg);
+      }
 
       &-cell {
         width: 100%;

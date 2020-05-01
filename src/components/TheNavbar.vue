@@ -4,6 +4,7 @@
     :class="{ small: smallNavbar }"
   >
     <div
+      v-if="false"
       class="border"
       @click="smallNavbar = !smallNavbar"
     />
@@ -70,7 +71,7 @@
       <router-link
         class="nav__links-link"
         :class="{ selected: this.$route.name === 'Library' || this.$route.name === 'LibraryPlaylist' }"
-        to="Library"
+        to="/Library"
       >
         <svg
           width="39"
@@ -89,7 +90,7 @@
       <router-link
         class="nav__links-link"
         :class="{ selected: this.$route.name === 'Themes' || this.$route.name === 'AllThemes' || this.$route.name === 'CreateTheme' }"
-        to="Themes"
+        to="/Themes"
       >
         <svg
           width="39"
@@ -108,7 +109,7 @@
       <router-link
         class="nav__links-link"
         :class="{ selected: this.$route.name === 'Profile' }"
-        to="Profile"
+        to="/Profile"
       >
         <svg
           width="39"
@@ -128,7 +129,7 @@
         class="nav__links-link"
         :class="{ selected: this.$route.name === 'Settings' }"
         id="Settings"
-        to="Settings"
+        to="/Settings"
       >
         <svg
           width="45"
@@ -209,7 +210,7 @@ export default {
   data() {
     return {
       showVolumeControls: false,
-      smallNavbar: false
+      smallNavbar: true
     };
   },
   methods: {
@@ -267,6 +268,10 @@ export default {
   height: 100vh;
   background-color: var(--dark-bg);
   transition: max-width .2s ease, min-width .2s ease;
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 100;
 
   .border {
     position: absolute;
@@ -314,17 +319,11 @@ export default {
     }
 
     .border {
-      cursor: col-resize;
-      box-sizing: border-box;
       width: 10px;
       position: absolute;
       height: 100%;
-      background-color: var(--accent-color);
-      opacity: 0.5;
-      transition: opacity .2s ease-in;
       right: -1px;
       left: auto;
-      border-left: var(--dark-bg) 9px solid;
     }
 
     .nav__music-controller {
@@ -410,6 +409,7 @@ export default {
       color: var(--primary-text);
       text-decoration: none;
       cursor: pointer;
+      outline: none !important;
 
       svg {
         width: 40px;

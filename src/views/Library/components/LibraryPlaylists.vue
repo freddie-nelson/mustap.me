@@ -40,6 +40,10 @@ export default {
     clickedCell(index) {
       const i = index - 1;
 
+      this.$store.dispatch("setProp", { prop: "missingSongsCount", data: 0 });
+      this.$store.dispatch("setProp", { prop: "deletedSongsCount", data: 0 });
+      this.$store.dispatch("setProp", { prop: "deletedSongs", data: [] });
+
       this.$route.params.playlistName = this.$store.state.playlists.playlists[i].name;
       this.$store.dispatch("setPlaylistsProp", { prop: "currentPlaylistViewing", data: i });
       this.$router.push({ name: "LibraryPlaylist" });

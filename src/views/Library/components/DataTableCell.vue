@@ -64,19 +64,21 @@ export default {
   computed: {
     computedClasses() {
       try {
-        if (
-          !this.forPlaylists &&
-          this.$store.state.playlists.currentPlaylistViewing ===
-            this.$store.state.playlists.currentPlaylist
-        ) {
+        if (!this.forPlaylists) {
           const song = this.$store.getters.currentPlaylistViewing.data[
             this.index - 1
           ];
           const currentPlayingIndex = this.$store.state.currentPlaying.index;
+          let applyClicked = false;
+
+          if (currentPlayingIndex === this.index - 1 && this.$store.state.playlists.currentPlaylistViewing === this.$store.state.playlists.currentPlaylist) {
+            applyClicked = true;
+          }
 
           return {
-            clicked: currentPlayingIndex === this.index - 1,
-            missing: song.missing
+            clicked: applyClicked,
+            missing: song.missing,
+            deleted: song.deleted
           };
         } else {
           return {};

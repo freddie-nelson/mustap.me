@@ -96,6 +96,16 @@ export default {
   props: {
     forPlaylists: Boolean
   },
+  computed: {
+    currentPlaylistViewing() {
+      return this.$store.state.playlists.currentPlaylistViewing;
+    }
+  },
+  watch: {
+    currentPlaylistViewing() {
+      this.filter = ""
+    }
+  },
   methods: {
     search() {
       if (this.forPlaylists || this.filter === "") {
@@ -144,7 +154,7 @@ export default {
 <style lang="scss">
 .current-playing-details-container {
   margin-left: 50px;
-  max-width: 760px;
+  width: calc(50% - 60px);
 
   h2.current-playing-details-container__heading {
     margin: 0 0 30px 0;
@@ -195,7 +205,16 @@ export default {
     flex-direction: column;
     justify-content: center;
     margin-left: 40px;
-    width: calc(49% - 30px);
+    width: 220px;
+    overflow: hidden;
+
+    @media screen and (min-width: 1400px) {
+      width: 300px;
+    }
+
+    @media screen and (min-width: 1700px) {
+      width: 400px;
+    }
   }
 
   p {

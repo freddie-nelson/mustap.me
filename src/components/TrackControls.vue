@@ -218,13 +218,19 @@ export default {
       const currentPlaylist = this.$store.getters.currentPlaylist.data;
 
       if (state.playlists.shufflePlaylist) {
-        let randomIndex;
+        const randomIndex = Math.floor(Math.random() * currentPlaylist.length);
 
-        do {
-          randomIndex = Math.floor(Math.random() * currentPlaylist.length);
-        } while (randomIndex === currentPlaying.index);
+        if (randomIndex === index) {
+          const secondRandomIndex = Math.floor(Math.random() * currentPlaylist.length);
 
-        index = randomIndex;
+          if (secondRandomIndex === index) {
+            index++;
+          } else {
+            index = secondRandomIndex;
+          }
+        } else {
+          index = randomIndex;
+        }
       }
 
       if (state.playlists.repeatSong && !clicked) {
@@ -248,10 +254,16 @@ export default {
 
       if (song.missing) {
         while (song.missing) {
-          index = num === 1 ? index + 1 : index - 1;
-          index === currentPlaylist.length
-            ? (song = currentPlaylist[index])
-            : null;
+          index += num;
+          index < currentPlaylist.length ? (song = currentPlaylist[index]) : null;
+
+          if (index >= currentPlaylist.length || index < 0) {
+            if (!currentPlaylist[0].missing) {
+              return 0
+            } else {
+              return undefined;
+            }
+          }
         }
       }
 
@@ -260,6 +272,12 @@ export default {
     nextBack(num, clicked) {
       if (this.$store.state.currentPlaying.title !== "N / A") {
         const index = this.calcNewIndex(num, clicked);
+
+        if (index === undefined) {
+          this.$store.dispatch("addAlert", { text: "Sorry no playable song could be found.", type: "warning" });
+          return;
+        }
+
         this.setCurrentPlaying(index + 1);
         this.addClasses(0);
       }

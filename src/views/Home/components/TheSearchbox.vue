@@ -143,11 +143,11 @@ export default {
 
 .searchbox-options {
   position: absolute;
-  width: calc(100% - 300px);
+  width: 100%;
   height: 100%;
   background: rgba(0, 0, 0, 0.7);
   top: 0;
-  left: 300px;
+  left: 0;
   z-index: 100;
   display: flex;
   align-items: center;
