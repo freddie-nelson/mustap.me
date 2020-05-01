@@ -18,7 +18,8 @@
 
 <script>
 import ThemeItem from "../components/ThemeItem";
-import firebase from "firebase";
+import firebase from "firebase/app";
+import "firebase/firestore";
 
 export default {
     name: "AllThemes",

@@ -72,7 +72,8 @@ import InputBox from "@/components/InputBox";
 import Dropdown from "@/components/Dropdown";
 import Button from "@/components/Button";
 import { Chrome } from "vue-color";
-import firebase from "firebase";
+import firebase from "firebase/app";
+import "firebase/firestore";
 
 export default {
     name: "CreateTheme",
