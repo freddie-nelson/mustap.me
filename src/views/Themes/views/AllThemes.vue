@@ -1,5 +1,8 @@
 <template>
-  <div class="theme-item-container">
+  <transition-group
+    class="theme-item-container"
+    name="fade"
+  >
     <ThemeItem
       class="theme-item"
       v-for="(theme, index) in themes"
@@ -10,7 +13,7 @@
       :downloaded="theme.downloaded"
       @change-downloaded="changeDownloaded(index)"
     />
-  </div>
+  </transition-group>
 </template>
 
 <script>

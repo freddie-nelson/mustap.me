@@ -163,7 +163,7 @@ export default {
       playlistData[index].deleted = false;
       playlist.data = playlistData;
 
-      this.$store.dispatch("setSongProperty", playlist)
+      this.$store.dispatch("setSongProperty", { songIndex: index, prop: "deleted", data: false })
       console.log(this.$store.getters.currentPlaylistViewing.data);
 
       const fs = require("fs");
@@ -189,12 +189,25 @@ export default {
       this.addClasses(0, 0, false);
     },
     deleteSong(i, index) {
+      const fs = require("fs");
+
       this.$store.dispatch("setProp", {
         prop: "deletedSongs",
         data: this.$store.state.deletedSongs.filter(
           (song, index) => index !== i
         )
       });
+
+      const playlistName = this.$store.getters.currentPlaylistViewing.name;
+      const deletedPlaylistName = this.$store.state.documentsPath + playlistName + "__deleted__.json";
+
+      if (!this.$store.state.deletedSongs.length > 1) {
+        fs.promises.unlink(deletedPlaylistName)
+          .catch(err => console.log(err));
+      } else {
+        fs.promises.writeFile(deletedPlaylistName, JSON.stringify(this.$store.state.deletedSongs))
+        .catch(err => console.log(err))
+      }
 
       this.$store.dispatch("decrement", "deletedSongsCount");
       this.$refs.dataTable.deleteSong(index + 1, true);

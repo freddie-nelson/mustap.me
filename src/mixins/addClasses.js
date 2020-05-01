@@ -35,6 +35,7 @@ export default {
 
           if (deletedPlaylist[0] && delay > 0) {
             const deletedPlaylistData = deletedPlaylist[0].data;
+            console.log("hey")
 
             for (let j = 0; j < deletedPlaylistData.length; j++) {
               if (song.videoId === deletedPlaylistData[j].videoId) {
@@ -45,6 +46,8 @@ export default {
                 });
 
                 this.$store.dispatch("setSongProperty", { songIndex: i, prop: "deleted", data: true })
+              } else {
+                this.$store.dispatch("setSongProperty", { songIndex: i, prop: "deleted", data: false })
               }
             }
           }
@@ -54,6 +57,8 @@ export default {
           if (song && !fs.existsSync(filename)) {
             this.$store.dispatch("increment", "missingSongsCount");
             this.$store.dispatch("setSongProperty", { songIndex: i, prop: "missing", data: true })
+          } else if (song) {
+            this.$store.dispatch("setSongProperty", { songIndex: i, prop: "missing", data: false })
           }
 
           const currentPlaying = state.currentPlaying;
