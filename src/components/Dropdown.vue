@@ -61,6 +61,7 @@ export default {
 .dropdown {
   width: 250px;
   color: var(--secondary-text);
+  position: relative;
 
   &__label {
     font-size: 13px;

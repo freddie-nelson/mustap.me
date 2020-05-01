@@ -98,7 +98,7 @@ export default {
 
   .theme-item-container {
     display: grid;
-    grid-gap: 30px;
+    grid-gap: 20px;
     grid-template-columns: repeat(auto-fill, 300px);
     grid-template-rows: repeat(auto-fill, 255px);
     height: 100%;
@@ -109,9 +109,10 @@ export default {
       margin-left: 10px;
     }
 
-    @media screen and (max-width: 1099px) {
+    @media screen and (max-width: 1175px) {
       grid-template-columns: repeat(auto-fill, 240px);
       grid-template-rows: repeat(auto-fill, 212px);
+      padding-right: 15px;
 
       .theme-item {
         width: 240px;

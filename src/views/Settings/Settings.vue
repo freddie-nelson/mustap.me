@@ -1,18 +1,20 @@
 <template>
-  <main class="settings">
-    <h1>Settings</h1>
-    <section class="settings__main">
-      <SettingCategory
-        v-for="(category, index) in Object.keys(settings)"
-        :key="index"
-        :title="category"
-        :data="settings[category]"
-        class="settings__category"
-        @clicked-option="clickedOption({ category: category, ...$event })"
-        @checked="checked({ category: category, ...$event })"
-      />
-    </section>
-  </main>
+  <div class="settings-container">
+    <main class="settings">
+      <h1>Settings</h1>
+      <section class="settings__main">
+        <SettingCategory
+          v-for="(category, index) in Object.keys(settings)"
+          :key="index"
+          :title="category"
+          :data="settings[category]"
+          class="settings__category"
+          @clicked-option="clickedOption({ category: category, ...$event })"
+          @checked="checked({ category: category, ...$event })"
+        />
+      </section>
+    </main>
+  </div>
 </template>
 
 <script>
@@ -69,10 +71,17 @@ export default {
 </script>
 
 <style lang="scss">
+.settings-container {
+  width: 100%;
+  height: 100%;
+  padding: 5px 5px 5px 0;
+}
+
 .settings {
   width: 100%;
   height: 100%;
   color: var(--primary-text);
+  overflow-y: scroll;
 
   h1 {
     font-size: 36px;
@@ -83,7 +92,7 @@ export default {
   &__main {
     display: flex;
     width: 100%;
-    padding: 10px 60px 40px 60px;
+    padding: 5px 60px 35px 60px;
     flex-direction: column;
   }
 
