@@ -441,7 +441,8 @@ export default new Vuex.Store({
   },
   getters: {
     imageFilter: state => {
-      return state.imageFilter;
+      const filter = state.imageFilter.split(":")[1];
+      return filter.slice(0, filter.length - 1);
     },
     navbarSmall: state => {
       return state.navbarSmall;

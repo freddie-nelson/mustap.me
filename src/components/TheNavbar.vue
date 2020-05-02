@@ -11,6 +11,7 @@
       <img
         src="@/assets/svg/chevron-down.svg"
         alt="Resize Navbar"
+        :style="{ filter: $store.getters.imageFilter }"
       >
     </div>
     <div class="nav__logo">
@@ -321,6 +322,7 @@ export default {
       height: 100%;
       right: -1px;
       left: auto;
+      z-index: 2;
     }
 
     .nav__music-controller {

@@ -624,7 +624,7 @@ export default {
   }
 }
 
-@media screen and (max-width: 1310px) {
+@media screen and (max-width: 1279px) {
   .library {
     &__current-playing {
       display: none;

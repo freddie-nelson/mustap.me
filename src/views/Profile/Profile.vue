@@ -1,12 +1,17 @@
 <template>
   <main class="profile">
-      <h1>Profile</h1>
+    <SignInForm />
   </main>
 </template>
 
 <script>
+import SignInForm from "./components/SignInForm"
+
 export default {
-    name: 'Profile'
+    name: 'Profile',
+    components: {
+        SignInForm
+    }
 }
 </script>
 

@@ -1,7 +1,15 @@
 <template>
-  <div class="checkbox" @click="clicked">
+  <div
+    class="checkbox"
+    @click="clicked"
+  >
     <transition name="fade">
-      <img v-if="checkedBool" src="../assets/svg/tick.svg" alt="" />
+      <img
+        v-if="checkedBool"
+        src="../assets/svg/tick.svg"
+        alt=""
+        :style="{ filter: $store.getters.imageFilter }"
+      >
     </transition>
   </div>
 </template>

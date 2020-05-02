@@ -10,7 +10,7 @@
       v-if="label"
     >{{ this.label }}</label>
     <input
-      :style="{ width: `${width}px` }"
+      :style="{ width: `${width}px`, fontSize: `${fontSize}px`, height: `${height}px` }"
       type="text"
       class="input-box"
       :placeholder="placeholder === '.' ? '' : placeholder"
@@ -31,7 +31,12 @@ export default {
         placeholder: String,
         width: Number,
         displayMode: String,
-        maxLength: Number
+        maxLength: Number,
+        fontSize: Number,
+        height: {
+          type: Number,
+          default: 30
+        }
     },
     data() {
         return {

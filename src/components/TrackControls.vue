@@ -170,8 +170,7 @@ export default {
     },
     filter() {
       if (this.$store.getters.imageFilter) {
-        const filter = this.$store.getters.imageFilter.split(":")[1];
-        return filter.slice(0, filter.length - 1)
+        return this.$store.getters.imageFilter
       } else {
         return ""
       }
