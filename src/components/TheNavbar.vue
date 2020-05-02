@@ -4,9 +4,8 @@
     :class="{ small: smallNavbar }"
   >
     <div
-      v-if="false"
       class="border"
-      @click="smallNavbar = !smallNavbar"
+      @click="() => { $store.dispatch('navbarChanged', !smallNavbar); smallNavbar = !smallNavbar; }"
     />
     <div class="nav__resize-btn">
       <img
@@ -268,10 +267,8 @@ export default {
   height: 100vh;
   background-color: var(--dark-bg);
   transition: max-width .2s ease, min-width .2s ease;
-  position: absolute;
-  top: 0;
-  left: 0;
   z-index: 100;
+  overflow: hidden;
 
   .border {
     position: absolute;
@@ -327,11 +324,11 @@ export default {
     }
 
     .nav__music-controller {
-      display: none;
+      opacity: 0;
     }
 
     .nav__logo {
-      display: none;
+      opacity: 0;
     }
 
     h2 {
@@ -344,11 +341,16 @@ export default {
 
     .nav__links-container {
       padding: 22px;
+      height: 364px;
+      position: absolute;
       margin: auto 0;
+      top: 0;
+      bottom: 0;
       
       .nav__links-link {
         opacity: 0.4;
         transition: opacity .2s ease-in;
+        transform: scale(.9);
 
         &.selected {
           opacity: 1;
@@ -360,11 +362,11 @@ export default {
   &__logo {
     width: 100%;
     position: relative;
+    transition: opacity .2s ease;
     
     svg {
       z-index: 0;
       display: block;
-      width: 100%;
       height: auto;
       top: 0;
 
@@ -467,7 +469,9 @@ export default {
   &__music-controller {
     position: relative;
     height: 234px;
+    width: 300px;
     margin-top: auto;
+    transition: opacity .2s ease;
 
     > svg {
       width: 100%;

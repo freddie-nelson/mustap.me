@@ -375,7 +375,8 @@ export default new Vuex.Store({
     deletedSongs: [],
     documentsPath: "",
     alerts: [],
-    imageFilter: ""
+    imageFilter: "",
+    navbarSmall: true
   },
   mutations: {
     ADD_ALERT(state, payload) {
@@ -402,6 +403,9 @@ export default new Vuex.Store({
       } else {
         Vue.set(state, "deletedSongs", [payload, ...state.deletedSongs]);
       }
+    },
+    NAVBAR_CHANGED(state, payload) {
+      Vue.set(state, "navbarSmall", payload);
     }
   },
   actions: {
@@ -425,6 +429,9 @@ export default new Vuex.Store({
     },
     pushDeletedSong({ commit }, payload) {
       commit("PUSH_DELETED_SONG", payload);
+    },
+    navbarChanged({ commit }, payload) {
+      commit("NAVBAR_CHANGED", payload);
     }
   },
   modules: {
@@ -435,6 +442,9 @@ export default new Vuex.Store({
   getters: {
     imageFilter: state => {
       return state.imageFilter;
+    },
+    navbarSmall: state => {
+      return state.navbarSmall;
     }
   }
 });

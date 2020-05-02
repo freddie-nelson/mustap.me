@@ -1,6 +1,11 @@
 <template>
-  <div id="app">
-    <Navbar ref="navbar" />
+  <div
+    id="app"
+    ref="app"
+  >
+    <Navbar
+      ref="navbar"
+    />
     <vue-page-transition
       name="fade-in-right"
       class="transition"
@@ -20,12 +25,14 @@
         />
       </transition-group>
     </div>
+    <!-- <CurrentlyPlayingBar /> -->
   </div>
 </template>
 
 <script>
 import Navbar from "./components/TheNavbar";
 import Alert from "./components/Alert";
+// import CurrentlyPlayingBar from "./components/CurrentlyPlayingBar";
 import convertColorToFilter from "@/mixins/convertColorToFilter";
 import loadTheme from "@/mixins/loadTheme";
 
@@ -33,27 +40,10 @@ export default {
   name: "App",
   components: {
     Navbar,
-    Alert
+    Alert,
+    // CurrentlyPlayingBar
   },
   mixins: [convertColorToFilter, loadTheme],
-  data() {
-    return {
-      navbarWidth: 80
-    }
-  },
-  watch: {
-    navbarWidth(val, oldVal) {
-      if (val > oldVal) {
-        this.$refs.app.$el.classList.add("navbar-open")
-        this.$refs.navbar.$el.style.position = "absolute";
-      } else if (val > 80) {
-        this.$refs.navbar.$el.style.position = "absolute";
-      } else {
-        this.$refs.navbar.$el.style.position = "";
-        this.$refs.app.$el.classList.remove("navbar-open");
-      }
-    }
-  },
   methods: {
     closeAlert(index) {
       this.$store.dispatch("closeAlert", index);
@@ -69,12 +59,6 @@ export default {
     };
 
    this.loadTheme();
-
-   const observer = new ResizeObserver(entries => {
-      this.navbarWidth = entries[0].contentRect.width;
-    });
-
-    observer.observe(this.$refs.navbar.$el);
   }
 };
 </script>
@@ -84,6 +68,17 @@ export default {
 
 .vue-range-slider > .slider {
   background-color: rgba(255, 255, 255, 0.15) !important;
+
+  // &:hover {
+  //   .slider-dot {
+  //     opacity: 1;
+  //   }
+  // }
+
+  // .slider-dot {
+  //   opacity: 0;
+  //   transition: opacity .3s ease-out;
+  // }
 
   .slider-process {
     background-color: var(--accent-color) !important;
@@ -131,15 +126,17 @@ body {
 }
 
 #app {
+  // display: grid;
   display: flex;
   width: 100vw;
   height: 100vh;
   flex-direction: row;
-}
-
-main.navbar-open {
-  width: calc(100% - 80px);
-  transform: translateX(80px);
+  // grid-template-rows: calc(100vh - 100px) 100px;
+  // grid-template-rows: 1fr;
+  // grid-template-columns: 80px 1fr;
+  // transition: grid-template-columns .2s ease;
+  // grid-template-areas: "navbar main"
+                      //  "currently-playing-bar currently-playing-bar";
 }
 
 .transition {

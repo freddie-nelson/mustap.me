@@ -1,5 +1,8 @@
 <template>
-  <main class="library">
+  <main
+    class="library"
+    :style="{ maxWidth: computedWidth }"
+  >
     <div
       v-if="deletedSongsModal"
       class="deleted-songs-modal"
@@ -143,6 +146,9 @@ export default {
     },
     forPlaylists() {
       return !this.$store.getters.currentPlaylistViewing ? true : false;
+    },
+    computedWidth() {
+      return this.$store.getters.navbarSmall ? 'calc(100vw - 80px)' : '';
     }
   },
   methods: {
@@ -485,6 +491,13 @@ export default {
 </script>
 
 <style lang="scss">
+
+.nav.small {
+  .library {
+    max-width: calc(100vw - 80px);
+  }
+}
+
 .library {
   display: flex;
   width: 100%;
@@ -493,6 +506,8 @@ export default {
   flex-direction: column;
   overflow-y: hidden;
   position: relative;
+  max-width: calc(100vw - 300px);
+  transition: max-width .2s ease;
 
   h1 {
     font-size: 36px;

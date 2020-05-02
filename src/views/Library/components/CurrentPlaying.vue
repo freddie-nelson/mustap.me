@@ -176,6 +176,8 @@ export default {
 }
 
 .current-playing-details {
+  position: relative;
+
   &__image {
     width: 220px;
     height: 220px;
@@ -205,16 +207,8 @@ export default {
     flex-direction: column;
     justify-content: center;
     margin-left: 40px;
-    width: 220px;
+    width: calc(50% - 40px);
     overflow: hidden;
-
-    @media screen and (min-width: 1400px) {
-      width: 300px;
-    }
-
-    @media screen and (min-width: 1700px) {
-      width: 400px;
-    }
   }
 
   p {
@@ -287,6 +281,7 @@ export default {
     &__text {
       height: 175px;
       margin-left: 20px;
+      width: calc(50% - 20px);
 
       p {
         font-size: 26px;
