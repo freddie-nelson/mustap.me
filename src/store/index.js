@@ -367,6 +367,34 @@ const playlists = {
   }
 };
 
+const profile = {
+  state: {
+    displayName: "",
+    email: "",
+    uid: "",
+    emailVerified: false,
+    signedIn: false
+  },
+  mutations: {
+    SET_PROFILE_PROP(state, payload) {
+      Vue.set(state, payload.prop, payload.data);
+    },
+    SET_PROFILE_MULTIPLE(state, payload) {
+      Object.keys(payload).forEach(prop => {
+        Vue.set(state, prop, payload[prop]);
+      });
+    }
+  },
+  actions: {
+    setProfileProp({ commit }, payload) {
+      commit("SET_PROFILE_PROP", payload);
+    },
+    setProfileMultiple({ commit }, payload) {
+      commit("SET_PROFILE_MULTIPLE", payload);
+    }
+  }
+};
+
 export default new Vuex.Store({
   state: {
     mountedTrackControlsCount: 0,
@@ -437,10 +465,13 @@ export default new Vuex.Store({
   modules: {
     currentPlaying: currentPlaying,
     currentDownload: currentDownload,
-    playlists: playlists
+    playlists: playlists,
+    profile: profile
   },
   getters: {
     imageFilter: state => {
+      if (!state.imageFilter) return "";
+      
       const filter = state.imageFilter.split(":")[1];
       return filter.slice(0, filter.length - 1);
     },

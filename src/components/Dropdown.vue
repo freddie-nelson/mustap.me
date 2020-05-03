@@ -15,6 +15,7 @@
         src="../assets/svg/chevron-down.svg"
         alt=""
         :class="{ flip: dropdown }"
+        :style="{ filter: $store.getters.imageFilter }"
       >
     </div>
     <div

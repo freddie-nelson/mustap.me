@@ -447,7 +447,6 @@ export default {
                     added: `${day}/${month}/${year}`
                   });
                 }
-
                 // start the next read
                 readFile(i + 1);
               })

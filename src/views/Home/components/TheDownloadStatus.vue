@@ -1,17 +1,26 @@
 <template>
   <div class="download-status">
     <div class="download-status__text-container">
-      <p id="current-process">{{ currentDownload.currentProcess }}</p>
-      <p id="current-download">{{ currentDownload.currentDownloadTitle }}</p>
+      <p id="current-process">
+        {{ currentDownload.currentProcess }}
+      </p>
+      <p id="current-download">
+        {{ currentDownload.currentDownloadTitle }}
+      </p>
       <p id="download-index">
         Song {{ currentDownload.index }} of {{ currentDownload.totalQueueSize }} <span @click="skip">Skip</span>
       </p>
     </div>
 
     <div class="download-status__progress-bar">
-      <div :style="{ width: currentDownload.progress + '%', maxWidth: '100%' }" id="download-progress"></div>
+      <div
+        :style="{ width: currentDownload.progress + '%', maxWidth: '100%' }"
+        id="download-progress"
+      />
     </div>
-    <p id="download-progress-percentage">{{ currentDownload.progress }}%</p>
+    <p id="download-progress-percentage">
+      {{ currentDownload.progress }}%
+    </p>
   </div>
 </template>
 
@@ -39,7 +48,6 @@ export default {
       if (fs.existsSync(path)) {
         fs.promises
           .unlink(path)
-          .then(() => console.log(`deleted song`))
           .catch(err => console.log(`failed to delete ${path}. Error: ${err}`));
       }
 
@@ -59,12 +67,10 @@ export default {
       if (playlist) {
         fs.promises
           .writeFile(playlistPath, JSON.stringify(playlist))
-          .then(() => console.log("done"))
           .catch(err => console.log(err));
       } else {
         fs.promises
           .unlink(playlistPath)
-          .then(() => console.log("done"))
           .catch(err => console.log(err));
       }
     }

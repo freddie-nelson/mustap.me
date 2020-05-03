@@ -11,7 +11,7 @@
     >{{ this.label }}</label>
     <input
       :style="{ width: `${width}px`, fontSize: `${fontSize}px`, height: `${height}px` }"
-      type="text"
+      :type="typeData"
       class="input-box"
       :placeholder="placeholder === '.' ? '' : placeholder"
       v-model="input"
@@ -19,6 +19,17 @@
       @focus="focused = true"
       @blur="input.length > 0 ? null : focused = false"
       :maxlength="maxLength"
+    >
+    <img
+      v-if="type === 'password'"
+      :src="typeData === 'password' ? require('@/assets/svg/hide.svg') : require('@/assets/svg/show.svg')"
+      @click="typeData === 'password' ? typeData = 'text' : typeData = 'password'"
+      alt="Show password"
+      class="password-show-btn"
+      :style="{ filter: this.$store.getters.imageFilter, 
+                width: typeData === 'password' ? '16px' : '18px', 
+                marginLeft: typeData === 'password' ? '5px' : '4px',
+                paddingTop: typeData === 'password' ? '19px' : '20px' }"
     >
   </div>
 </template>
@@ -36,12 +47,17 @@ export default {
         height: {
           type: Number,
           default: 30
+        },
+        type: {
+          type: String,
+          default: "text"
         }
     },
     data() {
         return {
             focused: false,
-            input: ""
+            input: "",
+            typeData: this.type
         }
     }
 }
@@ -51,6 +67,7 @@ export default {
     .container {
         height: 45px;
         padding-top: 15px;
+        position: relative;
     }
 
     .label {
@@ -66,6 +83,18 @@ export default {
             transform: translateY(-24px) translateX(-8px);
             opacity: 0.6;
         }
+    }
+
+    .password-show-btn {
+      position: absolute;
+      margin: auto 0;
+      padding-top: 15px;
+      margin-left: 3px;
+      width: 18px;
+      top: 0;
+      bottom: 0;
+      cursor: pointer;
+      opacity: .5;
     }
 
     .input-box {

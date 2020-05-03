@@ -151,7 +151,7 @@ export default {
         const theme = {
           name: this.themeName,
           description: this.themeDescription,
-          creator: "Mustap",
+          creator: this.$store.state.profile.displayName,
           type: this.themeType,
           colors: this.colors
         }

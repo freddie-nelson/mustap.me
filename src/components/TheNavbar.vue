@@ -108,7 +108,7 @@
 
       <router-link
         class="nav__links-link"
-        :class="{ selected: this.$route.name === 'Profile' }"
+        :class="{ selected: this.$route.name === 'Profile' || this.$route.name === 'SignIn' || this.$route.name === 'MyProfile' }"
         to="/Profile"
       >
         <svg

@@ -9,6 +9,8 @@ import MyThemes from "../views/Themes/views/MyThemes";
 import AllThemes from "../views/Themes/views/AllThemes";
 import CreateTheme from "../views/Themes/views/CreateTheme"
 import Profile from "../views/Profile/Profile";
+import SignInForm from "../views/Profile/components/SignInForm";
+import MyProfile from "../views/Profile/components/MyProfile";
 import Settings from "../views/Settings/Settings";
 
 Vue.use(VueRouter);
@@ -60,7 +62,19 @@ const routes = [
   {
     path: "/Profile",
     name: "Profile",
-    component: Profile
+    component: Profile,
+    children: [
+      {
+        path: "/SignIn",
+        name: "SignIn",
+        component: SignInForm
+      },
+      {
+        path: "/MyProfile",
+        name: "MyProfile",
+        component: MyProfile
+      }
+    ]
   },
   {
     path: "/Settings",

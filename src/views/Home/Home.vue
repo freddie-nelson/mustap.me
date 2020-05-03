@@ -163,7 +163,7 @@ export default {
       //   let match = title.match();
       // }
 
-      console.log("Fetching metadata...");
+      // console.log("Fetching metadata...");
       this.$store.dispatch("setCurrentDownloadProp", {
         prop: "currentProcess",
         data: "Fetching metadata..."
@@ -174,16 +174,16 @@ export default {
         limit: 0
       })
         .then(res => {
-          console.log(res);
-          playlist = res.items.map(song => {
+          // console.log(res);
+          playlist = res.items.map((song, i) => {
             /* map is the best way to do this as it allows us to take in all the songs from the playlist, change them, and put them back in all in one*/
             /* Take the data we want and format it nicely */
             if (song.duration === null) {
               return;
             } else {
-              return {
+              const obj =  {
                 videoId: song.id,
-                url: song.url,
+                url: song.url.split("&")[0],
                 title: removeArtist(
                   song.title.replace(/ *\([^)]*\) */g, "").replace(/\[.*?\]/g, "") || song.title,
                   song.author.name
@@ -192,16 +192,22 @@ export default {
                 artist: song.author.name,
                 thumbnailUrl: song.thumbnail.replace("hqdefault", "0"),
                 duration: song.duration,
-                playlistLink: url
               };
+
+              if (i === 0) {
+                obj.playlistLink = url;
+              }
+
+              return obj
             }
           });
 
           playlist = playlist.filter(obj => obj !== undefined); /* get rid of any songs that weren't found*/
-          console.log(playlist);
 
           // console.log(playlist);
-          console.log("Fetched all metadata.");
+
+          // console.log(playlist);
+          // console.log("Fetched all metadata.");
           this.$store.dispatch("setCurrentDownloadProp", {
             prop: "currentProcess",
             data: "Fetched all metadata."
@@ -259,7 +265,7 @@ export default {
             data: "Created songs save location."
           });
 
-          console.log("Removing all previously installed songs...");
+          // console.log("Removing all previously installed songs...");
           this.$store.dispatch("setCurrentDownloadProp", {
             prop: "currentProcess",
             data: "Removing all previously installed songs..."
@@ -268,7 +274,7 @@ export default {
           let files = await readdir(songsPath).catch(err => console.log(err));
 
           if (!files) {
-            console.log("No songs to remove.");
+            // console.log("No songs to remove.");
             this.$store.dispatch("setCurrentDownloadProp", {
               prop: "currentProcess",
               data: "No songs to remove."
@@ -290,7 +296,7 @@ export default {
               }
             }
 
-            console.log("All previously installed songs removed from download queue.");
+            // console.log("All previously installed songs removed from download queue.");
             this.$store.dispatch("setCurrentDownloadProp", {
               prop: "currentProcess",
               data: "All previously installed songs removed from download queue."
@@ -298,14 +304,14 @@ export default {
           }
 
           if (playlist === []) {
-            console.log("You already have all these songs downloaded.");
+            // console.log("You already have all these songs downloaded.");
             this.$store.dispatch("setCurrentDownloadProp", {
               prop: "currentProcess",
               data: "You already have all these songs downloaded."
             });
           } else {
             /* start downloading the songs */
-            console.log("Starting download...");
+            // console.log("Starting download...");
 
             this.$store.dispatch("setCurrentDownloadMultiple", {
               currentProcess: "Starting download...",
@@ -316,7 +322,7 @@ export default {
           }
         })
         .catch(err => {
-          console.log("An error has occured --- " + err);
+          // console.log("An error has occured --- " + err);
           this.$store.dispatch("setCurrentDownloadMultiple", {
             currentProcess: err,
             currentlyDownloading: false
@@ -332,7 +338,7 @@ export default {
 
       /* check if the playlist is finished downloading*/
       if (index > playlist.length - 1) {
-        console.log("----- Finished downloading all songs. -----");
+        // console.log("----- Finished downloading all songs. -----");
 
         this.$store.dispatch("setCurrentDownloadMultiple", {
           currentProcess: "Finished downloading all songs.",
@@ -357,9 +363,9 @@ export default {
       const estimatedSize = calcLengthSeconds(songInfo.duration) * 144000;
 
       if (tries === 2) {
-        console.log(
-          `Sorry the download of ${songInfo.title} has been attempted 3 times and has failed. This song cannot be downloaded.`
-        );
+        // console.log(
+        //   `Sorry the download of ${songInfo.title} has been attempted 3 times and has failed. This song cannot be downloaded.`
+        // );
         this.$store.dispatch("setCurrentDownloadProp", {
           prop: "currentProcess",
           data: "Sorry this song could not be downloaded."
@@ -405,7 +411,7 @@ export default {
             .createWriteStream(songsPath + songInfo.filename)
             .on("close", () => {
               /* once the song is finished downloading call the function again for the next song in the array*/
-              console.log("stream closed");
+              // console.log("stream closed");
               this.downloadSongs(index + 1, 0, songsPath, playlist);
             })
             .on("error", err => console.log(err))
@@ -427,7 +433,7 @@ export default {
         this.playlistDownloader([updatingPlaylist.link, updatingPlaylist.name]);
       }
     } catch {
-      console.log("No playlist to update.");
+      // console.log("No playlist to update.");
     }
   }
 };
