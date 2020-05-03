@@ -8,12 +8,26 @@
       {{ text }}
     </button>
     <transition name="fade">
-      <div v-if="modalShow" class="modal-container">
+      <div
+        v-if="modalShow"
+        class="modal-container"
+      >
         <div class="modal">
-          <p><span v-html="modalTextFormatted"></span></p>
-          <input v-if="modalInputBox || false" type="text" name="playlist-name" v-model="playlistName" />
+          <p><span v-html="modalTextFormatted" /></p>
+          <input
+            v-if="modalInputBox || false"
+            type="text"
+            name="playlist-name"
+            v-model="playlistName"
+          >
           <div class="modal__button-container">
-            <Button @clicked="modalShow = false" class="button" :filled="false" :text="'Cancel'" :fontSize="14" />
+            <Button
+              @clicked="modalShow = false"
+              class="button"
+              :filled="false"
+              :text="'Cancel'"
+              :font-size="14"
+            />
             <Button
               @clicked="
                 () => {
@@ -24,7 +38,7 @@
               class="button"
               :filled="true"
               :text="modalButtonText"
-              :fontSize="14"
+              :font-size="14"
             />
           </div>
         </div>
