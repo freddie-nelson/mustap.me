@@ -113,7 +113,6 @@ import CurrentPlaying from "./components/CurrentPlaying";
 import Button from "@/components/Button";
 import setCurrentPlaying from "@/mixins/setCurrentPlaying";
 import addClasses from "@/mixins/addClasses";
-import getPlaylists from "@/mixins/getPlaylists";
 
 export default {
   name: "Library",
@@ -121,7 +120,7 @@ export default {
     CurrentPlaying,
     Button
   },
-  mixins: [setCurrentPlaying, addClasses, getPlaylists],
+  mixins: [setCurrentPlaying, addClasses],
   data() {
     return {
       deletedSongsModal: false,
@@ -388,7 +387,6 @@ export default {
               data: -1
             });
             this.$refs.dataTable.back();
-            this.getPlaylists();
           })
           .catch(err =>
             state.alerts.push({
@@ -400,8 +398,6 @@ export default {
     }
   },
   mounted() {
-    this.getPlaylists();
-
     const observer = new ResizeObserver(entries => {
       this.headerHeight = entries[0].contentRect.height;
     });

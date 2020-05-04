@@ -464,29 +464,6 @@ export default {
     opacity: 0;
     transition: opacity 0.7s ease-in;
   }
-
-  &__back-btn {
-    position: absolute;
-    background: transparent;
-    border: none;
-    color: rgba(255, 255, 255, 0.253);
-    font-size: 18px;
-    font-weight: 500;
-    top: 15px;
-    left: 15px;
-    cursor: pointer;
-    opacity: 0.2;
-    transition: opacity 0.4s ease-in;
-    outline: none !important;
-
-    &.opacityNone {
-      opacity: 0;
-    }
-
-    &:hover {
-      opacity: 1;
-    }
-  }
 }
 
 .hidden {

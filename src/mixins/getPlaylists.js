@@ -1,22 +1,73 @@
 export default {
+  data() {
+    return {
+      array: [],
+      playlists: [],
+      playlistNames: [],
+      datesAdded: []
+    };
+  },
+  computed: {
+    documentsPath() {
+      return this.$store.state.documentsPath;
+    }
+  },
+  watch: {
+    documentsPath() {
+      this.getPlaylists().then(() => {
+        this.formatDataPlaylists();
+      });
+    }
+  },
   methods: {
+    clickedCell(index) {
+      const i = index - 1;
+
+      this.$store.dispatch("setProp", { prop: "missingSongsCount", data: 0 });
+      this.$store.dispatch("setProp", { prop: "deletedSongsCount", data: 0 });
+      this.$store.dispatch("setProp", { prop: "deletedSongs", data: [] });
+
+      this.$route.params.playlistName = this.$store.state.playlists.playlists[
+        i
+      ].name;
+      this.$store.dispatch("setPlaylistsProp", {
+        prop: "currentPlaylistViewing",
+        data: i
+      });
+      this.$router.push({ name: "LibraryPlaylist" });
+    },
+    formatDataPlaylists() {
+      this.playlists = this.$store.getters.playlistsData;
+      this.playlistNames = this.$store.getters.playlistNames;
+      this.datesAdded = this.$store.getters.playlistDatesAdded;
+
+      this.array = this.playlists.map((playlist, index) => {
+        return {
+          leftTop: this.playlistNames[index],
+          leftBottom: this.datesAdded[index],
+          rightTop: this.playlists[index].length + " Songs"
+        };
+      });
+    },
     async getPlaylists() {
       const fs = require("fs");
 
       const playlistsLocation =
         this.$store.state.documentsPath + "/mustap/playlists";
-      let playlists = [];
-      let deletedPlaylists = [];
+
+      await this.$store.dispatch("changePlaylists", []);
+      await this.$store.dispatch("setPlaylistsProp", {
+        prop: "deletedPlaylists",
+        data: []
+      });
 
       // read all json files in the playlists directory
       await fs.promises
         .readdir(playlistsLocation)
-        .then(arr => {
+        .then(async arr => {
           // a recursive style is used so that we read the files one by one and not all at the same time
           // this means that the playlists are always read and appear in the same order which gives a better UX
-
-          readFile(0);
-          function readFile(i) {
+          const readFile = async i => {
             // if the array has nothing left in it then stop the recursion
             if (!arr[i]) {
               return;
@@ -25,9 +76,9 @@ export default {
             const file = arr[i];
 
             // read the file
-            fs.promises
+            await fs.promises
               .readFile(playlistsLocation + "/" + file)
-              .then(data => {
+              .then(async data => {
                 // get the date the file was created
                 const date = new Date(
                   fs.statSync(playlistsLocation + "/" + file).mtimeMs
@@ -38,32 +89,26 @@ export default {
 
                 // only push the data to the playlists array if it isn't one used to store deleted songs
                 if (file.indexOf("__deleted__") === -1) {
-                  playlists.push({
+                  this.$store.dispatch("pushPlaylist", {
                     name: file.split(".")[0],
                     data: JSON.parse(data),
                     added: `${day}/${month}/${year}`
                   });
                 } else {
-                  deletedPlaylists.push({
+                  this.$store.dispatch("pushDeletedPlaylists", {
                     name: file.split(".")[0],
                     data: JSON.parse(data),
                     added: `${day}/${month}/${year}`
                   });
                 }
                 // start the next read
-                readFile(i + 1);
+                await readFile(i + 1);
               })
               .catch(err => console.log(err));
-          }
+          };
+          await readFile(0);
         })
         .catch(err => console.log(err));
-
-      // store the playlists in vuex
-      this.$store.dispatch("changePlaylists", playlists);
-      this.$store.dispatch("setPlaylistsProp", {
-        prop: "deletedPlaylists",
-        data: deletedPlaylists
-      });
 
       if (
         this.$store.state.playlists.currentPlaylist !== -1 &&
@@ -78,6 +123,13 @@ export default {
             : null;
         });
       }
+    }
+  },
+  mounted() {
+    if (this.documentsPath) {
+      this.getPlaylists().then(() => {
+        this.formatDataPlaylists();
+      });
     }
   }
 };

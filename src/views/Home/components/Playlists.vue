@@ -21,30 +21,6 @@ export default {
     mixins: [getPlaylists],  
     components: {
         DataTable
-    },
-    data() {
-        return {
-            array: []
-        }
-    },
-    methods: {
-        formatDataPlaylists() {
-            this.playlists = this.$store.getters.playlistsData;
-            this.playlistNames = this.$store.getters.playlistNames;
-            this.datesAdded = this.$store.getters.playlistDatesAdded;
-
-            this.array = this.playlists.map((playlist, index) => {
-                return {
-                leftTop: this.playlistNames[index],
-                leftBottom: this.datesAdded[index],
-                rightTop: this.playlists[index].length + " Songs"
-                };
-            });
-        }
-    }, 
-    mounted() {
-        this.getPlaylists();
-        this.formatDataPlaylists();
     }
 }
 </script>
@@ -54,6 +30,10 @@ export default {
     background-color: var(--lighter-bg);
     color: var(--primary-text);
     border-radius: 12px;
+
+    ::-webkit-scrollbar-thumb {
+        background-color: var(--alert-hover-color);
+    }   
 
     &__header {
 

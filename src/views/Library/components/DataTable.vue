@@ -35,7 +35,6 @@
       :for-playlists="forPlaylists"
     />
     <BackBtn
-      style="left: 16px"
       v-if="!this.forPlaylists"
       @back="back"
     />
@@ -124,7 +123,7 @@ export default {
 }
 
 ::-webkit-scrollbar-thumb {
-  background: var(--lighter-bg);
+  background-color: var(--lighter-bg);
   border-radius: 20px;
 }
 

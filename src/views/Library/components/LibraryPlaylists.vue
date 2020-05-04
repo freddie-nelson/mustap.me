@@ -9,34 +9,16 @@
 
 <script>
 import DataTable from "./DataTable";
+import getPlaylists from "@/mixins/getPlaylists";
+
 
 export default {
   name: "LibraryPlaylists",
+  mixins: [getPlaylists],
   components: {
     DataTable
   },
-  data() {
-    return {
-      array: [],
-      playlists: [],
-      playlistNames: [],
-      datesAdded: []
-    };
-  },
   methods: {
-    formatDataPlaylists() {
-      this.playlists = this.$store.getters.playlistsData;
-      this.playlistNames = this.$store.getters.playlistNames;
-      this.datesAdded = this.$store.getters.playlistDatesAdded;
-
-      this.array = this.playlists.map((playlist, index) => {
-        return {
-          leftTop: this.playlistNames[index],
-          leftBottom: this.datesAdded[index],
-          rightTop: this.playlists[index].length + " Songs"
-        };
-      });
-    },
     clickedCell(index) {
       const i = index - 1;
 
@@ -48,21 +30,6 @@ export default {
       this.$store.dispatch("setPlaylistsProp", { prop: "currentPlaylistViewing", data: i });
       this.$router.push({ name: "LibraryPlaylist" });
     }
-  },
-  mounted() {
-    setTimeout(this.formatDataPlaylists, 100);
-    setTimeout(() => {
-      if (this.$store.state.playlists.currentPlaylist !== -1 && this.$store.state.playlists.playlists !== []) {
-        this.$store.getters.playlistNames.forEach((name, i) => {
-          name === this.$store.state.playlists.currentPlaylistName
-            ? this.$store.dispatch("setPlaylistsProp", {
-                prop: "currentPlaylist",
-                data: i
-              })
-            : null;
-        });
-      }
-    }, 100);
   }
 };
 </script>

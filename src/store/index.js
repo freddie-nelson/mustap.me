@@ -226,10 +226,16 @@ const playlists = {
     CHANGE_PLAYLISTS(state, payload) {
       Vue.set(state, "playlists", payload);
     },
-    SET_SONG_PROPERTY(state, { songIndex, prop, data}) {
+    PUSH_PLAYLIST(state, payload) {
+      Vue.set(state, "playlists", payload);
+    },
+    PUSH_DELETED_PLAYLIST(state, payload) {
+      Vue.set(state, "deletedPlaylists", payload);
+    },
+    SET_SONG_PROPERTY(state, { songIndex, prop, data }) {
       const playlist = state.playlists[state.currentPlaylistViewing];
-      const song = playlist.data[songIndex]
-      Vue.set(song, prop, data)
+      const song = playlist.data[songIndex];
+      Vue.set(song, prop, data);
     },
     SET_UPDATING_PLAYLIST(state, payload) {
       Object.keys(payload).forEach(prop => {
@@ -265,8 +271,14 @@ const playlists = {
     changePlaylists({ commit }, payload) {
       commit("CHANGE_PLAYLISTS", payload);
     },
+    pushPlaylist({ commit, state }, payload) {
+      commit("PUSH_PLAYLIST", [...state.playlists, payload]);
+    },
+    pushDeletedPlaylist({ commit, state }, payload) {
+      commit("PUSH_DELETED_PLAYLIST", [...state.deletedPlaylists, payload]);
+    },
     setSongProperty({ commit }, payload) {
-      commit("SET_SONG_PROPERTY", payload)
+      commit("SET_SONG_PROPERTY", payload);
     },
     setUpdatingPlaylist({ commit }, payload) {
       commit("SET_UPDATING_PLAYLIST", payload);
