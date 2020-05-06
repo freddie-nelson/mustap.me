@@ -20,8 +20,8 @@ const currentThemePath = app.getPath('userData') + '/mustap/themes/currentTheme.
 let bgColor = '';
 
 if (fs.existsSync(currentThemePath)) {
-  const obj = fs.readFileSync(currentThemePath);
-  bgColor = obj.mainBg;
+  const obj = JSON.parse(fs.readFileSync(currentThemePath));
+  bgColor = obj.colors.mainBg;
 } else {
   bgColor = '#121212';
 }

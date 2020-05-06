@@ -416,7 +416,8 @@ export default new Vuex.Store({
     documentsPath: "",
     alerts: [],
     imageFilter: "",
-    navbarSmall: true
+    navbarSmall: true,
+    settings: {}
   },
   mutations: {
     ADD_ALERT(state, payload) {

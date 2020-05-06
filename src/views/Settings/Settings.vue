@@ -4,10 +4,10 @@
       <div class="settings__header">
         <h1>Settings</h1>
         <Button
-          text="Save Settings"
+          text="Apply Settings"
           :filled="true"
           :font-size="15"
-          @clicked="saveSettings"
+          @clicked="applySettings"
         />
       </div>
       <section class="settings__main">
@@ -28,7 +28,6 @@
 <script>
 import SettingCategory from "./components/SettingCategory";
 import Button from "@/components/Button"
-import { debounce } from "debounce";
 
 export default {
   name: "Settings",
@@ -45,32 +44,22 @@ export default {
     clickedOption(e) {
       const { category, setting, index } = e;
       this.settings[category][setting].selected = index;
+      this.$store.dispatch("setProp", { prop: "settings", data: { ...this.settings } })
     },
     checked(e) {
       const { category, setting, value } = e;
       this.settings[category][setting].options = value;
+      this.$store.dispatch("setProp", { prop: "settings", data: { ...this.settings } })
     },
-    saveSettings() {
-      const fs = require("fs");
-      const settingsPath = this.$store.state.documentsPath + "/settings.json";
+    applySettings() {
+      const { remote } = require("electron");
+      const win = remote.getCurrentWindow();
 
-      fs.promises.writeFile(settingsPath, JSON.stringify(this.settings))
-        .then(() => {
-          this.$store.dispatch("addAlert", { text: "Your new settings have been saved.", type: "alert", autoClose: true })
-        })
-        .catch(err => {
-          this.$store.dispatch("addAlert", { text: "Your new settings could not be saved. Error: " + err, type: "warning" })
-        })
+      win.reload();
     }
   },
   mounted() {
-    const fs = require("fs");
-    
-    fs.promises.readFile(this.$store.state.documentsPath + "/settings.json")
-      .then(res => this.settings = JSON.parse(res))
-      .catch(err => this.$store.dispatch("addAlert", { text: "Could not load settings. Error: " + err, type: "warning" }))
-
-    this.saveSettings = debounce(this.saveSettings, 500, true)
+    this.settings = { ...this.$store.state.settings }
   }
 };
 </script>

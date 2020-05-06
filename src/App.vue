@@ -76,12 +76,23 @@ export default {
 
           // change view if needed
           const page = Other["page Displayed On Launch"];
-
-          if (page.selected > 0) {
+          
+          if (this.$route.name !== page.options[page.selected]) {
             this.$router.push({ name: page.options[page.selected] })
           }
+
+          // set settings in vuex
+          this.$store.dispatch("setProp", { prop: "settings", data: data })
         })
         .catch(err => console.log(err));
+
+      window.addEventListener("beforeunload", () => {
+        // Save settings before quitting 
+        const settings = this.$store.state.settings;
+        settings.Volume.volume = this.$store.state.currentPlaying.volume;
+
+        fs.writeFileSync(settingsPath, JSON.stringify(settings));
+      });
     }
   },
   mounted() {
