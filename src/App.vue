@@ -20,6 +20,7 @@
           :key="index"
           :alert="alert.type === 'alert' ? true : false"
           :warning="alert.type === 'warning' ? true : false"
+          :success="alert.type === 'success' ? true : false"
           :text="alert.text"
           :auto-close="alert.autoClose ? alert.autoClose : false"
         />
@@ -47,10 +48,46 @@ export default {
   methods: {
     closeAlert(index) {
       this.$store.dispatch("closeAlert", index);
+    },
+    loadSettings() {
+      const fs = require("fs");
+      const settingsPath = this.$store.state.documentsPath + "/settings.json";
+
+      if (!fs.existsSync(settingsPath)) {
+        const { settings } = require("./settings");
+
+        try {
+          fs.writeFileSync(settingsPath, JSON.stringify(settings))
+        } catch (e) {
+          console.log(e);
+        }
+      }
+
+      fs.promises.readFile(settingsPath)
+        .then(res => JSON.parse(res))
+        .then(data => {
+          const { Volume, Appearance, Other } = data;
+
+          // set volume
+          this.$store.dispatch("changeVolumeSlider", Volume.volume)
+
+          // set font-family
+          document.documentElement.style.setProperty("--font", Appearance.fonts.options[Appearance.fonts.selected])
+
+          // change view if needed
+          const page = Other["page Displayed On Launch"];
+
+          if (page.selected > 0) {
+            this.$router.push({ name: page.options[page.selected] })
+          }
+        })
+        .catch(err => console.log(err));
     }
   },
   mounted() {
     console.log("----App Mounted----");
+
+    this.$root.$refs.app = this.$refs.app
 
     const that = this;
 
@@ -59,6 +96,7 @@ export default {
     };
 
    this.loadTheme();
+   this.loadSettings();
   }
 };
 </script>
@@ -95,6 +133,7 @@ export default {
   --accent-color-secondary: #e91e63;
   --navbar-logo-bg: #fff;
   --alert-hover-color: #353535;
+  --font: "Poppins"
 }
 
 .slider-dot-handle {
@@ -106,7 +145,7 @@ export default {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-  font-family: "Poppins";
+  font-family: var(--font);
   user-select: none;
   
   &::selection {

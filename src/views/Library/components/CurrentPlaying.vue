@@ -177,6 +177,8 @@ export default {
 
 .current-playing-details {
   position: relative;
+  display: flex;
+  overflow: hidden;
 
   &__image {
     width: 220px;

@@ -1,13 +1,33 @@
 <template>
   <div class="alert">
     <div class="alert__text-container">
-      <div v-if="warning" class="alert__text--warning">ⓧ</div>
-      <div v-if="alert" class="alert__text--alert">🛈</div>
+      <div
+        v-if="warning"
+        class="alert__text--warning"
+      >
+        ⓧ
+      </div>
+      <div
+        v-if="alert"
+        class="alert__text--alert"
+      >
+        🛈
+      </div>
+      <div
+        v-if="success"
+        class="alert__text--success"
+      >
+        🛈 
+      </div>
       <p class="alert__text">
         {{ this.text }}
       </p>
     </div>
-    <Button @clicked="$emit('close')" class="alert__btn" :text="'Close'" />
+    <Button
+      @clicked="$emit('close')"
+      class="alert__btn"
+      :text="'Close'"
+    />
   </div>
 </template>
 
@@ -22,6 +42,7 @@ export default {
   props: {
     warning: Boolean,
     alert: Boolean,
+    success: Boolean,
     text: String,
     autoClose: Boolean
   },
@@ -78,6 +99,10 @@ export default {
 
     &--alert {
       color: var(--accent-color);
+    }
+
+    &--success {
+      color: #28a745;
     }
   }
 }

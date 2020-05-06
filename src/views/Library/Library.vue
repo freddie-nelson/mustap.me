@@ -91,10 +91,12 @@
         name="fade-in-right"
         id="tableContainer"
         class="container"
+        :style="{ width: hideCurrentPlaying ? '100%' : null }"
       >
         <router-view
           ref="dataTable"
           @delete-song="$refs.currentPlaying.search()"
+          :style="{ paddingRight: hideCurrentPlaying ? '0px' : null }"
         />
       </vue-page-transition>
       <CurrentPlaying
@@ -103,6 +105,7 @@
         @delete-playlist="deletePlaylist"
         class="library__current-playing"
         :for-playlists="forPlaylists"
+        :style="{ display: hideCurrentPlaying ? 'none' : null }"
       />
     </section>
   </main>
@@ -124,7 +127,8 @@ export default {
   data() {
     return {
       deletedSongsModal: false,
-      headerHeight: 172
+      headerHeight: 172,
+      appWidth: 0
     };
   },
   computed: {
@@ -149,6 +153,9 @@ export default {
     },
     computedWidth() {
       return this.$store.getters.navbarSmall ? 'calc(100vw - 80px)' : '';
+    },
+    hideCurrentPlaying() {
+      return !this.$store.getters.navbarSmall && this.appWidth < 1240 ? true : false
     }
   },
   methods: {
@@ -398,11 +405,16 @@ export default {
     }
   },
   mounted() {
-    const observer = new ResizeObserver(entries => {
+    const headerObserver = new ResizeObserver(entries => {
       this.headerHeight = entries[0].contentRect.height;
     });
 
-    observer.observe(this.$refs.libraryHeader);
+    const appObserver = new ResizeObserver(entries => {
+      this.appWidth = entries[0].contentRect.width;
+    });
+
+    headerObserver.observe(this.$refs.libraryHeader);
+    appObserver.observe(this.$root.$el);
   }
 };
 </script>
@@ -541,15 +553,11 @@ export default {
   }
 }
 
-@media screen and (max-width: 1279px) {
+@media screen and (max-width: 1150px) {
   .library {
     &__current-playing {
-      display: none;
-    }
-
-    .container {
-      min-width: 240px;
-      width: 100%;
+      margin-left: 30px;
+      width: calc(50% - 40px);
     }
   }
 }

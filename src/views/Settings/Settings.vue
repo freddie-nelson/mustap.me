@@ -1,7 +1,15 @@
 <template>
   <div class="settings-container">
     <main class="settings">
-      <h1>Settings</h1>
+      <div class="settings__header">
+        <h1>Settings</h1>
+        <Button
+          text="Save Settings"
+          :filled="true"
+          :font-size="15"
+          @clicked="saveSettings"
+        />
+      </div>
       <section class="settings__main">
         <SettingCategory
           v-for="(category, index) in Object.keys(settings)"
@@ -19,42 +27,18 @@
 
 <script>
 import SettingCategory from "./components/SettingCategory";
+import Button from "@/components/Button"
+import { debounce } from "debounce";
 
 export default {
   name: "Settings",
   components: {
-    SettingCategory
+    SettingCategory,
+    Button
   },
   data() {
     return {
-      settings: {
-        Volume: {
-          volume: 0.5
-        },
-        Appearance: {
-          fonts: {
-            description: "Controls the default font family.",
-            selected: 0,
-            options: ["Poppins", "Arial", "sans-serif"]
-          },
-          themes: {
-            description: "Controls the default application theme.",
-            selected: 0,
-            options: ["Default"]
-          }
-        },
-        Other: {
-          "auto Sign In": {
-            description: "Controls wether you are automatically signed in.",
-            options: true
-          },
-          "page Displayed On Launch": {
-            description: "Controls what page is displayed when the app is opened.",
-            selected: 0,
-            options: ["Home", "Library"]
-          }
-        }
-      }
+      settings: {}
     };
   },
   methods: {
@@ -65,7 +49,28 @@ export default {
     checked(e) {
       const { category, setting, value } = e;
       this.settings[category][setting].options = value;
+    },
+    saveSettings() {
+      const fs = require("fs");
+      const settingsPath = this.$store.state.documentsPath + "/settings.json";
+
+      fs.promises.writeFile(settingsPath, JSON.stringify(this.settings))
+        .then(() => {
+          this.$store.dispatch("addAlert", { text: "Your new settings have been saved.", type: "alert", autoClose: true })
+        })
+        .catch(err => {
+          this.$store.dispatch("addAlert", { text: "Your new settings could not be saved. Error: " + err, type: "warning" })
+        })
     }
+  },
+  mounted() {
+    const fs = require("fs");
+    
+    fs.promises.readFile(this.$store.state.documentsPath + "/settings.json")
+      .then(res => this.settings = JSON.parse(res))
+      .catch(err => this.$store.dispatch("addAlert", { text: "Could not load settings. Error: " + err, type: "warning" }))
+
+    this.saveSettings = debounce(this.saveSettings, 500, true)
   }
 };
 </script>
@@ -83,10 +88,17 @@ export default {
   color: var(--primary-text);
   overflow-y: scroll;
 
-  h1 {
-    font-size: 36px;
-    margin: 60px 0 5px 60px;
-    font-weight: 600;
+  &__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: 60px 60px 5px 60px;
+
+    h1 {
+      font-size: 36px;
+      font-weight: 600;
+    }
+    
   }
 
   &__main {
