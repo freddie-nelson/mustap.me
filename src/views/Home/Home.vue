@@ -1,7 +1,7 @@
 <template>
   <main class="home">
     <div class="home__header">
-      <h1>Welcome to Mustap</h1>
+      <h1>{{ this.title }}</h1>
     </div> 
     <div class="home__grid">
       <div class="home__changes grid-cell">
@@ -31,13 +31,26 @@
 
 <script>
 import Playlists from "./components/Playlists";
-import Button from "@/components/Button"
+import Button from "@/components/Button";
+import firebase from "firebase/app";
+import "firebase/auth";
 
 export default {
     name: "Home",
     components: {
         Playlists,
         Button
+    },
+    computed: {
+        title() {
+            const auth = firebase.auth();
+
+            if (auth.currentUser) {
+                return `Welcome back ${this.$store.state.profile.displayName }`
+            } else {
+                return "Welcome to Mustap"
+            }
+        }
     }
 }
 </script>

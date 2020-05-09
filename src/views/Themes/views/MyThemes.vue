@@ -4,12 +4,12 @@
       class="theme-item"
       v-for="(theme, index) in themes"
       :key="index"
-      :downloaded="true"
+      :downloaded-prop="true"
       :colors="theme.colors"
       :name="theme.name"
       :creator="theme.creator"
       :deleteable="true"
-      @delete-theme="getMyThemes"
+      @deleted-theme="getMyThemes"
     />
   </div>
 </template>
@@ -43,6 +43,8 @@ export default {
         getMyThemes() {
             const fs = require("fs")
             const themesPath = this.$store.state.documentsPath + "/mustap/themes/";
+
+            this.themes = [];
             
             fs.promises.readdir(themesPath)
                 .then(res => {

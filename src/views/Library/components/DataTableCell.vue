@@ -159,14 +159,14 @@ export default {
     font-size: 16px;
     color: var(--primary-text);
     opacity: 0.3;
-    width: 40px;
+    min-width: 40px;
     text-align: center;
   }
 
   &__left-text {
     font-weight: 500;
     margin: auto 0;
-    max-width: 70%;
+    max-width: 55%;
 
     &-top {
       font-size: 18px;
@@ -191,6 +191,7 @@ export default {
       font-size: 16px;
       color: var(--secondary-text);
       transition: color 0.3s ease-in;
+      white-space: nowrap;
     }
 
     &-bottom {

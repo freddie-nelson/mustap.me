@@ -10,7 +10,7 @@
       :colors="theme.colors"
       :name="theme.name"
       :creator="theme.creator"
-      :downloaded="theme.downloaded"
+      :downloaded-prop="theme.downloaded"
       @change-downloaded="changeDownloaded(index)"
     />
   </transition-group>

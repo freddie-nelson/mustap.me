@@ -132,6 +132,7 @@ export default {
           index: 2
         }
       ],
+      downloaded: this.downloadedProp,
       play: true,
       shuffle: true,
       repeat: true,
@@ -141,7 +142,7 @@ export default {
   },
   props: {
     colors: Object,
-    downloaded: {
+    downloadedProp: {
       type: Boolean,
       default: false
     },
@@ -157,6 +158,9 @@ export default {
   watch: {
     refresh() {
       this.applyColors();
+    },
+    downloadedProp() {
+      this.downloaded = this.downloadedProp;
     }
   },
   methods: {
@@ -216,6 +220,8 @@ export default {
           if (!enable) {
             this.$store.dispatch("addAlert", { text: "The theme was successfully installed.", type: "alert" })
           }
+          
+          this.downloaded = true;
 
           this.loadTheme()
         })
