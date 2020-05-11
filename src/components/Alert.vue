@@ -64,7 +64,7 @@ export default {
   background-color: var(--alert-hover-color);
   color: var(--secondary-text);
   font-size: 13px;
-  font-weight: 300;
+  font-weight: 400;
   padding: 10px;
   border-radius: 5px;
   flex-direction: column;
