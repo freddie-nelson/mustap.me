@@ -3,7 +3,7 @@
     :id="tableId"
     ref="table"
     :class="{ forPlaylists: forPlaylists, table: forPlaylists }"
-    style="height: 100%;"
+    style="height: 100%; position: relative;"
   >
     <draggable
       v-if="!forPlaylists"
@@ -34,23 +34,17 @@
       :index="index + 1"
       :for-playlists="forPlaylists"
     />
-    <BackBtn
-      v-if="!this.forPlaylists"
-      @back="back"
-    />
   </div>
 </template>
 
 <script>
 import DataTableCell from "./DataTableCell";
-import BackBtn from "../../../components/BackBtn";
 import draggable from "vuedraggable";
 
 export default {
   name: "DataTable",
   components: {
     DataTableCell,
-    BackBtn,
     draggable
   },
   data() {
@@ -77,35 +71,6 @@ export default {
   watch: {
     formattedArray() {
       this.array = [...this.formattedArray];
-    }
-  },
-  methods: {
-    back() {
-      if (this.forPlaylists) {
-        return;
-      } else {
-        // get all the dataTableCell elements
-        const children = this.$refs.table.children;
-
-        // remove all their extra classes so they don't appear on the playlists view
-        for (let i = 0; i < children.length; i++) {
-          const element = children[i];
-
-          if (element.classList.contains("missing")) {
-            element.classList.remove("missing");
-          }
-
-          if (element.classList.contains("deleted")) {
-            element.classList.remove("deleted");
-          }
-
-          if (element.classList.contains("clicked")) {
-            element.classList.remove("clicked");
-          }
-        }
-
-        this.$router.push({ name: "Library" });
-      }
     }
   },
   mounted() {

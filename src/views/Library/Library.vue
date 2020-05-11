@@ -53,9 +53,23 @@
       </div>
     </div>
 
+    <BackBtn
+      v-if="!this.forPlaylists"
+      @back="back"
+    />
+
     <header ref="libraryHeader">
       <h1>{{ mainTitle }}</h1>
-      <h2>{{ subTitle }}</h2>
+      <div style="display: flex; align-items: center;">
+        <h2>{{ subTitle }}</h2>
+
+        <DropdownMenu
+          v-if="!this.forPlaylists"
+          style="margin-left: 10px;"
+          @update-playlist="updatePlaylist"
+          @delete-playlist="deletePlaylist"
+        />
+      </div>
       <div style="margin: 3px 0 0 60px; position: absolute;">
         <transition-group name="fade">
           <Button
@@ -101,8 +115,6 @@
       </vue-page-transition>
       <CurrentPlaying
         ref="currentPlaying"
-        @update-playlist="updatePlaylist"
-        @delete-playlist="deletePlaylist"
         class="library__current-playing"
         :for-playlists="forPlaylists"
         :style="{ display: hideCurrentPlaying ? 'none' : null }"
@@ -113,15 +125,19 @@
 
 <script>
 import CurrentPlaying from "./components/CurrentPlaying";
+import DropdownMenu from "./components/DropdownMenu";
 import Button from "@/components/Button";
 import setCurrentPlaying from "@/mixins/setCurrentPlaying";
 import addClasses from "@/mixins/addClasses";
+import BackBtn from "@/components/BackBtn";
 
 export default {
   name: "Library",
   components: {
     CurrentPlaying,
-    Button
+    Button,
+    BackBtn,
+    DropdownMenu
   },
   mixins: [setCurrentPlaying, addClasses],
   data() {
@@ -159,6 +175,33 @@ export default {
     }
   },
   methods: {
+    back() {
+      if (this.forPlaylists) {
+        return;
+      } else {
+        // get all the dataTableCell elements
+        const children = document.getElementById("table");
+
+        // remove all their extra classes so they don't appear on the playlists view
+        for (let i = 0; i < children.length; i++) {
+          const element = children[i];
+
+          if (element.classList.contains("missing")) {
+            element.classList.remove("missing");
+          }
+
+          if (element.classList.contains("deleted")) {
+            element.classList.remove("deleted");
+          }
+
+          if (element.classList.contains("clicked")) {
+            element.classList.remove("clicked");
+          }
+        }
+
+        this.$router.push({ name: "Library" });
+      }
+    },
     keepSong(i, index) {
       this.$store.dispatch("setProp", {
         prop: "deletedSongs",
@@ -393,7 +436,7 @@ export default {
               prop: "currentPlaylistViewing",
               data: -1
             });
-            this.$refs.dataTable.back();
+            this.back();
           })
           .catch(err =>
             state.alerts.push({
@@ -460,7 +503,7 @@ export default {
   .container {
     height: 100%;
     width: 50%;
-    overflow: hidden;
+    overflow: visible;
   }
 
 }

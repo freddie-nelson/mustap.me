@@ -56,6 +56,18 @@ export default {
       modalTextFormatted: this.modalText ? this.modalText.replace(/\n/g, "<br>") : null
     };
   },
+  computed: {
+    routeName() {
+      return this.$route.name;
+    }
+  },
+  watch: {
+    routeName() {
+      if (this.modalShow) {
+        this.modalShow = false;
+      }
+    }
+  },
   props: {
     text: String,
     fontSize: Number,
@@ -108,7 +120,7 @@ button {
 }
 
 .modal-container {
-  position: absolute;
+  position: fixed;
   width: 100%;
   height: 100%;
   background: rgba(0, 0, 0, 0.7);
@@ -125,6 +137,7 @@ button {
   padding: 20px;
   border-radius: 10px;
   max-width: 600px;
+  font-size: 14px;
 
   p {
     margin-bottom: 5px;

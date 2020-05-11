@@ -29,29 +29,6 @@
       :padding="0"
       :bg-color="'--lighter-bg'"
     />
-    <Button
-      style="margin-right: 30px;"
-      @clicked="$emit('update-playlist')"
-      :disabled="this.forPlaylists"
-      :text="'Update Playlist'"
-      :filled="false"
-      :font-size="15"
-      :modal-popup="true"
-      :modal-text="
-        'Updating this playlist will reset it\'s order. If you wish to keep the current order you can add new songs manually.'
-      "
-      :modal-button-text="'Update Playlist'"
-    />
-    <Button
-      @clicked="$emit('delete-playlist')"
-      :disabled="this.forPlaylists"
-      :text="'Delete Playlist'"
-      :filled="true"
-      :font-size="15"
-      :modal-popup="true"
-      :modal-text="'Are you sure you want to delete this playlist?'"
-      :modal-button-text="'Yes, I\'m sure.'"
-    />
     <input
       @keyup="search"
       v-model="filter"
@@ -76,7 +53,6 @@
 
 <script>
 import TrackControls from "@/components/TrackControls";
-import Button from "@/components/Button";
 import setCurrentPlaying from "@/mixins/setCurrentPlaying";
 import addClasses from "@/mixins/addClasses";
 
@@ -85,7 +61,6 @@ export default {
   mixins: [setCurrentPlaying, addClasses],
   components: {
     TrackControls,
-    Button
   },
   data() {
     return {

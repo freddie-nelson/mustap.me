@@ -3,9 +3,12 @@
     class="controls"
     :style="{ padding: `0 ${padding}px` }"
   >
-    <div
+    <button
       class="controls__volume-buttons"
       :style="{ padding: `0 ${padding}px 0 0` }"
+      style="background: none; border: none; outline: none; cursor: pointer"
+      @focus="showVolumeControls = true"
+      @blur="showVolumeControls = false"
     >
       <div
         class="volume-buttons__audio-controller"
@@ -37,7 +40,6 @@
         alt
         src="../assets/svg/volume/volume-none.svg"
         :style="{ filter: filter }"
-        @click="showVolumeControls = !showVolumeControls"
         class="volume-buttons__controls-volume-none volume-buttons__button"
       >
 
@@ -46,7 +48,6 @@
         alt
         src="../assets/svg/volume/volume-one.svg"
         :style="{ filter: filter }"
-        @click="showVolumeControls = !showVolumeControls"
         class="volume-buttons__controls-volume-one volume-buttons__button"
       >
 
@@ -55,10 +56,9 @@
         alt
         src="../assets/svg/volume/volume-full.svg"
         :style="{ filter: filter }"
-        @click="showVolumeControls = !showVolumeControls"
         class="volume-buttons__controls-volume-full volume-buttons__button"
       >
-    </div>
+    </button>
 
     <vue-range-slider
       @slide-end="$store.dispatch('setCurrentPlayingSoundCurrentTime', $event)"
