@@ -117,7 +117,7 @@ export default {
           case "navbarLogoBg":
             return "Navbar Logo"
           case "alertHoverColor":
-            return "Alert Hover Color"
+            return "Alert Color"
           case "iconColor":
             return "Icon Color"
           default:

@@ -2,11 +2,11 @@
   <button
     ref="dropdown"
     class="dropdown"
-    @click="show"
     @blur="blur"
   >
     <div
       class="dropdown__btn"
+      @click="show"
     >
       <div />
       <div />
@@ -31,12 +31,12 @@
       <Button
         class="dropdown__link"
         @clicked="$emit('delete-playlist')"
-        :text="'Delete Playlist'"
+        text="Delete Playlist"
         style="display: block; text-align: left;"
         :font-size="16"
         :modal-popup="true"
-        :modal-text="'Are you sure you want to delete this playlist?'"
-        :modal-button-text="'Yes, I\'m sure.'"
+        modal-text="Are you sure you want to delete this playlist?"
+        modal-button-text="Yes, I'm sure."
       />
     </div>
   </button>
@@ -69,6 +69,12 @@ export default {
             }
         },
         show(e) {
+            if (this.showMenu) {
+                this.showMenu = false;
+                this.$refs.dropdown.blur();
+                return;
+            }
+
             this.showMenu = true;
 
             if (e.target.classList.contains("dropdown__btn")) {

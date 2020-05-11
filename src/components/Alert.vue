@@ -61,7 +61,7 @@ export default {
   margin-top: 10px;
   display: flex;
   width: 320px;
-  background-color: var(--lighter-bg);
+  background-color: var(--alert-hover-color);
   color: var(--secondary-text);
   font-size: 13px;
   font-weight: 300;
@@ -69,11 +69,6 @@ export default {
   border-radius: 5px;
   flex-direction: column;
   cursor: pointer;
-  transition: background-color 0.3s ease-in;
-
-  &:hover {
-    background-color: var(--alert-hover-color);
-  }
 
   &:first-of-type {
     margin-top: 0px;
