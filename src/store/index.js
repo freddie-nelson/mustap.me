@@ -417,6 +417,7 @@ export default new Vuex.Store({
     alerts: [],
     imageFilter: "",
     navbarSmall: true,
+    navbarWidth: 60,
     settings: {}
   },
   mutations: {

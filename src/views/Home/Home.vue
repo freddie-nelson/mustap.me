@@ -93,7 +93,7 @@ export default {
 
     .grid-cell {
         background-color: var(--lighter-bg);
-        border-radius: 12px;
+        border-radius: 8px;
         color: var(--primary-text);
 
         h1 {

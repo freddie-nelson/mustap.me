@@ -125,7 +125,7 @@ export default {
   height: 64px;
   margin: 12px 0;
   background-color: var(--main-bg);
-  border-radius: 10px;
+  border-radius: 8px;
   display: flex;
   cursor: pointer;
   transition: background-color 0.3s ease-in, color 0.3s ease-in,

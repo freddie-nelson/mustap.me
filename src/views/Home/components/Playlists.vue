@@ -29,7 +29,7 @@ export default {
 .playlists {
     background-color: var(--lighter-bg);
     color: var(--primary-text);
-    border-radius: 12px;
+    border-radius: 8px;
 
     ::-webkit-scrollbar-thumb {
         background-color: var(--alert-hover-color);

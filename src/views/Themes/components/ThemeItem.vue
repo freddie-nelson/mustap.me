@@ -375,7 +375,7 @@ export default {
   height: 255px;
   background-color: var(--main-bg);
   border: 3px solid var(--lighter-bg);
-  border-radius: 15px;
+  border-radius: 12px;
   position: relative;
 
   &:hover {
@@ -391,7 +391,7 @@ export default {
     height: calc(100% + 6px);
     margin: -3px 0 0 -3px;
     background-color: var(--lighter-bg);
-    border-radius: 15px;
+    border-radius: 12px;
     display: flex;
     flex-direction: column;
     align-items: center;

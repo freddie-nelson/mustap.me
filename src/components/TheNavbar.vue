@@ -3,10 +3,10 @@
     class="nav"
     :class="{ small: smallNavbar }"
   >
-    <div
+    <!-- <div
       class="border"
       @click="() => { $store.dispatch('navbarChanged', !smallNavbar); smallNavbar = !smallNavbar; }"
-    />
+    /> -->
     <div class="nav__resize-btn">
       <img
         src="@/assets/svg/chevron-down.svg"

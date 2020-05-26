@@ -168,7 +168,7 @@ export default {
       return !this.$store.getters.currentPlaylistViewing ? true : false;
     },
     computedWidth() {
-      return this.$store.getters.navbarSmall ? 'calc(100vw - 60px)' : '';
+      return this.$store.getters.navbarSmall ? `calc(100vw - ${this.$store.state.navbarWidth}px)` : '';
     },
     hideCurrentPlaying() {
       return !this.$store.getters.navbarSmall && this.appWidth < 1240 ? true : false
@@ -463,13 +463,6 @@ export default {
 </script>
 
 <style lang="scss">
-
-.nav.small {
-  .library {
-    max-width: calc(100vw - 80px);
-  }
-}
-
 .library {
   display: flex;
   width: 100%;
@@ -478,7 +471,7 @@ export default {
   flex-direction: column;
   overflow-y: hidden;
   position: relative;
-  max-width: calc(100vw - 300px);
+  max-width: calc(100vw - 60px);
   transition: max-width .2s ease;
 
   h1 {

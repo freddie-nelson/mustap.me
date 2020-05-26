@@ -160,7 +160,7 @@ export default {
     height: 220px;
     background-size: 240%;
     background-position: center;
-    border-radius: 12px;
+    border-radius: 8px;
     display: inline-flex;
 
     &::after {
@@ -173,7 +173,7 @@ export default {
       width: 100%;
       height: 100%;
       background-color: var(--lighter-bg);
-      border-radius: 12px;
+      border-radius: 8px;
     }
   }
 

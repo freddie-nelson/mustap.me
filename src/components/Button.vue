@@ -94,7 +94,7 @@ button {
   color: var(--accent-color-secondary);
   border: none;
   outline: none !important;
-  border-radius: 6px;
+  border-radius: 4px;
   font-weight: 500;
   cursor: pointer;
   transition: color ease-in 0.3s;
