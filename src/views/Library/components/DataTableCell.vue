@@ -36,7 +36,7 @@
         }
       "
       class="cell__right-text-bottom"
-      :text="'🗑'"
+      icon="trash-2"
       v-if="!this.forPlaylists"
     />
   </div>

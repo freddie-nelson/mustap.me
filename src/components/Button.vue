@@ -6,6 +6,11 @@
       :style="{ fontSize: `${fontSize}px` }"
     >
       {{ text }}
+      <v-icon
+        v-if="icon"
+        :name="icon"
+        style="width: 14px"
+      />
     </button>
     <transition name="fade">
       <div
@@ -70,6 +75,7 @@ export default {
   },
   props: {
     text: String,
+    icon: String,
     fontSize: Number,
     filled: Boolean,
     disabled: Boolean,

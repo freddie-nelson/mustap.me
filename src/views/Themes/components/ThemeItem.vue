@@ -57,7 +57,7 @@
         />
 
         <div class="item__controls-buttons">
-          <img
+          <!-- <img
             :style="{ opacity: repeat ? 1 : 0.7 }"
             @click="repeat = !repeat"
             src="@/assets/svg/controls/repeat.svg"
@@ -91,7 +91,47 @@
             @click="shuffle = !shuffle"
             src="@/assets/svg/controls/shuffle.svg"
             alt=""
-          >
+          > -->
+
+          <v-icon
+            name="repeat"
+            style="width: 16px;"
+            :style="{ opacity: repeat ? 1 : 0.7 }"
+            @click.native="repeat = !repeat"
+          />
+
+          <v-icon
+            name="skip-back"
+            style="width: 26px;"
+            @click.native="nextBack(-1)"
+          />
+
+          <v-icon
+            name="play"
+            v-if="play"
+            style="width: 38px"
+            @click.native="play = !play"
+          />
+
+          <v-icon
+            name="pause"
+            v-else
+            style="width: 38px"
+            @click.native="play = !play"
+          />
+
+          <v-icon
+            name="skip-forward"
+            style="width: 26px;"
+            @click.native="nextBack(1)"
+          />
+
+          <v-icon
+            name="shuffle"
+            style="width: 16px;"
+            :style="{ opacity: shuffle ? 1 : 0.7 }"
+            @click.native="shuffle = !shuffle"
+          />
         </div>
       </div>
     </div>
@@ -246,6 +286,7 @@ export default {
         "--accent-color-secondary",
         "--navbar-logo-bg",
         "--alert-hover-color",
+        "--icon-color",
         "--filter"
       ];
 
@@ -259,6 +300,7 @@ export default {
         "accentColorSecondary",
         "navbarLogoBg",
         "alertHoverColor",
+        "iconColor",
         "filter"
       ];
 
@@ -266,10 +308,10 @@ export default {
         el.setProperty(val, this.colors[colorsPropNames[index]])
       );
 
-      const images = document.querySelectorAll(".item__controls-buttons>img");
-      images.forEach(element => {
-        element.style.cssText += this.colors[colorsPropNames[9]];
-      });
+      // const images = document.querySelectorAll(".item__controls-buttons>img");
+      // images.forEach(element => {
+      //   element.style.cssText += this.colors[colorsPropNames[9]];
+      // });
 
       setTimeout(() => this.addClasses(0), 100)
     },
@@ -326,6 +368,7 @@ export default {
   --accent-color-secondary: rgb(103, 207, 255);
   --navbar-logo-bg: #fff;
   --alert-hover-color: #353535;
+  --icon-color: #FFF;
   --filter: brightness(0) saturation(100%);
 
   width: 300px;
@@ -429,10 +472,10 @@ export default {
       align-items: center;
       margin-top: 4px;
 
-      img {
+      div {
         cursor: pointer;
         transform: scale(0.9);
-        margin: 0px 8px 3px 8px;
+        margin: -4px 7px 1px 7px;
       }
     }
   }
