@@ -26,6 +26,7 @@ export default {
           "--accent-color-secondary",
           "--navbar-logo-bg",
           "--alert-hover-color",
+          "--icon-color",
           "--filter"
         ];
 
@@ -39,6 +40,7 @@ export default {
           "accentColorSecondary",
           "navbarLogoBg",
           "alertHoverColor",
+          "iconColor",
           "filter"
         ];
 
@@ -62,6 +64,7 @@ export default {
           accentColorSecondary: "#E91E63",
           navbarLogoBg: "#FFF",
           alertHoverColor: "#353535", // a bit lighter than lighterBG
+          iconColor: "#FFF",
           filter: this.convertColorToFilter("#FFF")
         };
 

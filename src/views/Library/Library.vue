@@ -168,7 +168,7 @@ export default {
       return !this.$store.getters.currentPlaylistViewing ? true : false;
     },
     computedWidth() {
-      return this.$store.getters.navbarSmall ? 'calc(100vw - 80px)' : '';
+      return this.$store.getters.navbarSmall ? 'calc(100vw - 60px)' : '';
     },
     hideCurrentPlaying() {
       return !this.$store.getters.navbarSmall && this.appWidth < 1240 ? true : false

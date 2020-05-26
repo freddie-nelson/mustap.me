@@ -9,6 +9,10 @@ import firebase from "firebase/app";
 import "firebase/auth"
 import firebaseConfig from "./firebaseConfig";
 
+// import feather icon setnpm 
+import feather from "vue-icon";
+Vue.use(feather, "v-icon");
+
 // load fonts
 import "typeface-poppins";
 import "typeface-roboto";

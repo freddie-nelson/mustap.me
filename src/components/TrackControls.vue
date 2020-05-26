@@ -35,7 +35,28 @@
         />
       </div>
 
-      <img
+      <v-icon
+        v-if="volumeControlsBtn === 1"
+        name="volume"
+        style="width: 20px"
+        class="volume-buttons__controls-volume-none volume-buttons__button"
+      />
+
+      <v-icon
+        v-else-if="volumeControlsBtn === 2"
+        name="volume-1"
+        style="width: 20px"
+        class="volume-buttons__controls-volume-none volume-buttons__button"
+      />
+
+      <v-icon
+        v-else-if="volumeControlsBtn === 3"
+        name="volume-2"
+        style="width: 20px"
+        class="volume-buttons__controls-volume-none volume-buttons__button"
+      />
+
+      <!-- <img
         v-if="volumeControlsBtn === 1"
         alt
         src="../assets/svg/volume/volume-none.svg"
@@ -57,7 +78,7 @@
         src="../assets/svg/volume/volume-full.svg"
         :style="{ filter: filter }"
         class="volume-buttons__controls-volume-full volume-buttons__button"
-      >
+      > -->
     </button>
 
     <vue-range-slider
@@ -77,7 +98,7 @@
       style="display: block; padding: 0; margin: 0; cursor: pointer;"
     />
     <div class="controls__buttons">
-      <img
+      <!-- <img
         src="../assets/svg/controls/repeat.svg"
         :style="{
           opacity: $store.state.playlists.repeatSong ? '1' : '.7',
@@ -91,43 +112,81 @@
           })
         "
         class="controls__buttons-repeat"
-      >
+      > -->
 
-      <img
+      <v-icon
+        name="repeat"
+        class="controls__buttons-repeat"
+        style="width: 16px;"
+        :style="{
+          opacity: $store.state.playlists.repeatSong ? '1' : '.7'
+        }"
+        alt
+        @click.native="
+          $store.dispatch('setPlaylistsProp', {
+            prop: 'repeatSong',
+            data: !$store.state.playlists.repeatSong
+          })
+        "
+      />
+
+      <!-- <img
         src="../assets/svg/controls/next.svg"
         :style="{ filter: filter }"
         alt
         @click="nextBack(-1, true)"
         class="controls__buttons-button back-btn"
-      >
+      > -->
 
-      <img
+      <v-icon
+        name="skip-back"
+        style="width: 26px;"
+        class="controls__buttons-button back-btn"
+        @click.native="nextBack(-1, true)"
+      />
+
+      <!-- <img
         v-if="!this.$store.state.currentPlaying.playing"
         src="../assets/svg/controls/play.svg"
         :style="{ filter: filter }"
         alt
         @click="playPause"
         class="controls__buttons-button-play"
-      >
+      > -->
 
-      <img
+      <v-icon
+        name="play"
+        v-if="!this.$store.state.currentPlaying.playing"
+        style="width: 38px"
+        @click.native="playPause"
+        class="controls__buttons-button-play"
+      />
+
+      <!-- <img
         v-else
         src="../assets/svg/controls/pause.svg"
         :style="{ filter: filter }"
         alt
         @click="playPause"
         class="controls__buttons-button-pause"
-      >
+      > -->
+      
+      <v-icon
+        name="pause"
+        v-else
+        style="width: 38px"
+        @click.native="playPause"
+        class="controls__buttons-button-pause"
+      />
 
-      <img
-        src="../assets/svg/controls/next.svg"
-        :style="{ filter: filter }"
-        alt
-        @click="nextBack(1, true)"
+      <v-icon
+        name="skip-forward"
+        style="width: 26px;"
         class="controls__buttons-button skip-btn"
-      >
+        @click.native="nextBack(1, true)"
+      />
 
-      <img
+      <!-- <img
         src="../assets/svg/controls/shuffle.svg"
         :style="{
           opacity: $store.state.playlists.shufflePlaylist ? '1' : '.7',
@@ -141,7 +200,21 @@
           })
         "
         class="controls__buttons-shuffle"
-      >
+      > -->
+
+      <v-icon
+        name="shuffle"
+        style="width: 16px"
+        :style="{
+          opacity: $store.state.playlists.shufflePlaylist ? '1' : '.7' }"
+        class="controls__buttons-shuffle"
+        @click.native="
+          $store.dispatch('setPlaylistsProp', {
+            prop: 'shufflePlaylist',
+            data: !$store.state.playlists.shufflePlaylist
+          })
+        "
+      />
     </div>
   </div>
 </template>
@@ -382,6 +455,8 @@ export default {
 
   &__volume-buttons {
     position: absolute;
+    background-color: transparent;
+    border: none;
     top: -28px;
     right: 0;
     cursor: pointer;
@@ -394,6 +469,9 @@ export default {
 
     .volume-buttons__button {
       transition: transform 0.2s ease-out;
+      stroke: var(--icon-color);
+      fill: var(--icon-color);
+      color: var(--icon-color);
     }
 
     .volume-buttons__audio-controller {
@@ -433,7 +511,6 @@ export default {
     }
 
     .skip-btn {
-      transform: rotate(180deg);
       margin-right: 25px;
       cursor: pointer;
     }
