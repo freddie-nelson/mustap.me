@@ -63,12 +63,12 @@
       <div style="display: flex; align-items: center;">
         <h2>{{ subTitle }}</h2>
 
-        <DropdownMenu
+        <!-- <DropdownMenu
           v-if="!this.forPlaylists"
           style="margin-left: 10px;"
           @update-playlist="updatePlaylist"
           @delete-playlist="deletePlaylist"
-        />
+        /> -->
       </div>
       <div style="margin: 3px 0 0 60px; position: absolute;">
         <transition-group name="fade">
@@ -125,7 +125,7 @@
 
 <script>
 import CurrentPlaying from "./components/CurrentPlaying";
-import DropdownMenu from "./components/DropdownMenu";
+// import DropdownMenu from "./components/DropdownMenu";
 import Button from "@/components/Button";
 import setCurrentPlaying from "@/mixins/setCurrentPlaying";
 import addClasses from "@/mixins/addClasses";
@@ -137,7 +137,7 @@ export default {
     CurrentPlaying,
     Button,
     BackBtn,
-    DropdownMenu
+    // DropdownMenu
   },
   mixins: [setCurrentPlaying, addClasses],
   data() {

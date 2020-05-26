@@ -32,6 +32,7 @@
     "vue-page-transition": "^0.2.2",
     "vue-router": "^3.2.0",
     "vue-virtual-scroller": "^1.0.10",
+    "vue-youtube-embed": "^2.2.2",
     "vuedraggable": "^2.23.2",
     "vuex": "^3.4.0",
     "ytdl-core": "^2.1.5",
