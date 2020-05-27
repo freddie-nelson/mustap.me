@@ -51,6 +51,9 @@ export default {
                 return "Welcome to Mustap"
             }
         }
+    },
+    mounted() {
+        this.$emit("loaded")
     }
 }
 </script>

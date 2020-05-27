@@ -5,12 +5,14 @@
     </h2>
     <div class="current-playing-details">
       <div
+        ref="songImage"
         class="current-playing-details__image"
-        :style="{
-          backgroundImage: `url(${this.$store.state.currentPlaying.thumbnail})`
-        }"
         alt="Album Cover / Song Art"
       >
+        <img
+          :src="imageUrl"
+          @error.prevent="imageError"
+        >
         <v-icon
           name="music"
           style="width: 55px; position: absolute; margin-left: -3px; margin-top: 3px; opacity: 0.2; z-index: -1;"
@@ -60,6 +62,9 @@
 import TrackControls from "@/components/TrackControls";
 import setCurrentPlaying from "@/mixins/setCurrentPlaying";
 import addClasses from "@/mixins/addClasses";
+// import { throttle } from "throttle-debounce";
+
+const placeholderImage = require("../../../assets/placeholder.png");
 
 export default {
   name: "CurrentPlaying",
@@ -70,7 +75,8 @@ export default {
   data() {
     return {
       matches: [],
-      filter: ""
+      filter: "",
+      placeholder: null
     };
   },
   props: {
@@ -79,14 +85,46 @@ export default {
   computed: {
     currentPlaylistViewing() {
       return this.$store.state.playlists.currentPlaylistViewing;
+    },
+    imageUrl() {
+      if (navigator.onLine) {
+        return `${this.$store.state.currentPlaying.thumbnail}`;
+      } else {
+        return require("../../../assets/placeholder.png");
+      }
     }
   },
   watch: {
     currentPlaylistViewing() {
       this.filter = ""
-    }
+    },
+    // imageUrl(val) {
+    //   this.getImage(val)
+    // }
   },
   methods: {
+    // getImage(url) {
+    //   const proxyUrl = "https://cors-anywhere.herokuapp.com/";
+    //   const targetUrl = url;
+    //   const reader = new FileReader();
+
+    //   reader.onloadend = () => {
+    //     this.$refs.songImage.style.backgroundImage = `url(${reader.result})`
+    //   }
+
+    //   fetch(proxyUrl + targetUrl)
+    //     .then(res => res.blob())
+    //     .then(image => {
+    //       this.convertToDataUrl(image, reader)
+    //     })
+    //     .catch(err => console.error(err));
+    // },
+    // convertToDataUrl(image, reader) {
+    //   reader.readAsDataURL(image)
+    // },
+    imageError(e) {
+      e.target.src = placeholderImage;
+    },
     search() {
       if (this.forPlaylists || this.filter === "") {
         this.matches = [];
@@ -127,7 +165,10 @@ export default {
       this.setCurrentPlaying(index + 1);
       this.addClasses();
     }
-  }
+  },
+  // mounted() {
+  //   this.convertToDataUrl = throttle(100, this.convertToDataUrl)
+  // }
 };
 </script>
 
@@ -169,6 +210,18 @@ export default {
     display: inline-flex;
     justify-content: center;
     align-items: center;
+    position: relative;
+    overflow: hidden;
+
+    img {
+      position: absolute;
+      display: block;
+      width: 100%;
+      height: 100%;
+      border-radius: 8px;
+      transform-origin: center;
+      transform: scale(2.4);
+    }
 
     &::after {
       content: "";

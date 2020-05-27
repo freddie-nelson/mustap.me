@@ -458,6 +458,8 @@ export default {
 
     headerObserver.observe(this.$refs.libraryHeader);
     appObserver.observe(this.$root.$el);
+
+    this.$emit("loaded");
   }
 };
 </script>

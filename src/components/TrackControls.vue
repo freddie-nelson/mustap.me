@@ -351,7 +351,9 @@ export default {
         }
 
         this.setCurrentPlaying(index + 1);
-        this.addClasses(0);
+        if (this.$store.state.playlists.currentPlaylistViewing > -1) {
+          this.addClasses(0);
+        }
       }
     },
     registerKeys() {
@@ -438,7 +440,7 @@ export default {
     }
   },
   mounted() {
-    this.calcVolumeControlsSrc();
+    this.calcVolumeControlsSrc(this.$store.state.currentPlaying.volume);
     this.registerKeys();
   }
 };

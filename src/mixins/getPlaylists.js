@@ -95,7 +95,7 @@ export default {
                     added: `${day}/${month}/${year}`
                   });
                 } else {
-                  this.$store.dispatch("pushDeletedPlaylists", {
+                  this.$store.dispatch("pushDeletedPlaylist", {
                     name: file.split(".")[0],
                     data: JSON.parse(data),
                     added: `${day}/${month}/${year}`

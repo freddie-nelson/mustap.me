@@ -82,9 +82,7 @@ const currentPlaying = {
             commit("SET_CURRENT_PLAYING_SRC", dataURL);
             state.sound
               .play()
-              .catch(err =>
-                console.log("Song could not be played. Error: " + err)
-              );
+              .catch(() => null)
           })
           .catch(err => {
             commit("ADD_ALERT", {
@@ -418,6 +416,7 @@ export default new Vuex.Store({
     imageFilter: "",
     navbarSmall: true,
     navbarWidth: 60,
+    webOnly: false,
     settings: {}
   },
   mutations: {

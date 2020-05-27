@@ -175,13 +175,13 @@
       </svg>
 
       <div class="nav__music-controller__album-details">
-        <div
+        <!-- <div
           class="image"
           :style="{
             backgroundImage: `url(${this.$store.state.currentPlaying.thumbnail})`
           }"
           alt="Album Cover / Song Art"
-        />
+        /> -->
         <div>
           <p>{{ this.$store.state.currentPlaying.title }}</p>
           <p>{{ this.$store.state.currentPlaying.artist }}</p>
@@ -205,7 +205,7 @@
 
 <script>
 import TrackControls from "@/components/TrackControls";
-import { debounce } from "debounce";
+import { debounce } from "throttle-debounce";
 
 export default {
   name: "Navbar",
@@ -242,16 +242,14 @@ export default {
   mounted() {
     const currentPlaying = this.$store.state.currentPlaying;
 
-    this.$store.state.currentPlaying.sound.onended = debounce(
+    this.$store.state.currentPlaying.sound.onended = debounce(1000, true,
       () => {
         if (currentPlaying.title === "N / A" || !currentPlaying.playing) {
           return;
         } else {
           this.$refs.trackControls.nextBack(1);
         }
-      },
-      1000,
-      true
+      }
     );
   }
 };
@@ -360,6 +358,7 @@ export default {
       left: 0;
       top: 0;
       bottom: 0;
+      z-index: 3;
       
       .nav__links-link {
         opacity: 0.4;
