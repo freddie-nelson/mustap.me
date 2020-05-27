@@ -10,7 +10,12 @@
           backgroundImage: `url(${this.$store.state.currentPlaying.thumbnail})`
         }"
         alt="Album Cover / Song Art"
-      />
+      >
+        <v-icon
+          name="music"
+          style="width: 55px; position: absolute; margin-left: -3px; margin-top: 3px; opacity: 0.2; z-index: -1;"
+        />
+      </div>
       <div class="current-playing-details__text">
         <p class="current-playing-details__title">
           {{ this.$store.state.currentPlaying.title }}
@@ -162,14 +167,16 @@ export default {
     background-position: center;
     border-radius: 8px;
     display: inline-flex;
+    justify-content: center;
+    align-items: center;
 
     &::after {
-      content: "No image found";
+      content: "";
       display: flex;
       color: var(--secondary-text);
       justify-content: center;
       align-items: center;
-      z-index: -1;
+      z-index: -2;
       width: 100%;
       height: 100%;
       background-color: var(--lighter-bg);

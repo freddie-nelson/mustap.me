@@ -82,12 +82,14 @@ function createWindow() {
     win = null
   })
 
-  win.on('ready-to-show', () => {
-    win.show();
-    win.focus();
-  });
+  // win.on('ready-to-show', () => {
+  //   win.show();
+  //   win.focus();
+  // });
 
   win.webContents.on('did-finish-load', () => {
+    win.show();
+    win.focus();
     win.setTitle('Mustap');
   })
 }
