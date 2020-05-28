@@ -30,6 +30,12 @@ export default {
       this.$store.dispatch("setPlaylistsProp", { prop: "currentPlaylistViewing", data: i });
       this.$router.push({ name: "LibraryPlaylist" });
     }
+  },
+  mounted() {
+    if (this.$route.query.toHome) {
+      this.$route.query.toHome = null;
+      this.$router.push({ name: "Home" })
+    }
   }
 };
 </script>

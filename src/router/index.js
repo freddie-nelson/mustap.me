@@ -22,7 +22,7 @@ const routes = [
     component: Home
   },
   {
-    path: "/Library",
+    path: "/Library", 
     component: Library,
     children: [
       {
@@ -85,6 +85,14 @@ const routes = [
 
 const router = new VueRouter({
   routes
+});
+
+router.beforeEach((to, from, next) => {
+  if (to.name === "Home" && (from.name === "LibraryPlaylist" || from.name === "Library")) {
+    next({ name: "Library", query: { toHome: true } });
+  } else {
+    next();
+  }
 });
 
 export default router;
