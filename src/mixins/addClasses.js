@@ -1,6 +1,7 @@
 export default {
   methods: {
     addClasses(delay, tries = 0, scroll = true) {
+      console.log("yo");
       /* check for missing songs once the table has loaded, also apply the clicked class to a song if it is playing and then scroll it into view as well */
       if (delay > 0) {
         this.$store.dispatch("setProp", { prop: "missingSongsCount", data: 0 });

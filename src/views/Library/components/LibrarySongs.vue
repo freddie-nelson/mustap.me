@@ -160,7 +160,7 @@ export default {
 
       if (playlist.data.length !== 0) {
         fs.promises.writeFile(playlistPath, JSON.stringify(playlist.data));
-        this.addClasses(0, 0, false);
+        // this.addClasses(0, 0, false);
         this.$emit("delete-song");
       } else {
         // if the playlist has 0 songs left in it delete it altogther
@@ -208,7 +208,20 @@ export default {
       }
     }
   },
-  destroyed() {
+  mounted() {
+    if (this.$store.state.playlists.currentPlaylistViewing === -1) {
+      this.$store.dispatch("setPlaylistsProp", {
+        prop: "currentPlaylistViewing",
+        data: this.$store.state.playlists.formattedPlaylistIndex
+      });
+    }
+
+    this.playlistIndex = this.$store.state.playlists.currentPlaylistViewing;
+    this.playlist = this.$store.getters.currentPlaylistViewing.data;
+    this.formatDataSongs(this.playlistIndex);
+    // this.addClasses(400);
+  },
+  beforeDestroy() {
     if (this.$store.state.playlists.orderChanged) {
       const fs = require("fs");
       const currentPlaylistViewing = this.$store.getters.currentPlaylistViewing;
@@ -229,19 +242,9 @@ export default {
       currentPlaylistViewing: -1,
       orderChanged: false
     });
-  },
-  mounted() {
-    if (this.$store.state.playlists.currentPlaylistViewing === -1) {
-      this.$store.dispatch("setPlaylistsProp", {
-        prop: "currentPlaylistViewing",
-        data: this.$store.state.playlists.formattedPlaylistIndex
-      });
-    }
 
-    this.playlistIndex = this.$store.state.playlists.currentPlaylistViewing;
-    this.playlist = this.$store.getters.currentPlaylistViewing.data;
-    this.formatDataSongs(this.playlistIndex);
-    this.addClasses(400);
+    this.playlist.length = 0;
+    this.array.length = 0;
   }
 };
 </script>

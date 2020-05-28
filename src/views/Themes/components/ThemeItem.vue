@@ -207,7 +207,7 @@ export default {
     clickedCell(e) {
       const index = e - 1;
       this.index = index;
-      this.addClasses(index);
+      // this.addClasses(index);
     },
     addClasses(index) {
       try {
@@ -238,7 +238,7 @@ export default {
         this.index = newIndex;
       }
 
-      this.addClasses(this.index);
+      // this.addClasses(this.index);
     },
     enableOrDownloadTheme(enable) {
       const fs = require("fs");
@@ -313,7 +313,7 @@ export default {
       //   element.style.cssText += this.colors[colorsPropNames[9]];
       // });
 
-      setTimeout(() => this.addClasses(0), 100)
+      // setTimeout(() => this.addClasses(0), 100)
     },
     deleteTheme() {
       const fs = require("fs");

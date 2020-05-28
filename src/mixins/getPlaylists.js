@@ -131,5 +131,11 @@ export default {
         this.formatDataPlaylists();
       });
     }
+  },
+  beforeDestroy() {
+    this.playlists.length = 0;
+    this.array.length = 0;
+    this.playlistNames.length = 0;
+    this.datesAdded.length = 0;
   }
 };

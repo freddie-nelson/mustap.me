@@ -163,7 +163,7 @@ export default {
       }
       this.$store.dispatch("setCurrentPlaylistDetails");
       this.setCurrentPlaying(index + 1);
-      this.addClasses();
+      // this.addClasses();
     }
   },
   // mounted() {

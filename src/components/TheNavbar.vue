@@ -6,7 +6,7 @@
     <!-- <div
       class="border"
       @click="() => { $store.dispatch('navbarChanged', !smallNavbar); smallNavbar = !smallNavbar; }"
-    /> -->
+    />
     <div class="nav__resize-btn">
       <img
         src="@/assets/svg/chevron-down.svg"
@@ -27,10 +27,10 @@
           d="M206 132.238C234 142.751 262 134.341 290 121.724L296.5 118L303 112.5L300 0H-2.09808e-05C-22.1827 56.6857 -49.3869 105.157 38 98.5946C66 96.4919 94 79.6703 122 85.9784C150 92.2865 178 121.724 206 132.238Z"
         />
       </svg>
-    </div>
+    </div> -->
 
     <div class="nav__links-container">
-      <svg id="svg-defs">
+      <!-- <svg id="svg-defs">
         <defs>
           <linearGradient
             id="selectedGradient"
@@ -47,7 +47,7 @@
             />
           </linearGradient>
         </defs>
-      </svg>
+      </svg> -->
 
       <router-link
         class="nav__links-link"
@@ -160,7 +160,7 @@
       </router-link>
     </div>
 
-    <div class="nav__music-controller">
+    <!-- <div class="nav__music-controller">
       <svg
         xmlns="http://www.w3.org/2000/svg"
         width="300"
@@ -175,13 +175,13 @@
       </svg>
 
       <div class="nav__music-controller__album-details">
-        <!-- <div
+        <div
           class="image"
           :style="{
             backgroundImage: `url(${this.$store.state.currentPlaying.thumbnail})`
           }"
           alt="Album Cover / Song Art"
-        /> -->
+        />
         <div>
           <p>{{ this.$store.state.currentPlaying.title }}</p>
           <p>{{ this.$store.state.currentPlaying.artist }}</p>
@@ -199,59 +199,46 @@
         :padding="20"
         :bg-color="'--main-bg'"
       />
-    </div>
+    </div> -->
   </nav>
 </template>
 
 <script>
-import TrackControls from "@/components/TrackControls";
-import { debounce } from "throttle-debounce";
+// import TrackControls from "@/components/TrackControls";
+// import { debounce } from "throttle-debounce";
 
 export default {
   name: "Navbar",
-  components: {
-    TrackControls
-  },
+  // components: {
+  //   TrackControls
+  // },
   data() {
     return {
       showVolumeControls: false,
       smallNavbar: true
     };
   },
-  methods: {
-    changeView(e) {
-      console.log(e);
-      const nodeName = e.target.nodeName;
-      let id;
+  // methods: {
+  //   changeView(e) {
+  //     console.log(e);
+  //     const nodeName = e.target.nodeName;
+  //     let id;
 
-      if (nodeName === "H2" || nodeName === "svg") {
-        id = e.srcElement.parentElement.id;
-      } else if (nodeName === "path") {
-        e.srcElement.parentElement.parentElement.id;
-      } else {
-        id = e.target.id;
-      }
+  //     if (nodeName === "H2" || nodeName === "svg") {
+  //       id = e.srcElement.parentElement.id;
+  //     } else if (nodeName === "path") {
+  //       e.srcElement.parentElement.parentElement.id;
+  //     } else {
+  //       id = e.target.id;
+  //     }
 
-      if (this.$route.name === id) {
-        return;
-      } else {
-        this.$router.push({ name: id });
-      }
-    }
-  },
-  mounted() {
-    const currentPlaying = this.$store.state.currentPlaying;
-
-    this.$store.state.currentPlaying.sound.onended = debounce(1000, true,
-      () => {
-        if (currentPlaying.title === "N / A" || !currentPlaying.playing) {
-          return;
-        } else {
-          this.$refs.trackControls.nextBack(1);
-        }
-      }
-    );
-  }
+  //     if (this.$route.name === id) {
+  //       return;
+  //     } else {
+  //       this.$router.push({ name: id });
+  //     }
+  //   }
+  // },
 };
 </script>
 

@@ -222,6 +222,7 @@
 <script>
 import addClasses from "@/mixins/addClasses";
 import setCurrentPlaying from "@/mixins/setCurrentPlaying";
+import { debounce } from "throttle-debounce";
 
 export default {
   name: "TrackControls",
@@ -352,7 +353,7 @@ export default {
 
         this.setCurrentPlaying(index + 1);
         if (this.$store.state.playlists.currentPlaylistViewing > -1) {
-          this.addClasses(0);
+          // this.addClasses(0);
         }
       }
     },
@@ -437,9 +438,23 @@ export default {
           }
         });
       }
+    },
+    songFinished() {
+      const currentPlaying = this.$store.state.currentPlaying;
+
+      this.$store.state.currentPlaying.sound.onended = debounce(1000, true,
+        () => {
+          if (currentPlaying.title === "N / A" || !currentPlaying.playing) {
+            return;
+          } else {
+            this.nextBack(1);
+          }
+        }
+      );
     }
   },
   mounted() {
+    this.songFinished();
     this.calcVolumeControlsSrc(this.$store.state.currentPlaying.volume);
     this.registerKeys();
   }
