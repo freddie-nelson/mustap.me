@@ -12,7 +12,7 @@
         style="width: 14px"
       />
     </button>
-    <transition name="fade">
+    <!-- <transition name="fade">
       <div
         v-if="modalShow"
         class="modal-container"
@@ -48,7 +48,7 @@
           </div>
         </div>
       </div>
-    </transition>
+    </transition> -->
   </div>
 </template>
 

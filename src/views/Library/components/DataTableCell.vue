@@ -1,7 +1,6 @@
 <template>
   <div class="cell-container">
     <div
-      v-if="show"
       class="cell created"
       :class="computedClasses"
       @click="clicked"
@@ -52,8 +51,7 @@ export default {
   },
   data() {
     return {
-      deleteClicked: false,
-      show: true
+      deleteClicked: false
     };
   },
   props: {

@@ -23,8 +23,8 @@ import VueRangeSlider from "vue-range-component";
 Vue.use(VueRangeSlider);
 
 // import the youtube player
-import VueYoutubeEmbed from "vue-youtube-embed";
-Vue.use(VueYoutubeEmbed);
+// import VueYoutubeEmbed from "vue-youtube-embed";
+// Vue.use(VueYoutubeEmbed);
 
 
 // import firebase and the config
