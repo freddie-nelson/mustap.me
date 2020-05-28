@@ -353,7 +353,7 @@ export default {
 
         this.setCurrentPlaying(index + 1);
         if (this.$store.state.playlists.currentPlaylistViewing > -1) {
-          // this.addClasses(0);
+          this.addClasses(0);
         }
       }
     },

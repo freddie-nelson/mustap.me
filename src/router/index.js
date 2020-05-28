@@ -88,8 +88,8 @@ const router = new VueRouter({
 });
 
 router.beforeEach((to, from, next) => {
-  if (to.name === "Home" && (from.name === "LibraryPlaylist" || from.name === "Library")) {
-    next({ name: "Library", query: { toHome: true } });
+  if (from.name === "LibraryPlaylist" && to.name !== "Library") {
+    next({ name: "Library", query: { goto: to.name } });
   } else {
     next();
   }

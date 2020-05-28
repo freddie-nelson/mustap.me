@@ -1,43 +1,48 @@
 <template>
   <div class="cell-container">
     <div
-      class="cell created"
-      :class="computedClasses"
-      @click="clicked"
+      class="nested-cell-container"
+      v-if="visible"
     >
-      <span class="cell__index">{{ index }}</span>
-      <div class="cell__left-text">
-        <p class="cell__left-text-top">
-          {{ data.leftTop }}
-        </p>
-        <p class="cell__left-text-bottom">
-          {{ data.leftBottom }}
-        </p>
+      <div
+        class="cell created"
+        :class="computedClasses"
+        @click="clicked"
+      >
+        <span class="cell__index">{{ index }}</span>
+        <div class="cell__left-text">
+          <p class="cell__left-text-top">
+            {{ data.leftTop }}
+          </p>
+          <p class="cell__left-text-bottom">
+            {{ data.leftBottom }}
+          </p>
+        </div>
+
+        <div class="cell__right-text">
+          <p class="cell__right-text-top">
+            {{
+              this.$store.state.currentPlaying.index === index - 1 &&
+                !this.forPlaylists &&
+                this.$store.state.playlists.currentPlaylist === this.$store.state.playlists.currentPlaylistViewing
+                ? this.$store.state.currentPlaying.currentTime
+                : false || data.rightTop
+            }}
+          </p>
+        </div>
       </div>
 
-      <div class="cell__right-text">
-        <p class="cell__right-text-top">
-          {{
-            this.$store.state.currentPlaying.index === index - 1 &&
-              !this.forPlaylists &&
-              this.$store.state.playlists.currentPlaylist === this.$store.state.playlists.currentPlaylistViewing
-              ? this.$store.state.currentPlaying.currentTime
-              : false || data.rightTop
-          }}
-        </p>
-      </div>
+      <Button
+        @clicked="
+          () => {
+            $emit('deleteSong', index);
+          }
+        "
+        class="cell__right-text-bottom"
+        icon="trash-2"
+        v-if="!this.forPlaylists"
+      />
     </div>
-
-    <Button
-      @clicked="
-        () => {
-          $emit('deleteSong', index);
-        }
-      "
-      class="cell__right-text-bottom"
-      icon="trash-2"
-      v-if="!this.forPlaylists"
-    />
   </div>
 </template>
 
@@ -51,13 +56,23 @@ export default {
   },
   data() {
     return {
-      deleteClicked: false
+      deleteClicked: false,
+      visible: false
     };
   },
   props: {
     data: Object,
     forPlaylists: Boolean,
-    index: Number
+    index: Number,
+    show: {
+      type: Boolean,
+      default: false
+    }
+  },
+  watch: {
+    show(value) {
+      this.visible = value;
+    }
   },
   computed: {
     computedClasses() {
@@ -99,6 +114,15 @@ export default {
         this.$emit("clicked", this.index);
       }
     }
+  },
+  mounted() {
+    if (!this.forPlaylists) {
+      if (this.index === this.$store.getters.currentPlaylistViewing.data.length) {
+        this.$emit("loaded-cells");
+      }
+    } else {
+      this.visible = true;
+    }
   }
 };
 </script>
@@ -106,6 +130,14 @@ export default {
 <style lang="scss">
 .cell-container {
   position: relative;
+  max-width: 100%;
+  height: 64px;
+  margin: 12px 0;
+
+  .nested-cell-container {
+    height: 100%;
+    width: 100%;
+  }
 
   &:hover {
     .cell {
@@ -119,9 +151,8 @@ export default {
 }
 
 .cell {
-  max-width: 100%;
-  height: 64px;
-  margin: 12px 0;
+  width: 100%;
+  height: 100%;
   background-color: var(--main-bg);
   border-radius: 8px;
   display: flex;

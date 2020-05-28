@@ -242,7 +242,7 @@ export default {
         fs.unlinkSync(deletedPlaylistPath);
       }
 
-      // this.addClasses(0, 0, false);
+      this.addClasses(0, 0, false);
     },
     deleteSong(i, index) {
       const fs = require("fs");

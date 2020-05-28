@@ -18,9 +18,10 @@
         :key="index"
         @clicked="$emit('clicked-cell', $event)"
         @deleteSong="$emit('delete-song', $event)"
-        @loaded-cells="$emit('loaded-cells')"
+        @loaded-cells="addCells"
         :index="index + 1"
         :for-playlists="forPlaylists"
+        :show="visibles[index]"
       />
     </draggable>
     <DataTableCell
@@ -50,6 +51,7 @@ export default {
   data() {
     return {
       array: [],
+      visibles: null,
       tableId: this.forPlaylists ? "table" : false,
       draggableTableId: !this.forPlaylists ? "table" : false
     };
@@ -73,9 +75,38 @@ export default {
       this.array = [...this.formattedArray];
     }
   },
+  methods: {
+    showCells(entries) {
+      entries.forEach((entry) => {
+        const i = entry.target.getAttribute("index");
+
+        // console.log(entry, i);
+
+        if (entry.isIntersecting) {
+          this.$set(this.visibles, i, true);
+        } else {
+          if (this.visibles[i]) {
+            this.$set(this.visibles, i, false);
+          }
+        }
+      });
+    },
+    addCells() {
+      const observer = new IntersectionObserver(this.showCells);
+      document.getElementById("table").children.forEach((node, i) => {
+        node.setAttribute("index", i)
+        observer.observe(node);
+      });
+    }
+  },
   mounted() {
     if (this.formattedArray) {
       this.array = [...this.formattedArray];
+    }
+
+    if (!this.forPlaylists) {
+      this.visibles = Array(this.$store.getters.currentPlaylistViewing.data.length);
+      this.visibles.fill(false);
     }
   },
   beforeDestroy() {

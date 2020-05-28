@@ -31,10 +31,10 @@ export default {
       this.$router.push({ name: "LibraryPlaylist" });
     }
   },
-  mounted() {
-    if (this.$route.query.toHome) {
-      this.$route.query.toHome = null;
-      this.$router.push({ name: "Home" })
+  beforeMount() {
+    if (this.$route.query.goto) {
+      this.$router.push({ name: this.$route.query.goto })
+      this.$route.query.goto = null;
     }
   }
 };
