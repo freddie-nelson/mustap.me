@@ -31,6 +31,7 @@ const currentPlaying = {
     },
     SET_CURRENT_PLAYING_SRC(state, path) {
       Vue.set(state.sound, "src", path);
+      state.sound.load();
     },
     SET_CURRENT_PLAYING_CURRENT_TIME(state, { currentTime, progress }) {
       Vue.set(state, "currentTime", currentTime);
@@ -52,6 +53,9 @@ const currentPlaying = {
       commit("SET_CURRENT_PLAYING_PROP", payload);
     },
     setCurrentPlayingSrc({ commit, state, rootState }, payload) {
+      state.sound.pause();
+      commit("SET_CURRENT_PLAYING_SRC", "");
+
       if (payload === "") {
         commit("SET_CURRENT_PLAYING_SRC", payload);
       } else {

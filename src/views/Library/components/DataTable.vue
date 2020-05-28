@@ -79,7 +79,6 @@ export default {
     }
   },
   beforeDestroy() {
-    this.formattedArray.length = 0;
     this.array.length = 0;
     this.$store.state.playlists.formattedPlaylist.length = 0;
   }
