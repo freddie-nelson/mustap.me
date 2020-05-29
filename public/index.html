@@ -1,16 +1,101 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width,initial-scale=1.0">
-    <link rel="icon" href="<%= BASE_URL %>favicon.ico">
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+    <link rel="icon" href="<%= BASE_URL %>favicon.ico" />
     <title><%= htmlWebpackPlugin.options.title %></title>
+    <style>
+      .loading-overlay {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        top: 0;
+        left: 0;
+        display: flex;
+        z-index: 1000;
+        justify-content: center;
+        align-items: center;
+        background-color: var(--main-bg);
+        transition: opacity 1s ease;
+      }
+
+      .spinner {
+        display: inline-block;
+        position: relative;
+        width: 80px;
+        height: 80px;
+      }
+
+      .spinner div {
+        box-sizing: border-box;
+        display: block;
+        position: absolute;
+        width: 64px;
+        height: 64px;
+        margin: 8px;
+        border: 8px solid var(--accent-color);
+        border-radius: 50%;
+        animation: spinner 1.2s cubic-bezier(0.5, 0, 0.5, 1) infinite;
+        border-color: var(--accent-color) transparent transparent transparent;
+      }
+
+      @keyframes spinner {
+        0% {
+          transform: rotate(0deg);
+        }
+        100% {
+          transform: rotate(360deg);
+        }
+      }
+
+      .spinner div:nth-child(1) {
+        animation-delay: -0.45s;
+      }
+      .spinner div:nth-child(2) {
+        animation-delay: -0.3s;
+      }
+      .spinner div:nth-child(3) {
+        animation-delay: -0.15s;
+      }
+    </style>
+    <script>
+      const { readFileSync, existsSync } =  require("fs");
+      const { remote } = require("electron");
+
+      const currentThemePath = remote.app.getPath("userData") + "/mustap/themes/currentTheme.json";
+      let accentColor = "";
+      let mainBg = "";
+
+      if (existsSync(currentThemePath)) {
+        const obj = JSON.parse(readFileSync(currentThemePath));
+        accentColor = obj.colors.accentColor;
+        mainBg = obj.colors.mainBg;
+      } else {
+        accentColor = "#E91EA4";
+        mainBg = "#121212"
+      }
+      
+      document.documentElement.style.setProperty("--accent-color", accentColor);
+      document.documentElement.style.setProperty("--main-bg", mainBg);
+    </script>
   </head>
   <body>
     <noscript>
-      <strong>We're sorry but <%= htmlWebpackPlugin.options.title %> doesn't work properly without JavaScript enabled. Please enable it to continue.</strong>
+      <strong
+        >We're sorry but <%= htmlWebpackPlugin.options.title %> doesn't work
+        properly without JavaScript enabled. Please enable it to
+        continue.</strong
+      >
     </noscript>
+    <div id="loading-spinner" class="loading-overlay">
+      <div class="spinner">
+        <div></div>
+        <div></div>
+        <div></div>
+      </div>
+    </div>
     <div id="app"></div>
     <!-- built files will be auto injected -->
   </body>

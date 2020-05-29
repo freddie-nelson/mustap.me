@@ -431,8 +431,9 @@ export default {
     margin-left: 12px;
     margin-top: 8px;
 
-    .cell {
+    .cell-container {
       height: 50px;
+      margin-top: 6px;
       margin-bottom: 6px;
 
       .cell__index {
