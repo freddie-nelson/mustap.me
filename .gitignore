@@ -25,3 +25,6 @@ yarn-error.log*
 
 #Hide firebase api key
 /src/firebaseConfig.js
+
+#Line count directory
+.VSCodeCounter

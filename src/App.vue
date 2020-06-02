@@ -3,6 +3,7 @@
     id="app"
     ref="app"
   >
+    <RouterNavButtons />
     <Navbar
       ref="navbar"
     />
@@ -36,6 +37,7 @@
 <script>
 import Navbar from "./components/TheNavbar";
 import Alert from "./components/Alert";
+import RouterNavButtons from "./components/RouterNavButtons";
 // import CurrentlyPlayingBar from "./components/CurrentlyPlayingBar";
 import convertColorToFilter from "@/mixins/convertColorToFilter";
 import loadTheme from "@/mixins/loadTheme";
@@ -45,6 +47,7 @@ export default {
   components: {
     Navbar,
     Alert,
+    RouterNavButtons,
     // CurrentlyPlayingBar
   },
   mixins: [convertColorToFilter, loadTheme],

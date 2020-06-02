@@ -33,7 +33,7 @@ export default {
   },
   beforeMount() {
     if (this.$route.query.goto) {
-      this.$router.push({ name: this.$route.query.goto })
+      this.$router.replace({ name: this.$route.query.goto })
       this.$route.query.goto = null;
     }
   }

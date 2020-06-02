@@ -53,11 +53,6 @@
       </div>
     </div>
 
-    <BackBtn
-      v-if="!this.forPlaylists"
-      @back="back"
-    />
-
     <header ref="libraryHeader">
       <h1>{{ mainTitle }}</h1>
       <div style="display: flex; align-items: center;">
@@ -129,14 +124,12 @@ import CurrentPlaying from "./components/CurrentPlaying";
 import Button from "@/components/Button";
 import setCurrentPlaying from "@/mixins/setCurrentPlaying";
 import addClasses from "@/mixins/addClasses";
-import BackBtn from "@/components/BackBtn";
 
 export default {
   name: "Library",
   components: {
     CurrentPlaying,
     Button,
-    BackBtn,
     // DropdownMenu
   },
   mixins: [setCurrentPlaying, addClasses],

@@ -15,6 +15,13 @@ import "firebase/auth";
 
 export default {
     name: 'Profile',
+    watch: {
+      $route(to) {
+        if (firebase.auth().currentUser && to.name === "Profile") {
+           this.$router.go(-1);
+        }
+      }
+    },
     mounted() {
       firebase.auth().onAuthStateChanged((user) => {
         if (user) {

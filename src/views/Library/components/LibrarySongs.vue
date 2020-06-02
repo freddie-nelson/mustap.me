@@ -2,6 +2,7 @@
   <DataTable
     ref="dataTable"
     :for-playlists="false"
+    :mounted-bool="dataTableMount"
     @drag-end="dragEnd($event)"
     @clicked-cell="setCurrentPlaying($event, false, true)"
     @delete-playlist="$emit('delete-playlist', $event)"
@@ -24,7 +25,8 @@ export default {
     return {
       playlist: [],
       array: [],
-      playlistIndex: null
+      playlistIndex: null,
+      dataTableMount: false
     };
   },
   methods: {
@@ -210,15 +212,31 @@ export default {
   },
   mounted() {
     if (this.$store.state.playlists.currentPlaylistViewing === -1) {
+      // this.$store.dispatch("setPlaylistsProp", {
+      //   prop: "currentPlaylistViewing",
+      //   data: this.$store.state.playlists.formattedPlaylistIndex
+      // });
+
+      let index;
+
+      this.$store.state.playlists.playlists.forEach((playlist, i) => {
+        if (playlist.name === this.$route.params.playlistName) {
+          index = i;
+        }
+      });
+
       this.$store.dispatch("setPlaylistsProp", {
         prop: "currentPlaylistViewing",
-        data: this.$store.state.playlists.formattedPlaylistIndex
+        data: index
       });
     }
+
+    
 
     this.playlistIndex = this.$store.state.playlists.currentPlaylistViewing;
     this.playlist = this.$store.getters.currentPlaylistViewing.data;
     this.formatDataSongs(this.playlistIndex);
+    this.dataTableMount = true;
     this.addClasses(400);
   },
   beforeDestroy() {

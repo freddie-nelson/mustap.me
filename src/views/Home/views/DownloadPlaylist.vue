@@ -18,7 +18,6 @@
 <script>
 import Searchbox from "./components/TheSearchbox";
 import DownloadStatus from "./components/TheDownloadStatus";
-import BackBtn from "../../components/BackBtn";
 import calcLengthSeconds from "@/mixins/calcLengthSeconds";
 import { Stream } from "stream";
 
@@ -26,8 +25,7 @@ export default {
   name: "Home",
   components: {
     Searchbox,
-    DownloadStatus,
-    BackBtn
+    DownloadStatus
   },
   data() {
     return {

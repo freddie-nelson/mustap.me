@@ -68,11 +68,21 @@ export default {
   },
   props: {
     formattedArray: Array,
-    forPlaylists: Boolean
+    forPlaylists: Boolean,
+    mountedBool: {
+      type: Boolean,
+      default: false
+    }
   },
   watch: {
     formattedArray() {
       this.array = [...this.formattedArray];
+    },
+    mountedBool(val) {
+      if (!val) return
+
+      this.visibles = Array(this.$store.getters.currentPlaylistViewing.data.length);
+      this.visibles.fill(false);
     }
   },
   methods: {
@@ -102,11 +112,6 @@ export default {
   mounted() {
     if (this.formattedArray) {
       this.array = [...this.formattedArray];
-    }
-
-    if (!this.forPlaylists) {
-      this.visibles = Array(this.$store.getters.currentPlaylistViewing.data.length);
-      this.visibles.fill(false);
     }
   },
   beforeDestroy() {

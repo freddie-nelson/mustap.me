@@ -272,12 +272,8 @@ export default {
     playPause() {
       if (this.$store.state.currentPlaying.title != "N / A") {
         const currentPlaying = this.$store.state.currentPlaying;
-        this.$store.dispatch("setCurrentPlayingProp", {
-          prop: "playing",
-          data: !currentPlaying.playing
-        });
 
-        if (currentPlaying.playing) {
+        if (!currentPlaying.playing) {
           currentPlaying.sound.play();
         } else {
           currentPlaying.sound.pause();
@@ -451,9 +447,19 @@ export default {
           }
         }
       );
+    },
+    playingChanged() {
+      this.$store.state.currentPlaying.sound.onplay = event => {
+        this.$store.dispatch("setCurrentPlayingProp", { prop: "playing", data: event.returnValue })
+      }
+
+      this.$store.state.currentPlaying.sound.onpause = event => {
+        this.$store.dispatch("setCurrentPlayingProp", { prop: "playing", data: !event.returnValue })
+      }
     }
   },
   mounted() {
+    this.playingChanged();
     this.songFinished();
     this.calcVolumeControlsSrc(this.$store.state.currentPlaying.volume);
     this.registerKeys();
