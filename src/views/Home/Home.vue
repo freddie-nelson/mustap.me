@@ -61,7 +61,7 @@ export default {
 <style lang="scss">
 .home {
     width: 100%;
-    height: 100vh;
+    height: calc(100vh - 40px);
     padding: 60px;
     overflow-y: scroll;
 

@@ -142,5 +142,9 @@ export default {
   overflow: scroll;
   padding-right: 8px;
   overflow-x: hidden;
+
+  .cell-container:first-of-type {
+    margin-top: 0px;
+  }
 }
 </style>

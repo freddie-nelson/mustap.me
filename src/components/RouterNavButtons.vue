@@ -23,17 +23,13 @@ export default {
 
 <style lang="scss" scoped>
   .router-nav {
-    position: absolute;
+    margin: auto 0px;
     display: flex;
     align-items: center;
     justify-content: space-between;
-    top: 10px;
-    left: 70px;
-    background: var(--lighter-bg);
-    border-radius: 4px;
-    height: 32px;
-    width: 75px;
-    z-index: 10;
+    height: 28px;
+    width: 60px;
+    -webkit-app-region: no-drag;
   }
 
   .btn {
@@ -43,13 +39,12 @@ export default {
     font-size: 18px;
     font-weight: 500;
     cursor: pointer;
-    opacity: .5;
-    transition: opacity 0.2s ease;
+    opacity: .7;
     outline: none !important;
-    width: 29px;
+    width: 25px;
 
     > div {
-      height: 29px;
+      height: 25px;
     }
 
     &:hover {

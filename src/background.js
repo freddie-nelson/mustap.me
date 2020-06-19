@@ -46,14 +46,18 @@ function createWindow() {
   win = new BrowserWindow({
     title: "Mustap",
     show: true,
+    frame: false,
+    transparent: true,
+    opacity: 0.5,
     minWidth: 1000,
     minHeight: 750,
+    fullscreen: mainWindowState.fullscreen,
     x: mainWindowState.x,
     y: mainWindowState.y,
     width: mainWindowState.width,
     height: mainWindowState.height,
     icon: path.join(__dirname, "/512x512.png"),
-    backgroundColor: bgColor,
+    backgroundColor: "",
     webPreferences: {
       nodeIntegration: true,
       devTools: true, // CHANGE HERE TO FALSE TO DISABLE DEVTOOLS FOR PRODUCTION -----------------------------------------------------------------------

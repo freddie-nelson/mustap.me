@@ -3,41 +3,51 @@
     id="app"
     ref="app"
   >
-    <RouterNavButtons />
-    <Navbar
-      ref="navbar"
-    />
-    <vue-page-transition
-      name="fade-in-right"
-      class="transition"
-    >
-      <router-view
-        ref="app"
-        @loaded="doneLoading"
-      />
-    </vue-page-transition>
-    <div class="alerts-container">
-      <transition-group name="fade">
-        <Alert
-          v-for="(alert, index) in this.$store.state.alerts"
-          @close="closeAlert(index)"
-          :key="index"
-          :alert="alert.type === 'alert' ? true : false"
-          :warning="alert.type === 'warning' ? true : false"
-          :success="alert.type === 'success' ? true : false"
-          :text="alert.text"
-          :auto-close="alert.autoClose ? alert.autoClose : false"
-        />
-      </transition-group>
+    <div class="edges">
+      <div />
+      <div />
+      <div />
     </div>
+    <TitleBar />
+    <section
+      name="main"
+      class="main"
+    >
+      <Navbar
+        ref="navbar"
+      />
+      <vue-page-transition
+        name="fade-in-right"
+        class="transition"
+      >
+        <router-view
+          ref="app"
+          @loaded="doneLoading"
+        />
+      </vue-page-transition>
+      <div class="alerts-container">
+        <transition-group name="fade">
+          <Alert
+            v-for="(alert, index) in this.$store.state.alerts"
+            @close="closeAlert(index)"
+            :key="index"
+            :alert="alert.type === 'alert' ? true : false"
+            :warning="alert.type === 'warning' ? true : false"
+            :success="alert.type === 'success' ? true : false"
+            :text="alert.text"
+            :auto-close="alert.autoClose ? alert.autoClose : false"
+          />
+        </transition-group>
+      </div>
     <!-- <CurrentlyPlayingBar /> -->
+    </section>
   </div>
 </template>
 
 <script>
 import Navbar from "./components/TheNavbar";
 import Alert from "./components/Alert";
-import RouterNavButtons from "./components/RouterNavButtons";
+import TitleBar from "./components/TitleBar";
 // import CurrentlyPlayingBar from "./components/CurrentlyPlayingBar";
 import convertColorToFilter from "@/mixins/convertColorToFilter";
 import loadTheme from "@/mixins/loadTheme";
@@ -47,7 +57,7 @@ export default {
   components: {
     Navbar,
     Alert,
-    RouterNavButtons,
+    TitleBar
     // CurrentlyPlayingBar
   },
   mixins: [convertColorToFilter, loadTheme],
@@ -156,7 +166,7 @@ export default {
   --accent-color-secondary: #e91e63;
   --navbar-logo-bg: #fff;
   --alert-hover-color: #353535;
-  --font: "Poppins"
+  --font: "Poppins";
 }
 
 .slider-dot-handle {
@@ -187,11 +197,12 @@ body {
   overflow: hidden;
 }
 
-#app {
+.main {
   // display: grid;
+  position: relative;
   display: flex;
   width: 100vw;
-  height: 100vh;
+  height: calc(100vh - 40px);
   flex-direction: row;
   // grid-template-rows: calc(100vh - 100px) 100px;
   // grid-template-rows: 1fr;

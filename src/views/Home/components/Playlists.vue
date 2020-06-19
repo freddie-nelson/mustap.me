@@ -38,7 +38,7 @@ export default {
     &__header {
 
         h1 {
-            margin: 10px 0 0 20px;
+            margin: 10px 0 5px 20px;
             font-size: 28px;
             font-weight: 600;
         }
@@ -46,6 +46,7 @@ export default {
 
     &__table {
         width: 105% !important;
+        padding-right: 12px;
         margin-left: -8px;
         height: calc(100% - 60px) !important;
         transform: scale(.9);

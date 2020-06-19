@@ -255,7 +255,7 @@ export default {
   width: 15.6vw;
   min-width: 300px;
   max-width: 300px;
-  height: 100vh;
+  height: calc(100vh - 40px);
   background-color: var(--dark-bg);
   transition: max-width .2s ease, min-width .2s ease;
   z-index: 100;
