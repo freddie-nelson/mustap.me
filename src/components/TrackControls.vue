@@ -97,6 +97,7 @@
       :height="10"
       style="display: block; padding: 0; margin: 0; cursor: pointer;"
     />
+
     <div class="controls__buttons">
       <!-- <img
         src="../assets/svg/controls/repeat.svg"
@@ -438,15 +439,25 @@ export default {
     songFinished() {
       const currentPlaying = this.$store.state.currentPlaying;
 
-      this.$store.state.currentPlaying.sound.onended = debounce(1000, true,
+      currentPlaying.sound.onended = debounce(1000, true,
         () => {
-          if (currentPlaying.title === "N / A" || !currentPlaying.playing) {
+          if (currentPlaying.title === "N / A") {
             return;
           } else {
             this.nextBack(1);
+            
+            setTimeout(() => {
+              if (currentPlaying.currentTime === currentPlaying.duration) {
+                currentPlaying.sound.currentTime = 0;
+                currentPlaying.sound.play();
+              }
+            }, 300)
           }
-        }
-      );
+        });
+
+      // this.$store.state.currentPlaying.sound.onended = () => {
+      //   console.log("yo");
+      // }
     },
     playingChanged() {
       this.$store.state.currentPlaying.sound.onplay = event => {

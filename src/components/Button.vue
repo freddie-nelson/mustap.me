@@ -1,5 +1,8 @@
 <template>
-  <div style="display: inline-block;">
+  <div
+    style="display: inline-block;"
+    :style="{ height: icon ? iconWidth + 'px' : null }"
+  >
     <button
       @click="modalPopup ? (!disabled ? (modalShow = true) : null) : !disabled ? $emit('clicked') : null"
       :class="{ filled: filled || false, disabled: disabled || false }"
@@ -9,7 +12,7 @@
       <v-icon
         v-if="icon"
         :name="icon"
-        style="width: 14px"
+        :style="{ width: iconWidth + 'px', height: iconWidth + 'px' }"
       />
     </button>
     <!-- <transition name="fade">
@@ -79,6 +82,7 @@ export default {
     fontSize: Number,
     filled: Boolean,
     disabled: Boolean,
+    iconWidth: Number,
     modalPopup: Boolean,
     modalText: String,
     modalInputBox: Boolean,

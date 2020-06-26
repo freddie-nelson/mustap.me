@@ -75,10 +75,7 @@ export default {
               const distanceToTop = clickedEle.getBoundingClientRect().top - tableContainer.offsetTop;
 
               if (distanceToTop < 0 || distanceToBottom > 0) {
-                table.scrollTo({
-                  top: clickedEle.offsetTop - tableContainer.offsetTop,
-                  behavior: "smooth"
-                });
+                clickedEle.scrollIntoView({ behavior: "smooth" });
               }
             }
           }

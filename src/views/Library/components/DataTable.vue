@@ -3,27 +3,49 @@
     :id="tableId"
     ref="table"
     :class="{ forPlaylists: forPlaylists, table: forPlaylists }"
-    style="height: 100%; position: relative;"
+    style="height: 100%;"
   >
-    <draggable
-      v-if="!forPlaylists"
-      :id="draggableTableId"
-      class="table"
-      v-model="playlist"
-      @change="$emit('drag-end', $event)"
-    >
-      <DataTableCell
-        v-for="(data, index) in $store.state.playlists.formattedPlaylist"
-        :data="data"
-        :key="index"
-        @clicked="$emit('clicked-cell', $event)"
-        @deleteSong="$emit('delete-song', $event)"
-        @loaded-cells="addCells"
-        :index="index + 1"
-        :for-playlists="forPlaylists"
-        :show="visibles[index]"
+    <transition name="fade">
+      <AddSongModal
+        v-if="showAddSongModal"
+        @close="showAddSongModal = false"
       />
-    </draggable>
+    </transition>
+    <div
+      v-if="!forPlaylists"
+      class="table"
+    >
+      <draggable
+        :id="draggableTableId"
+        v-model="playlist"
+        @change="$emit('drag-end', $event)"
+      >
+        <DataTableCell
+          v-for="(data, index) in $store.state.playlists.formattedPlaylist"
+          :data="data"
+          :key="index"
+          @clicked="$emit('clicked-cell', $event)"
+          @deleteSong="$emit('delete-song', $event)"
+          @loaded-cells="addCells"
+          :index="index + 1"
+          :for-playlists="forPlaylists"
+          :show="visibles[index]"
+        />
+      </draggable>
+      <div
+        class="table-add-cell"
+        @click="showAddSongModal = true"
+      >
+        <v-icon name="plus" />
+      </div>
+    <!-- <div
+        class="table-add-cell"
+        slot="header"
+        v-if="playlist.length > 50"
+      >
+        <v-icon name="plus" />
+      </div> -->
+    </div>
     <DataTableCell
       v-else
       v-for="(data, index) in array"
@@ -35,25 +57,34 @@
       :index="index + 1"
       :for-playlists="forPlaylists"
     />
+    <div
+      class="table-add-cell"
+      v-if="forPlaylists && !forTheme"
+    >
+      <v-icon name="plus" />
+    </div>
   </div>
 </template>
 
 <script>
 import DataTableCell from "./DataTableCell";
 import draggable from "vuedraggable";
+import AddSongModal from "./AddSongModal";
 
 export default {
   name: "DataTable",
   components: {
     DataTableCell,
-    draggable
+    draggable,
+    AddSongModal
   },
   data() {
     return {
       array: [],
       visibles: null,
       tableId: this.forPlaylists ? "table" : false,
-      draggableTableId: !this.forPlaylists ? "table" : false
+      draggableTableId: !this.forPlaylists ? "table" : false,
+      showAddSongModal: false
     };
   },
   computed: {
@@ -70,6 +101,10 @@ export default {
     formattedArray: Array,
     forPlaylists: Boolean,
     mountedBool: {
+      type: Boolean,
+      default: false
+    },
+    forTheme: {
       type: Boolean,
       default: false
     }
@@ -103,7 +138,9 @@ export default {
     },
     addCells() {
       const observer = new IntersectionObserver(this.showCells);
-      document.getElementById("table").children.forEach((node, i) => {
+      const cells = Array.from(document.getElementById("table").children);
+
+      cells.forEach((node, i) => {
         node.setAttribute("index", i)
         observer.observe(node);
       });
@@ -134,6 +171,33 @@ export default {
 
 ::-webkit-scrollbar-corner {
   display: none;
+}
+
+.table-add-cell {
+  max-width: 100%;
+  height: 64px;
+  margin: 12px 0;
+  cursor: pointer;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transition: background-color .3s ease;
+  border-radius: 8px;
+
+  &:hover {
+    background-color: var(--lighter-bg);
+
+    div {
+      opacity: 1;
+    }
+  }
+
+  div {
+    transition: opacity .3s ease;
+    opacity: 0.5;
+    width: 30px;
+    height: 30px;
+  }
 }
 
 .table {

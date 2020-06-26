@@ -45,6 +45,7 @@
       />
       <DataTable
         :for-playlists="true"
+        :for-theme="true"
         :formatted-array="array"
         @clicked-cell="clickedCell"
         ref="table"
