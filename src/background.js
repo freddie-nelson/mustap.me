@@ -47,8 +47,6 @@ function createWindow() {
     title: "Mustap",
     show: true,
     frame: false,
-    transparent: true,
-    opacity: 0.5,
     minWidth: 1000,
     minHeight: 750,
     fullscreen: mainWindowState.fullscreen,
