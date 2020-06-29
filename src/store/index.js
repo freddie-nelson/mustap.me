@@ -184,7 +184,8 @@ const currentDownload = {
     totalQueueSize: 0,
     currentlyDownloading: false,
     stream: null,
-    path: ""
+    path: "",
+    stopAll: false
   },
   mutations: {
     SET_CURRENT_DOWNLOAD_MULTIPLE(state, payload) {

@@ -53,11 +53,12 @@ export default {
           }
 
           const filename = songsPath + song.filename;
+          const exists = fs.existsSync(filename);
 
-          if (song && !fs.existsSync(filename) && delay > 0) {
+          if (song && !exists && delay > 0) {
             this.$store.dispatch("increment", "missingSongsCount");
             this.$store.dispatch("setSongProperty", { songIndex: i, prop: "missing", data: true })
-          } else if (song) {
+          } else if (song && exists) {
             this.$store.dispatch("setSongProperty", { songIndex: i, prop: "missing", data: false })
           }
 
