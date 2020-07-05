@@ -45,7 +45,6 @@ export default {
   methods: {
     close() {
       if (!win) {
-        const { remote } = require('electron');
         win = remote.BrowserWindow.getFocusedWindow();
       }
 
@@ -53,7 +52,6 @@ export default {
     },
     minimize() {
       if (!win) {
-        const { remote } = require('electron');
         win = remote.BrowserWindow.getFocusedWindow();
       }
 
@@ -61,12 +59,11 @@ export default {
     },
     maximize() {
       if (!win) {
-        const { remote } = require('electron');
         win = remote.BrowserWindow.getFocusedWindow();
       }
 
       if (win.isMaximized()) {
-        win.unmaximize()
+        win.unmaximize();
       } else {
         win.maximize();
       }

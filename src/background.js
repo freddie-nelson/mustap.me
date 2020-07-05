@@ -47,18 +47,18 @@ function createWindow() {
     title: "Mustap",
     show: true,
     frame: false,
-    minWidth: 1000,
-    minHeight: 750,
+    minWidth: 900,
+    minHeight: 650,
     fullscreen: mainWindowState.fullscreen,
     x: mainWindowState.x,
     y: mainWindowState.y,
     width: mainWindowState.width,
     height: mainWindowState.height,
     icon: path.join(__dirname, "/512x512.png"),
-    backgroundColor: "",
+    backgroundColor: bgColor,
     webPreferences: {
       nodeIntegration: true,
-      devTools: true, // CHANGE HERE TO FALSE TO DISABLE DEVTOOLS FOR PRODUCTION -----------------------------------------------------------------------
+      devTools: false, // CHANGE HERE TO FALSE TO DISABLE DEVTOOLS FOR PRODUCTION -----------------------------------------------------------------------
       webSecurity: true
     }
   });
