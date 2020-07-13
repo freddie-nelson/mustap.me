@@ -3,6 +3,16 @@ import Vuex from "vuex";
 
 Vue.use(Vuex);
 
+const discordRPC = {
+  state: {
+    details: "The better way to enjoy your music",
+    state: "Browsing Songs...",
+    startTimestamp: new Date().getTime(),
+    largeImageKey: "512x512",
+    instance: false
+  },
+};
+
 const currentPlaying = {
   state: {
     sound: new Audio(),
@@ -484,7 +494,8 @@ export default new Vuex.Store({
     currentPlaying: currentPlaying,
     currentDownload: currentDownload,
     playlists: playlists,
-    profile: profile
+    profile: profile,
+    discordRPC: discordRPC
   },
   getters: {
     imageFilter: state => {

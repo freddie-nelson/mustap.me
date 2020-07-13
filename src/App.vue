@@ -52,6 +52,10 @@ import TitleBar from "./components/TitleBar";
 import convertColorToFilter from "@/mixins/convertColorToFilter";
 import loadTheme from "@/mixins/loadTheme";
 
+// Setup discord RPC
+import setupDiscordRPC from "./discord";
+setupDiscordRPC();
+
 export default {
   name: "App",
   components: {
