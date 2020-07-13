@@ -199,6 +199,8 @@ body {
   height: 100vh;
   background-color: var(--main-bg);
   overflow: hidden;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
 }
 
 .main {
