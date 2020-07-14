@@ -9,7 +9,7 @@ Vue.use(feather, "v-icon");
 
 // load fonts
 import "typeface-poppins";
-import "typeface-roboto";
+// import "typeface-roboto";
 
 Vue.config.productionTip = false;
 

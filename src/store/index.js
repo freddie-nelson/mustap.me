@@ -8,6 +8,7 @@ const discordRPC = {
     details: "The better way to enjoy your music",
     state: "Browsing Songs...",
     startTimestamp: new Date().getTime(),
+    endTimestamp: new Date().getTime(),
     largeImageKey: "512x512",
     instance: false
   },

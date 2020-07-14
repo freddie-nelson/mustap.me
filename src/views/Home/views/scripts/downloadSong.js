@@ -22,9 +22,11 @@ const downloadSong = (song, songsPath, tries = 0) => {
 
   str.on("progress", progress => {
     if (store.state.currentDownload.progress < 100) {
+      const progress10x = Math.round(progress.percentage) * 10;
+
       store.dispatch("setCurrentDownloadProp", {
         prop: "progress",
-        data: Math.round(progress.percentage)
+        data: progress10x > 100 ? 100 : progress10x
       });
     } else {
       store.dispatch("setCurrentDownloadProp", {

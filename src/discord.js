@@ -12,14 +12,18 @@ rpc.on("ready", () => {
   setInterval(() => {
     const currentPlaying = store.state.currentPlaying;
 
-    if (currentPlaying.index > -1) {
-        const song = currentPlaying.artist + " - " + currentPlaying.title;
-                
-        store.state.discordRPC.details = "Listening to";
-        store.state.discordRPC.state = song;
+    const timeMs = new Date().getTime();
+
+    if (currentPlaying.index > -1) {                
+        store.state.discordRPC.details = currentPlaying.title;
+        store.state.discordRPC.state = "by " + currentPlaying.artist;
+        store.state.discordRPC.startTimestamp = timeMs;
+        store.state.discordRPC.endTimestamp = timeMs + (currentPlaying.lengthSeconds - currentPlaying.currentTimeSeconds) * 1000;
     } else {
         store.state.discordRPC.details = "The better way to enjoy your music";
         store.state.discordRPC.state = "Browsing Songs...";
+        store.state.discordRPC.startTimestamp = timeMs;
+        store.state.discordRPC.endTimestamp = timeMs;
     }
 
     rpc.setActivity(store.state.discordRPC);
