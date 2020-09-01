@@ -1,12 +1,11 @@
 "use strict";
 
 import { app, protocol, BrowserWindow, globalShortcut, Menu } from "electron";
-import {
-  createProtocol,
-  installVueDevtools
-} from "vue-cli-plugin-electron-builder/lib";
+import installExtension, { VUEJS_DEVTOOLS } from "electron-devtools-installer";
+import { createProtocol } from "vue-cli-plugin-electron-builder/lib";
+// import { install } from "vuedraggable";
 const isDevelopment = process.env.NODE_ENV !== "production";
-const path = require("path");
+// const path = require("path");
 const fs = require("fs");
 const windowStateKeeper = require("electron-window-state");
 
@@ -54,13 +53,14 @@ function createWindow() {
     y: mainWindowState.y,
     width: mainWindowState.width,
     height: mainWindowState.height,
-    icon: path.join(__dirname, "/512x512.png"),
+    // icon: path.join(__dirname, "/512x512.png"),
     backgroundColor: bgColor,
     webPreferences: {
       nodeIntegration: true,
       devTools: true, // CHANGE HERE TO FALSE TO DISABLE DEVTOOLS FOR PRODUCTION -----------------------------------------------------------------------
-      webSecurity: true
-    }
+      webSecurity: true,
+      enableRemoteModule: true
+    },
   });
 
   mainWindowState.manage(win);
@@ -70,7 +70,6 @@ function createWindow() {
   if (process.env.WEBPACK_DEV_SERVER_URL) {
     // Load the url of the dev server if in development mode
     win.loadURL(process.env.WEBPACK_DEV_SERVER_URL);
-    if (!process.env.IS_TEST) win.webContents.openDevTools();
   } else {
     createProtocol("app");
     // Load the index.html when not in development
@@ -109,10 +108,7 @@ app.on("activate", () => {
   }
 });
 
-// This method will be called when Electron has finished
-// initialization and is ready to create browser windows.
-// Some APIs can only be used after this event occurs.
-app.on("ready", async () => {
+app.whenReady().then(async () => {
   if (isDevelopment && !process.env.IS_TEST) {
     // Install Vue Devtools
     // Devtools extensions are broken in Electron 6.0.0 and greater
@@ -121,12 +117,19 @@ app.on("ready", async () => {
     // If you are not using Windows 10 dark mode, you may uncomment these lines
     // In addition, if the linked issue is closed, you can upgrade electron and uncomment these lines
     try {
-      await installVueDevtools();
+      console.log("Installing devtools")
+      await installExtension(VUEJS_DEVTOOLS);
+      console.log("Vue devtools installed.")
     } catch (e) {
       console.error("Vue Devtools failed to install:", e.toString());
     }
   }
+})
 
+// This method will be called when Electron has finished
+// initialization and is ready to create browser windows.
+// Some APIs can only be used after this event occurs.
+app.on("ready", async () => {
   createWindow();
 });
 
