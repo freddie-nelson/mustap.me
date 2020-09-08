@@ -1,24 +1,43 @@
 <template>
   <div class="modal-container">
     <div class="modal">
-      <h1 class="modal__title">
-        Add a playlist
-      </h1>
       <Button
         class="modal__button"
         @clicked="$emit('close')"
         icon="x"
         :icon-width="22"
       />
+      <h1
+        class="modal__title"
+        style="margin-bottom: 20px;"
+      >
+        Create a new playlist
+      </h1>
       <div class="modal__form">
         <InputBox
+          class="modal__form-input"
           label="Playlist name"
           placeholder="Name..."
           :full="true"
         />
+        
         <InputBox
+          class="modal__form-input"
           label="Playlist link or ID"
+          placeholder="Playlist link or ID..."
           :full="true"
+        />
+        <p><span>Don't know where to find this? Click </span><a href="#">here</a><span> for help.</span></p>
+        <Button
+          text="Create Playlist"
+          :filled="true"
+          :font-size="14"
+          style="float: right; margin-top: 2px;"
+        />
+        <Button
+          text="Create Empty Playlist"
+          style="float: right; margin-top: 7px; margin-right: 18px;"
+          :font-size="14"
         />
       </div>
     </div>
@@ -61,18 +80,16 @@ export default {
 }
 
 .modal {
-    max-width: 60%;
-    width: 100%;
-    max-height: 400px;
-    height: 100%;
+    max-width: 750px;
+    width: 80%;
     background-color: var(--main-bg);
     z-index: 2;
     border-radius: 8px;
     position: relative;
-    padding: 15px;
+    padding: 20px;
 
     &__title {
-      font-size: 26px;
+      font-size: 2rem;
       color: var(--primary-text);
       margin: 0;
       line-height: 100%;
@@ -80,6 +97,27 @@ export default {
 
     &__form {
       margin-top: 10px;
+
+      &-input {
+        margin-top: 18px;
+      }
+
+      p {
+        color: var(--secondary-text);
+        font-weight: 300;
+        font-size: 12.5px;
+        margin-top: 5px;
+
+        span {
+          opacity: 0.5;
+        }
+
+        >a {
+          color: var(--accent-color);
+          font-weight: 500;
+          opacity: 0.8;
+        }
+      }
     }
 
     &__button {

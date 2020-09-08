@@ -45,8 +45,8 @@ export default {
 }
 
 .modal {
-    max-width: 60%;
-    width: 100%;
+    max-width: 700px;
+    width: 80%;
     max-height: 400px;
     height: 100%;
     background-color: var(--main-bg);
