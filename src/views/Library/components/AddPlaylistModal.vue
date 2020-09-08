@@ -19,13 +19,16 @@
           label="Playlist name"
           placeholder="Name..."
           :full="true"
+          :max-length="70"
+          v-model="name"
         />
-        
         <InputBox
           class="modal__form-input"
           label="Playlist link or ID"
           placeholder="Playlist link or ID..."
           :full="true"
+          :max-length="1000"
+          v-model="link"
         />
         <p><span>Don't know where to find this? Click </span><a href="#">here</a><span> for help.</span></p>
         <Button
@@ -33,11 +36,26 @@
           :filled="true"
           :font-size="14"
           style="float: right; margin-top: 2px;"
+          @clicked="createPlaylist"
         />
         <Button
           text="Create Empty Playlist"
           style="float: right; margin-top: 7px; margin-right: 18px;"
           :font-size="14"
+          @clicked="createPlaylist(true)"
+        />
+      </div>
+
+      <div
+        class="modal__errors"
+        v-if="errorMsg.length"
+      >
+        <div class="bg" />
+        <h3>{{ errorMsg }}</h3>
+        <v-icon
+          name="x"
+          class="modal__errors-close"
+          @click.native="errorMsg = ''"
         />
       </div>
     </div>
@@ -53,6 +71,52 @@ export default {
   components: {
     Button,
     InputBox
+  },
+  data() {
+    return {
+      name: "",
+      link: "",
+      errorMsg: ""
+    }
+  },
+  methods: {
+    validateName() {
+      const name = this.name.replace(/[/\\?%*:|"<>.]/g, "");
+      if (name.length === 0) {
+        this.errorMsg = "No playlist name has been entered."
+        return false;
+      }
+
+      const playlistNames = this.$store.getters.playlistNames;
+
+      for (const playlistName of playlistNames) {
+        if (name === playlistName) {
+          this.errorMsg = "That name is already taken by another playlist."
+          return false;
+        }
+      }
+
+      this.errorMsg = "";
+      return true;
+    },
+    validateLink() {
+      if (this.link.length === 0) {
+        this.errorMsg = "No playlist link or ID has been entered."
+        return false;
+      }
+      if (!require("ytpl").validateURL(this.link)) {
+        this.errorMsg = "The playlist link or ID entered is invalid.";
+        return false;
+      }
+
+      this.errorMsg = "";
+      return true;
+    },
+    createPlaylist(empty = false) {
+      const valid = empty ? this.validateName() : this.validateName() && this.validateLink();
+      
+      if (!valid) return;
+    }
   }
 }
 </script>
@@ -117,6 +181,69 @@ export default {
           font-weight: 500;
           opacity: 0.8;
         }
+      }
+    }
+
+    &__errors {
+      height: 55px;
+      margin-top: 60px;
+      position: relative;
+      display: flex;
+      align-items: center;
+      overflow: hidden;
+
+      &:hover {
+        .modal__errors-close {
+          opacity: 1;
+        }
+      }
+      
+      &-close {
+        content: "";
+        color: var(--accent-color-secondary);
+        filter: contrast(2);
+        width: 20px;
+        height: 20px;
+        margin: auto 0;
+        position: absolute;
+        right: 15px;
+        top: 0;
+        bottom: 0;
+        cursor: pointer;
+        transition: opacity .2s ease-in;
+        opacity: 0;
+      }
+
+      &::before {
+        content: "";
+        background-color: var(--accent-color-secondary);
+        filter: contrast(2);
+        width: 6px;
+        height: 100%;
+        border-radius: 6px 0 0 6px;
+        position: absolute;
+        left: 0;
+        top: 0;
+      }
+
+      h3 {
+        margin-left: 21px;
+        font-size: 16px;
+        font-weight: 500;
+        margin-top: -1px;
+        opacity: 1;
+        color: var(--accent-color-secondary);
+        filter: contrast(2)
+      }
+
+      .bg {
+        background-color: var(--accent-color-secondary);
+        width: 100%;
+        height: 100%;
+        position: absolute;
+        z-index: -1;
+        opacity: 0.12;
+        border-radius: 8px;
       }
     }
 
