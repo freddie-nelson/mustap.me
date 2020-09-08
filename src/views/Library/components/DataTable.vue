@@ -11,6 +11,12 @@
         @close="showAddSongModal = false"
       />
     </transition>
+    <transition name="fade">
+      <AddPlaylistModal
+        v-if="showAddPlaylistModal"
+        @close="showAddPlaylistModal = false"
+      />
+    </transition>
     <div
       v-if="!forPlaylists"
       class="table"
@@ -60,6 +66,7 @@
     <div
       class="table-add-cell"
       v-if="forPlaylists && !forTheme"
+      @click="showAddPlaylistModal = true"
     >
       <v-icon name="plus" />
     </div>
@@ -70,13 +77,15 @@
 import DataTableCell from "./DataTableCell";
 import draggable from "vuedraggable";
 import AddSongModal from "./AddSongModal";
+import AddPlaylistModal from "./AddPlaylistModal";
 
 export default {
   name: "DataTable",
   components: {
     DataTableCell,
     draggable,
-    AddSongModal
+    AddSongModal,
+    AddPlaylistModal
   },
   data() {
     return {
@@ -84,7 +93,8 @@ export default {
       visibles: null,
       tableId: this.forPlaylists ? "table" : false,
       draggableTableId: !this.forPlaylists ? "table" : false,
-      showAddSongModal: false
+      showAddSongModal: false,
+      showAddPlaylistModal: false
     };
   },
   computed: {

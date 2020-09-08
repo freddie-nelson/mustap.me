@@ -1,7 +1,7 @@
 <template>
   <div
     class="container"
-    :style="{ display: displayMode }"
+    :style="{ display: displayMode, width: full ? '100%' : null }"
   >
     <label
       for="input-box"
@@ -10,7 +10,7 @@
       v-if="label"
     >{{ this.label }}</label>
     <input
-      :style="{ width: `${width}px`, fontSize: `${fontSize}px`, height: `${height}px` }"
+      :style="{ width: full ? '100%' : `${width}px`, maxWidth: full ? '100%' : null, fontSize: `${fontSize}px`, height: `${height}px` }"
       :type="typeData"
       class="input-box"
       :placeholder="placeholder === '.' ? '' : placeholder"
@@ -44,6 +44,7 @@ export default {
         displayMode: String,
         maxLength: Number,
         fontSize: Number,
+        full: Boolean,
         height: {
           type: Number,
           default: 30
@@ -80,8 +81,8 @@ export default {
         opacity: 0.3;
 
         &.focused {
-            transform: translateY(-24px) translateX(-8px);
-            opacity: 0.6;
+            transform: translateY(-26px) translateX(-8px) scale(1);
+            opacity: 0.7;
         }
     }
 
@@ -101,7 +102,7 @@ export default {
         min-width: 100px;
         max-width: 300px;
         height: 30px;
-        color: var(--primary-text);
+        color: var(--secondary-text);
         border-radius: 5px;
         padding: 5px 8px;
         padding-bottom: 6px;
