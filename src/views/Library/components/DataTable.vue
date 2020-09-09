@@ -217,8 +217,12 @@ export default {
   padding-right: 8px;
   overflow-x: hidden;
 
-  .cell-container:first-of-type {
+  .cell-container {
     margin-top: 0px;
+  }
+
+  .cell-container ~ .cell-container {
+    margin-top: auto;
   }
 }
 </style>

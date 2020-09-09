@@ -7,6 +7,7 @@
       class="playlists__table"
       :formatted-array="array"
       :for-playlists="true"
+      :for-theme="true"
       @clicked-cell="clickedCell($event)"
     />
   </div>
