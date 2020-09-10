@@ -31,7 +31,7 @@ export default {
       /* dependencies */
       const fs = require("fs");
       const ytpl = require("ytpl");
-      const path = require("path")
+      const path = require("path");
 
       /* system paths */
       const documentsPath = this.$store.state.documentsPath;
@@ -39,7 +39,12 @@ export default {
 
       this.$store.dispatch("setCurrentDownloadProp", {
         prop: "playlistPath",
-        data: path.join(documentsPath, "/mustap/playlists/", playlistName, ".json"),
+        data: path.join(
+          documentsPath,
+          "/mustap/playlists/",
+          playlistName,
+          ".json"
+        ),
       });
 
       // console.log("Fetching metadata...");
@@ -49,9 +54,13 @@ export default {
       });
 
       // Get playlist metadata
-      const metadata = await ytpl(url, { limit: Infinity }).catch(err => console.log(err));
+      let metadataSuccess = true;
+      const metadata = await ytpl(url, { limit: Infinity }).catch(() => metadataSuccess = false);
 
-      console.log(metadata);
+      if (!metadataSuccess) {
+        this.resetCurrentDownload({ currentProcess: "Failed to fetch metadata." });
+        return;
+      }
 
       const playlist = formatPlaylist(metadata, url);
 
@@ -60,31 +69,14 @@ export default {
         data: "Saving metadata...",
       });
 
-      // Get rid of any songs that appear twice
-
-      // playlist.forEach(song => {
-      //   let matches = 0;
-      //   let indexes = [];
-
-      //   playlist.forEach((innerSong, i) => {
-      //     if (song.videoId === innerSong.videoId) {
-      //       matches++;
-      //     }
-
-      //     if (matches > 1) {
-      //       indexes.push(i);
-      //     }
-      //   });
-
-      //   if (indexes.length > 0) {
-      //     indexes.forEach(i => {
-      //       playlist.splice(i, 1);
-      //     });
-      //   }
-      // });
-
       // saving playlist to documents as json file
-      savePlaylist(playlist, documentsPath, playlistName);
+      await savePlaylist(playlist, documentsPath, playlistName);
+
+      // refresh playlist list
+      this.clearData();
+      this.getPlaylists().then(() => {
+        this.formatDataPlaylists();
+      });
 
       // remove all songs already installed
       this.$store.dispatch("setCurrentDownloadProp", {
@@ -160,28 +152,18 @@ export default {
           });
 
         if (download === "stop") {
-          this.$store.dispatch("setCurrentDownloadMultiple", {
-            currentProcess: "Stopped downloading songs.",
-            currentlyDownloading: false,
-            currentDownloadTitle: "N / A",
-            stream: null,
-            playlistPath: "",
-            path: "",
-            progress: 0,
-            playlistLink: "",
-            playlistName: "",
-            downloadNow: false,
-          });
+          this.resetCurrentDownload({ currentProcess: "Stopped downloading songs." });
 
           return;
         }
       }
 
+      this.resetCurrentDownload({ index: playlist.length, currentProcess: "Finished downloading playlist." });
+    },
+    resetCurrentDownload(extra = {}) {
       this.$store.dispatch("setCurrentDownloadMultiple", {
-        currentProcess: "Finished downloading all songs.",
         currentlyDownloading: false,
         currentDownloadTitle: "N / A",
-        index: playlist.length,
         stream: null,
         playlistPath: "",
         path: "",
@@ -189,7 +171,8 @@ export default {
         playlistLink: "",
         playlistName: "",
         downloadNow: false,
+        ...extra,
       });
-    }
-  }
+    },
+  },
 };

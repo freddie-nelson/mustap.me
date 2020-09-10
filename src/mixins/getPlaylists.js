@@ -123,6 +123,12 @@ export default {
             : null;
         });
       }
+    },
+    clearData() {
+      this.playlists.length = 0;
+      this.array.length = 0;
+      this.playlistNames.length = 0;
+      this.datesAdded.length = 0;
     }
   },
   mounted() {
@@ -133,9 +139,6 @@ export default {
     }
   },
   beforeDestroy() {
-    this.playlists.length = 0;
-    this.array.length = 0;
-    this.playlistNames.length = 0;
-    this.datesAdded.length = 0;
+    this.clearData();
   }
 };

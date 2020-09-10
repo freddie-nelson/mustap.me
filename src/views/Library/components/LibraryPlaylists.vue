@@ -23,10 +23,6 @@ export default {
       if (this.downloadPlaylistBool) {
         this.playlistDownloader([ this.$store.state.currentDownload.playlistLink, this.$store.state.currentDownload.playlistName ])
       }
-
-      this.getPlaylists().then(() => {
-        this.formatDataPlaylists()
-      })
     }
   },
   computed: {
