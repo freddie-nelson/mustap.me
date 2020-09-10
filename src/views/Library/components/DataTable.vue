@@ -41,6 +41,7 @@
       <div
         class="table-add-cell"
         @click="showAddSongModal = true"
+        :style="{ marginTop: $store.getters.currentPlaylistViewing.data.length === 0 ? '0' : null }"
       >
         <v-icon name="plus" />
       </div>
@@ -67,6 +68,7 @@
       class="table-add-cell"
       v-if="forPlaylists && !forTheme"
       @click="showAddPlaylistModal = true"
+      :style="{ marginTop: array.length === 0 ? '0' : null }"
     >
       <v-icon name="plus" />
     </div>

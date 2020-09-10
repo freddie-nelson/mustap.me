@@ -120,11 +120,18 @@ export default {
       
       if (!valid) return;
 
-      this.$store.dispatch("setCurrentDownloadMultiple", {
+      if (empty) {
+        this.$store.dispatch("setCurrentDownloadMultiple", {
+          playlistName: this.name,
+          downloadNow: true
+        });
+      } else {
+        this.$store.dispatch("setCurrentDownloadMultiple", {
         playlistLink: this.link,
         playlistName: this.name,
         downloadNow: true
       });
+      }
 
       this.$emit("close");
     }

@@ -11,6 +11,7 @@
 import DataTable from "./DataTable";
 import getPlaylists from "@/mixins/getPlaylists";
 import downloadPlaylist from "@/mixins/downloadPlaylist/downloadPlaylist";
+import savePlaylist from "@/mixins/downloadPlaylist/scripts/savePlaylist"
 
 export default {
   name: "LibraryPlaylists",
@@ -21,13 +22,23 @@ export default {
   watch: {
     downloadPlaylistBool() {
       if (this.downloadPlaylistBool) {
-        this.playlistDownloader([ this.$store.state.currentDownload.playlistLink, this.$store.state.currentDownload.playlistName ])
+        if (this.$store.state.currentDownload.playlistLink) {
+          this.playlistDownloader([ this.$store.state.currentDownload.playlistLink, this.$store.state.currentDownload.playlistName ]);
+        } else {
+          savePlaylist([], require("path").join(this.$store.state.documentsPath), this.$store.state.currentDownload.playlistName)
+            .then(() => {
+              this.resetCurrentDownload();
+              this.clearData();
+              this.getPlaylists().then(() => this.formatDataPlaylists());
+            })
+            .catch(err => console.log(err)); 
+        }
       }
     }
   },
   computed: {
     downloadPlaylistBool() {
-      return this.$store.state.currentDownload.downloadNow
+      return this.$store.state.currentDownload.downloadNow;
     }
   },
   methods: {

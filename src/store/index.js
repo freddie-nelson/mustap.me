@@ -135,7 +135,6 @@ const currentPlaying = {
             seconds = "0" + seconds;
           }
 
-
           currentTime = `${hours}:${minutes}:${seconds}`
         } else {
           if (seconds < 10) {
