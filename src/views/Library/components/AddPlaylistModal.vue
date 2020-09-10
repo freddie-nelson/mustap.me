@@ -104,7 +104,10 @@ export default {
         this.errorMsg = "No playlist link or ID has been entered."
         return false;
       }
-      if (!require("ytpl").validateURL(this.link)) {
+
+      const ytpl = require("ytpl");
+
+      if (!ytpl.validateID(this.link)) {
         this.errorMsg = "The playlist link or ID entered is invalid.";
         return false;
       }
@@ -116,6 +119,14 @@ export default {
       const valid = empty ? this.validateName() : this.validateName() && this.validateLink();
       
       if (!valid) return;
+
+      this.$store.dispatch("setCurrentDownloadMultiple", {
+        playlistLink: this.link,
+        playlistName: this.name,
+        downloadNow: true
+      });
+
+      this.$emit("close");
     }
   }
 }

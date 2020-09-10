@@ -188,6 +188,9 @@ const currentPlaying = {
 const currentDownload = {
   state: {
     playlistPath: "",
+    playlistLink: "",
+    playlistName: "",
+    downloadNow: false,
     currentProcess: "N / A",
     currentDownloadTitle: "N / A",
     progress: 0,
@@ -196,17 +199,17 @@ const currentDownload = {
     currentlyDownloading: false,
     stream: null,
     path: "",
-    stopAll: false
+    stopAll: false,
   },
   mutations: {
     SET_CURRENT_DOWNLOAD_MULTIPLE(state, payload) {
-      Object.keys(payload).forEach(prop => {
+      Object.keys(payload).forEach((prop) => {
         Vue.set(state, prop, payload[prop]);
       });
     },
     SET_CURRENT_DOWNLOAD_PROP(state, payload) {
       Vue.set(state, payload.prop, payload.data);
-    }
+    },
   },
   actions: {
     setCurrentDownloadMultiple({ commit }, payload) {
@@ -214,8 +217,8 @@ const currentDownload = {
     },
     setCurrentDownloadProp({ commit }, payload) {
       commit("SET_CURRENT_DOWNLOAD_PROP", payload);
-    }
-  }
+    },
+  },
 };
 
 const playlists = {

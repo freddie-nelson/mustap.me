@@ -1,5 +1,8 @@
 <template>
-  <div class="cell-container">
+  <div
+    class="cell-container"
+    :class="{ downloading: forPlaylists ? this.data.leftTop === this.$store.state.currentDownload.playlistName : false }"
+  >
     <div
       class="nested-cell-container"
       v-if="visible"
@@ -35,7 +38,7 @@
       <Button
         @clicked="
           () => {
-            $emit('deleteSong', index);
+            $emit('delete-song', index);
           }
         "
         class="cell__right-text-bottom"
@@ -57,7 +60,8 @@ export default {
   data() {
     return {
       deleteClicked: false,
-      visible: false
+      visible: false,
+      downloading: false
     };
   },
   props: {
@@ -133,6 +137,11 @@ export default {
   max-width: 100%;
   height: 64px;
   margin: 12px 0;
+
+  &.downloading {
+    pointer-events: none;
+    opacity: 0.5
+  }
 
   .nested-cell-container {
     height: 100%;

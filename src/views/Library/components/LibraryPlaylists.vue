@@ -10,13 +10,29 @@
 <script>
 import DataTable from "./DataTable";
 import getPlaylists from "@/mixins/getPlaylists";
-
+import downloadPlaylist from "@/mixins/downloadPlaylist/downloadPlaylist";
 
 export default {
   name: "LibraryPlaylists",
-  mixins: [getPlaylists],
+  mixins: [getPlaylists, downloadPlaylist],
   components: {
     DataTable
+  },
+  watch: {
+    downloadPlaylistBool() {
+      if (this.downloadPlaylistBool) {
+        this.playlistDownloader([ this.$store.state.currentDownload.playlistLink, this.$store.state.currentDownload.playlistName ])
+      }
+
+      this.getPlaylists().then(() => {
+        this.formatDataPlaylists()
+      })
+    }
+  },
+  computed: {
+    downloadPlaylistBool() {
+      return this.$store.state.currentDownload.downloadNow
+    }
   },
   methods: {
     clickedCell(index) {
