@@ -127,10 +127,10 @@ export default {
         });
       } else {
         this.$store.dispatch("setCurrentDownloadMultiple", {
-        playlistLink: this.link,
-        playlistName: this.name,
-        downloadNow: true
-      });
+          playlistLink: this.link,
+          playlistName: this.name,
+          downloadNow: true
+        });
       }
 
       this.$emit("close");

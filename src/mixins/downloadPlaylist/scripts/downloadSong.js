@@ -35,10 +35,16 @@ const downloadSong = (song, songsPath, tries = 0) => {
       });
     }
   });
+  
+  let stream;
 
-  const stream = ytdl(song.url, downloadOptions)
-    .pipe(str)
-    .pipe(fs.createWriteStream(songsPath + song.filename));
+  try {
+    stream = ytdl(song.url, downloadOptions)
+        .pipe(str)
+        .pipe(fs.createWriteStream(songsPath + song.filename));
+  } catch (e) {
+    return e;
+  }
 
   store.state.currentDownload.stream = stream;
 

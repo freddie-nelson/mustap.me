@@ -449,9 +449,9 @@ export default {
           stroke: var(--accent-color);
         }
 
-        svg {
-          filter: drop-shadow(0px 0px 15px var(--accent-color));
-        }
+        // svg {
+        //   filter: drop-shadow(0px 0px 15px var(--accent-color));
+        // }
 
         &#Settings svg > * {
           fill: none;

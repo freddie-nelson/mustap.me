@@ -36,7 +36,7 @@
     "vue-youtube-embed": "^2.2.2",
     "vuedraggable": "^2.24.1",
     "vuex": "3.5.1",
-    "ytdl-core": "2.1.7",
+    "ytdl-core": "^3.2.2",
     "ytpl": "^1.0.0"
   },
   "devDependencies": {

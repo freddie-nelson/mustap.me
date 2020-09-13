@@ -76,6 +76,8 @@ export default {
 
   &__text-container {
     display: flex;
+    text-overflow: ellipsis;
+    word-break: break-all;
   }
 
   &__btn {
