@@ -197,7 +197,7 @@ img, a {
 body {
   width: 100%;
   height: 100vh;
-  background-color: var(--main-bg);
+  background-color: var(--dark-bg);
   overflow: hidden;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
@@ -220,6 +220,8 @@ body {
 
 .transition {
   width: 100%;
+  border-radius: 8px 0 0 0;
+  background-color: var(--main-bg);
 }
 
 .alerts-container {

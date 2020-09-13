@@ -59,7 +59,7 @@ function createWindow() {
       nodeIntegration: true,
       devTools: true, // CHANGE HERE TO FALSE TO DISABLE DEVTOOLS FOR PRODUCTION -----------------------------------------------------------------------
       webSecurity: true,
-      enableRemoteModule: true
+      enableRemoteModule: true,
     },
   });
 
