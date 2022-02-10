@@ -21,7 +21,7 @@
     "electron-window-state": "^5.0.3",
     "end-of-stream": "^1.4.4",
     "firebase": "7.15.2",
-    "node-sass": "4.14.1",
+    "node-sass": "7.0.0",
     "progress-stream": "2.0.0",
     "sass-loader": "8.0.2",
     "throttle-debounce": "2.2.1",
